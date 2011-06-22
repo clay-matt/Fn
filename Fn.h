@@ -1,7 +1,7 @@
 // Header file for constants
 
 // author Matt Clay
-// version 110524
+// version 110622
 
 /////////////////////////////////////////////////////////
 
@@ -40,9 +40,9 @@ const int Fn_MaxRank = 10;
 const int Fn_DefaultRank = 2;
 const int Fn_MaxVertices = 100;
 const int Fn_MaxEdges = 100;
-const QString Fn_BasisCharacters = "aAbBcCdDeEfFgGhHiIjJ";
-const QString Fn_TightRegExp = "aA|Aa|bB|Bb|cC|Cc|dD|Dd|eE|Ee|fF|Ff|gG|Gg|hH|Hh|iI|Ii|jJ|Jj";
-const QString Fn_Identity = "1";
+const char Fn_BasisCharacters[] = "aAbBcCdDeEfFgGhHiIjJ";
+const char Fn_TightRegExp[] = "aA|Aa|bB|Bb|cC|Cc|dD|Dd|eE|Ee|fF|Ff|gG|Gg|hH|Hh|iI|Ii|jJ|Jj";
+const char Fn_Identity[] = "1";
 
 // file handling constants
 const QString FnVersion = "0.1";
