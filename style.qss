@@ -1,0 +1,41 @@
+FunctionListWidget {
+    background-color: lightyellow;
+}
+
+FunctionListWidget::item:hover:!selected {
+    background: lightblue;
+ }
+
+GraphListWidget {
+    background-color: lightyellow;
+}
+
+HelpBrowser QPushButton[back="true"] {
+    border-image: url(:Images/backarrow.png) 8 0 8 0;
+    border-width: 8px 0px 8px 0px;
+    width: 32px;
+    height: 16px;
+    padding: 4px;
+    margin-right: 16px;
+}
+
+HelpBrowser QPushButton[forward="true"] {
+    border-image: url(:Images/forwardarrow.png) 8 0 8 0;
+    border-width: 8px 0px 8px 0px;
+    width: 32px;
+    height: 16px;
+    padding: 4px;
+}
+
+MorphismDialog QLineEdit[image="true"] {
+    min-width: 200px;
+    max-width: 200px;
+}
+
+MorphismListWidget {
+    background-color: lightyellow;
+}
+
+VariableListWidget {
+    background-color: lightyellow;
+}

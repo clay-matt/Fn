@@ -1,0 +1,14 @@
+# Compiled Source #
+###################
+*.o
+
+# QMake Automatic Files #
+#########################
+Fn
+Makefile
+*.user*
+
+# OS generated files #
+######################
+.DS_Store
+

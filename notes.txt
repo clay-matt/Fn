@@ -1,0 +1,80 @@
+This file contains a log of changes made and needed to be made
+
+10/24/2010 -
+
+    1. Morphism Handling:
+    Fix input line handling of morphisms.  Currently, a morphism is outputed in the form:
+        { a:a b:Ab A:A B:Ba }
+    But to load this morphism on the input line, the program expects:
+        { a, Ab } or optionally { a, Ab : image_rank }
+    This is annoying, the way morphisms are handled should be consistent.
+    ** 05/25/2011 ** Fixed - morphisms are now outputed in the form { a, Ab : image_rank }
+
+    2. Program Icon:
+    Dock icon is tiny.
+    ** 11/05/2010 ** Fixed
+
+    3. Status Bar:
+    By default, status bar is made, change to showStatus.
+    ** 11/05/2010 ** Fixed
+
+    4. Conjugacy Problem:
+    Status Tip is invalid, programs returns error if user tries to supply rank
+    ** 11/05/2010 ** Fixed
+
+10/28/2010 -
+
+    1. Functionality to Add:
+        Saving
+        Copy/Paste ** Added 02/08/11 **
+        Input short form
+        Ability to loop over integers
+        Ability to loop over ball of fixed radius
+        Standard functions (02/08/11 - what did I mean by this?)
+
+    2. Features to Add:
+        Graphs
+        Stallings Graphs
+        Separability
+        Graph Morphism
+        Train-Tracks
+        Translation length (free volume) in 1-edge Bass-Serre Trees
+        Intersection number for points in CV
+        Intersection number for free splittings
+        Intersection number for Z-splittings
+
+11/24/2010 -
+
+    1. BUG:
+    Program crashed when trying to load the morphism F_3 -> F_2 given by a->a, b->b, c->1
+    ** 02/11/11 ** Fixed
+
+2/25/2011 -
+
+    1. Functionality to Add:
+        Online help/documentation
+        Help browser using QtWebKit
+        Xml reading/writing (as opposed to or in addition to saving?)
+
+    2. Features to Add:
+        Morphisms should be "linked" to computed inverses so that Map_(f_,a_,-1) applies the inverse of f_ to a_.
+        Roig/Venture/Weil P algorithm for Whitehead problem
+        Whitehead Graphs
+
+3/31/2011 -
+
+    1. Xml reading/writing of variables (integers/elements/morphisms) works
+        Still need to add display saving
+
+4/7/2011 -
+
+    1. Xml reading/writing of morphisms does not work, problem on 10/24/2010 still persists
+    ** 05/25/2011 ** Fixed
+
+4/13/2011 -
+
+    1. Changed FnMap::iterate to take advantage of repeated squaring
+
+6/6/2011 -
+
+    1. Added verision control using git.

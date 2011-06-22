@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Images/icon.png</file>
+        <file>style.qss</file>
+        <file>Documentation/index.html</file>
+        <file>Documentation/style.css</file>
+        <file>Documentation/Classes/ClassInfo/basis.html</file>
+        <file>Documentation/Classes/index.html</file>
+        <file>Documentation/Images/icon.png</file>
+        <file>Documentation/Images/email.gif</file>
+        <file>Images/backarrow.png</file>
+        <file>Images/forwardarrow.png</file>
+    </qresource>
+</RCC>

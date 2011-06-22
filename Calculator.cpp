@@ -1,0 +1,952 @@
+//
+/////////////////////////////////////////////////////////
+
+#include <QChar>
+#include <QHash>
+#include <QMessageBox>
+#include <QRegExp>
+#include <QString>
+
+#include "Calculator.h"
+
+const QString Calculator::IdString = "Id";
+const QString Calculator::PreviousOutput = "_";
+
+/////////////////////////////////////////////////////////
+
+Calculator::Calculator(QObject *parent) : QObject(parent)
+{
+
+    basis.changeRank(Fn_MaxRank);
+    previousOutput.setFailMessage(tr("Name Error: \"%1\" is not defined").arg(PreviousOutput));
+
+    // make regular expressions
+    // matches string = anything
+    assignmentRegExp.setPattern(QString("^\\b\\S+\\b\\s*=.+$"));
+
+    // matches string_(anything)
+    functionRegExp.setPattern(QString("^\\S+_\\(.+\\)$"));
+
+    // matches { anything }
+    morphismRegExp.setPattern(QString("^\\{.+\\}$"));
+
+    // matches string without equal sign
+    stringRegExp.setPattern(QString("^[^=]+$"));
+  
+    // matches string_
+    variableRegExp.setPattern(QString("^\\S+_$"));
+
+    // matches word with only characters and digits
+    wordRegExp.setPattern(QString("^\\w+$"));
+
+    // place identity into variable list
+    variableList.insert(IdString,FnData(Id));
+
+}
+
+/////////////////////////////////////////////////////////
+// PUBLIC
+
+QString Calculator::processInput(const QString & user_input)
+{
+
+  // processes user input
+  basis.changeRank(Fn_MaxRank);
+
+  // remove extra white space
+  QString input = user_input.trimmed();
+
+  // check previous output
+  if (input == PreviousOutput)
+    return previousOutput.toOutput();
+
+  // echo after processing input
+  if (stringRegExp.exactMatch(input)) {
+
+    FnData output = compute(input);
+    previousOutput = output;
+
+    return output.toOutput();
+
+  }
+
+  // assignment processed input to variable
+  if (assignmentRegExp.exactMatch(input)) {
+
+    // varName = anything to left of first equal sign
+    QString varName = input.section(QChar('='),0,0).trimmed();
+
+    // check that varName is an appropriate name for a variable
+    if (varName == Id) {
+      previousOutput.setFailMessage(tr("Name Error: %1 is a protected character").arg(IdString));
+      return previousOutput.toOutput();
+    }
+    if (varName == PreviousOutput){
+      previousOutput.setFailMessage(tr("Name Error: %1 is a protected character").arg(PreviousOutput));
+      return previousOutput.toOutput();
+    }
+    if (!varName.contains(QRegExp("[A-Za-z]"))) {
+      previousOutput.setFailMessage(tr("Name Error: variable names must contain a letter"));
+      return previousOutput.toOutput();
+    }
+
+    // varValue = everything to the right of the first equal sign
+    QString varValue = input.section(QChar('='),1).trimmed();
+
+    // check previous output
+    if (varValue == PreviousOutput) {
+      variableList.insert(varName,previousOutput);
+      emit updateVariableList(variableList);
+      return previousOutput.toOutput();
+    }
+
+    FnData output = compute(varValue);
+    previousOutput = output;
+
+    if (output.type() != FailMessage) {
+      variableList.insert(varName,output);
+      emit updateVariableList(variableList);
+    }
+
+    return output.toOutput();
+
+  }
+
+  previousOutput.setFailMessage(tr("Input Error: unknown input %1").arg(input));
+  return previousOutput.toOutput();
+  
+}
+
+/////////////////////////////////////////////////////////
+// PRIVATE
+
+FnData Calculator::compute(const QString & input)
+{
+
+  FnData failedOutput;
+
+  // default returns failedOutput
+  failedOutput.setFailMessage(tr("Input Error: unknown input %1").arg(input));
+
+  // try to match with integer
+  bool isInt;
+  int n = input.toInt(&isInt);
+  if (isInt) {
+    return FnData(n);
+  }
+
+  // try to match with variable
+  if (variableRegExp.exactMatch(input)) {
+
+    failedOutput.setFailMessage(tr("Name Error: \"%1\" is not defined").arg(input));
+
+    // check variable list for input - last _
+    return variableList.value(input.left(input.size() - 1),failedOutput);
+
+  }
+
+  // try to match with element
+  if (wordRegExp.exactMatch(input)) {
+
+    failedOutput.setFailMessage(tr("Basis Error: %1 is not a word in the basis %2").arg(input).arg(basis));
+
+    FnWord u(input);
+    if (u.checkBasis(basis)) {
+      u.tighten();
+      return FnData(u);
+    }
+
+    return failedOutput;
+
+  }
+
+  // try to match with morphism
+  else if (morphismRegExp.exactMatch(input)) {
+
+    QString images = input;
+    images.chop(1);
+    images.remove(0,1);
+    QStringList imageList = breakAtTopLevel(images);
+
+    int rank = imageList.size();
+    QString lastEntry = imageList.takeLast();
+    if (lastEntry.contains(QChar(':'))) {
+      int index = lastEntry.indexOf(QChar(':'));
+      rank = lastEntry.mid(index+1).trimmed().toInt();
+      if (rank < Fn_MinRank || rank > Fn_MaxRank) {
+          failedOutput.setFailMessage(tr("Basis Error: %1 is not a valid rank (%2 < rank < %3)")
+                                      .arg(lastEntry.mid(index+1)).arg(Fn_MinRank).arg(Fn_MaxRank));
+        return failedOutput;
+      }
+      lastEntry = lastEntry.left(index).trimmed();
+    }
+
+    imageList.append(lastEntry);
+
+    FnMap phi(imageList,rank);
+    if (!phi) {
+      failedOutput.setFailMessage(tr("Morphism Error: images are not in specified basis"));
+      return failedOutput;
+    }
+    return FnData(phi);
+
+  }
+
+  // try to match with preset function
+  if (functionRegExp.exactMatch(input)) {
+
+    // functionName =  everything to the left of first (
+    QString functionName = input.section(QChar('('),0,0);
+    enum FunctionNames fcn = presetFunctions.fcnTag(functionName);
+    QString functionInput = input.section(QChar('('),1);
+    functionInput.chop(1);
+
+    FunctionInput converted_input = stringToInput(functionInput);
+    return applyFunction(fcn,converted_input);
+    
+   }
+
+  return failedOutput;
+
+}
+
+FunctionInput Calculator::stringToInput(const QString & input)
+{
+
+  QStringList input_list = breakAtTopLevel(input);
+
+  bool isInt;
+  FnData dataItem;
+  FunctionInput computed_input;
+  QString listItem;
+
+  QStringListIterator i(input_list);
+  while (i.hasNext()) {
+    listItem = i.next();
+
+    // try to guess the type of listItem
+
+    // integer?
+    dataItem.setInteger(listItem.toInt(&isInt));
+    if (isInt) {
+      computed_input.append(dataItem);
+    }
+
+    // previous?
+    else if (listItem == PreviousOutput) {
+      computed_input.append(previousOutput);
+    }
+
+    // variable?
+    else if (variableRegExp.exactMatch(listItem)) {
+      if (variableList.contains(listItem.left(listItem.size() - 1)))
+        dataItem = variableList.value(listItem.left(listItem.size() - 1));
+      else
+        dataItem.setFailMessage(tr("Name Error: \"%1\" is not defined").arg(listItem));
+      computed_input.append(dataItem);
+    }
+
+    // element?
+    else if (wordRegExp.exactMatch(listItem)) {
+      FnWord u(listItem);
+      dataItem.setElement(u);
+      computed_input.append(dataItem);
+    }
+
+    // morphism?
+    else if (morphismRegExp.exactMatch(listItem)) {
+      listItem.chop(1);
+      listItem.remove(0,1);
+      QStringList imageList = breakAtTopLevel(listItem);
+
+      int rank = imageList.size();
+      QString lastEntry = imageList.takeLast();
+      if (lastEntry.contains(QChar(':'))) {
+        int index = lastEntry.indexOf(QChar(':'));
+        rank = lastEntry.mid(index+1).trimmed().toInt();
+        if (rank < Fn_MinRank || rank > Fn_MaxRank) {
+          dataItem.setFailMessage(tr("Basis Error: %1 is not a valid rank (%2 < rank < %3)").arg(lastEntry.mid(index+1))
+                                  .arg(Fn_MinRank).arg(Fn_MaxRank));
+        }
+        lastEntry = lastEntry.left(index).trimmed();
+      }
+
+      imageList.append(lastEntry);
+
+      if ( rank >= Fn_MinRank && rank <= Fn_MaxRank) {
+        FnMap phi(imageList,rank);
+        if (!phi) {
+          dataItem.setFailMessage(tr("Morphism Error: images are not in specified basis"));
+        } else
+          dataItem.setMorphism(phi);
+      }
+
+      computed_input.append(dataItem);
+    }
+
+    // function?
+    else if (functionRegExp.exactMatch(listItem)) {
+      QString functionName  = listItem.section(QChar('('),0,0);
+      enum FunctionNames fcn = presetFunctions.fcnTag(functionName);
+      QString functionInput = listItem.section(QChar('('),1);
+      functionInput.chop(1);
+
+      FunctionInput converted_input = stringToInput(functionInput);
+      dataItem = applyFunction(fcn,converted_input);
+      computed_input.append(dataItem);
+    }
+
+    // unknown input
+    else {
+      dataItem.setFailMessage(tr("Input Error: unknown input \"%1\"").arg(listItem));
+      computed_input.append(dataItem);
+    }
+
+  }
+
+  return computed_input;
+
+}
+
+FnData Calculator::applyFunction(enum FunctionNames fcn, const FunctionInput & input)
+{
+
+  FnData failedOutput;
+
+  // a fall through for error messages
+  if (input.varTypes().contains(FailMessage)) {
+    FunctionInputIterator x(input);
+    while (x.hasNext()) {
+      failedOutput = x.next();
+      if (failedOutput.type() == FailMessage)
+        return failedOutput;
+    }
+  }
+
+  failedOutput.setFailMessage(tr("Function Error: \"%1\" is not a valid function").arg(presetFunctions.fcnName(fcn)));
+
+  switch (fcn) {
+
+  case CommutatorFcn:
+    return CommutatorFunction(input);
+    break;
+
+  case ComposeFcn:
+    return ComposeFunction(input);
+    break;
+
+  case ConjugateFcn:
+    return ConjugationFunction(input);
+    break;
+
+  case ConjugacyProblemFcn:
+    return ConjugacyProblemFunction(input);
+    break;
+
+  case ExpFcn:
+    return ExponentiationFunction(input);
+    break;
+
+  case IdentityFcn:
+    return IdentityFunction(input);
+    break;
+
+  case InverseFcn:
+    return InverseFunction(input);
+    break;
+
+  case IsAutomorphismFcn:
+    return IsAutomorphismFunction(input);
+    break;
+
+  case IsPrimitiveElementFcn:
+    return IsPrimitiveElementFunction(input);
+    break;
+
+  case IterateFcn:
+    return IterateFunction(input);
+    break;
+
+  case LengthFcn:
+    return LengthFunction(input);
+    break;
+
+  case MapFcn:
+    return MapFunction(input);
+    break;
+
+  case MultiplyFcn:
+    return MultiplyFunction(input);
+    break;
+
+  case WhiteheadProblemFcn:
+    return WhiteheadProblemFunction(input);
+    break;
+
+  default:
+    return failedOutput;
+    break;
+
+  }
+
+  return failedOutput;
+
+}
+
+/////////////////////////////////////////////////////////
+// PRESET FUNCTIONS
+
+FnData Calculator::CommutatorFunction(const FunctionInput & input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(CommutatorFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for Commutator"));
+    return output;
+  }
+
+  FnWord u1(input.at(0).wordData());
+  FnWord u2(input.at(1).wordData());
+
+  if (!u1.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u1).arg(basis));
+    return output;
+  }
+
+  if (!u2.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u2).arg(basis));
+    return output;
+  }
+
+  FnWord u1u2 = u1*u2*u1.inverse()*u2.inverse();
+  output.setElement(u1u2);
+
+  return output;
+
+}
+
+FnData Calculator::ComposeFunction(const FunctionInput &input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(ComposeFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for Compose"));
+    return output;
+  }
+
+  FnMap phi1(input.at(0).mapData());
+  FnMap phi2(input.at(1).mapData());
+
+  FnMap phi12 = phi1*phi2;
+
+  if (!phi12) {
+    output.setFailMessage(tr("Function Error: image rank (%1) is not equal to domain rank (%2)")
+                          .arg(phi2.imageRank()).arg(phi1.domainRank()));
+    return output;
+  }
+
+  output.setMorphism(phi12);
+
+  return output;
+
+}
+
+FnData Calculator::ConjugationFunction(const FunctionInput & input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(ConjugateFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for Conjugate"));
+    return output;
+  }
+
+  FnWord u1(input.at(0).wordData());
+  FnWord u2(input.at(1).wordData());
+
+  if (!u1.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u1).arg(basis));
+    return output;
+  }
+
+  if (!u2.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u2).arg(basis));
+    return output;
+  }
+
+  FnWord u1u2 = u1^u2;
+  output.setElement(u1u2);
+
+  return output;
+
+}
+
+FnData Calculator::ConjugacyProblemFunction(const FunctionInput & input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(ConjugacyProblemFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for ConjugacyProblem"));
+    return output;
+  }
+
+  FnWord u1(input.at(0).wordData());
+  FnWord u2(input.at(1).wordData());
+
+  if (!u1.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u1).arg(basis));
+    return output;
+  }
+
+  if (!u2.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u2).arg(basis));
+    return output;
+  }
+
+  FnWord areConjugate = conjugacyProblem(u1,u2);
+
+  if (!areConjugate) {
+    output.setFailMessage(tr("%1 and %2 are not conjugate").arg(u1).arg(u2));
+    return output;
+  }
+
+  output.setElement(areConjugate);
+
+  return output;
+
+}
+
+FnData Calculator::ExponentiationFunction(const FunctionInput & input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(ExpFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for Exp"));
+    return output;
+  }
+
+  FnWord u(input.at(0).wordData());
+  if (!u.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+    return output;
+  }
+
+  u.tighten();
+
+  int n = input.at(1).integerData();
+  FnWord un = u.exp(n);
+
+  output.setElement(un);
+
+  return output;
+
+}
+
+FnData Calculator::IdentityFunction(const FunctionInput & input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(IdentityFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for Identity"));
+    return output;
+  }
+
+  FnWord u(input.at(0).wordData());
+  if (!u.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+    return output;
+  }
+
+  u.tighten();
+
+  output.setElement(u);
+
+  return output;
+
+}
+
+FnData Calculator::InverseFunction(const FunctionInput & input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(InverseFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for Inverse"));
+    return output;
+  }
+
+  FnWord u(input.at(0).wordData());
+  if (!u.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+    return output;
+  }
+
+  u.tighten();
+
+  FnWord U = u.inverse();
+  output.setElement(U);
+
+  return output;
+
+}
+
+FnData Calculator::IsAutomorphismFunction(const FunctionInput & input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(IsAutomorphismFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for IsAutomorphism"));
+    return output;
+  }
+
+  FnMap phi(input.at(0).mapData());
+  FnMap phi_Inv = phi.isAutomorphism();
+
+  if (!phi_Inv)
+    output.setFailMessage(tr("%1 is not an automorphism").arg(input.at(0).toOutput()));
+  else
+    output.setMorphism(phi_Inv);
+
+  return output;
+
+}
+
+FnData Calculator::IsPrimitiveElementFunction(const FunctionInput & input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(IsPrimitiveElementFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for IsPrimitiveElement"));
+    return output;
+  }
+
+  FnWord u(input.at(0).wordData());
+  if (input.size() == 2) {
+    int r = input.at(1).integerData();
+    if (r < Fn_MinRank || r > Fn_MaxRank) {
+      output.setFailMessage(tr("Basis Error: %1 is not a valid rank (%2 < rank < %3)").arg(r)
+                            .arg(Fn_MinRank).arg(Fn_MaxRank));
+      return output;
+    }
+    basis.changeRank(r);
+  }
+
+  if (!u.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+    return output;
+  }
+
+  FnMap phi = isPrimitiveElement(u,basis);
+
+  if (!phi) {
+    output.setFailMessage(tr("%1 is not a primitive element").arg(u));
+  } else
+    output.setMorphism(phi);
+
+  return output;
+
+}
+
+FnData Calculator::IterateFunction(const FunctionInput & input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(IterateFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for Iterate"));
+    return output;
+  }
+
+  FnMap phi(input.at(0).mapData());
+  int n = input.at(1).integerData();
+
+  if (n < 0) {
+    output.setFailMessage(tr("Function Error: number of iterations must be non-negative"));
+    return output;
+  }
+
+  FnMap phi_n = phi.iterate(n);
+
+  if (!phi_n) {
+    output.setFailMessage(tr("Function Error: cannot iterate this morphism"));
+    return output;
+  }
+
+  output.setMorphism(phi_n);
+
+  return output;
+
+}
+
+FnData Calculator::LengthFunction(const FunctionInput & input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(LengthFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for Length"));
+    return output;
+  }
+
+  FnWord u(input.at(0).wordData());
+  if (!u.checkBasis(basis)) {
+    output.setFailMessage(QString("Function Error: invalid input for Length"));
+    return output;
+  }
+
+  u.tighten();
+
+  if (u == Id)
+    output.setInteger(0);
+  else
+    output.setInteger(u.length());
+
+  return output;
+
+}
+
+FnData Calculator::MapFunction(const FunctionInput & input)
+{
+
+    FnData output;
+
+    if (!input.isAcceptable(presetFunctions.fcnInput(MapFcn))) {
+      output.setFailMessage(tr("Function Error: invalid input for Map"));
+      return output;
+    }
+
+    FnMap phi(input.at(0).mapData());
+    basis.changeRank(phi.domainRank());
+
+    FnWord u(input.at(1).wordData());
+    if (!u.checkBasis(basis)) {
+      output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+      return output;
+    }
+
+    u.tighten();
+
+    int n = 1;
+    if (input.size() == 3)
+      n = input.at(2).integerData();
+
+    if (n < 0) {
+      output.setFailMessage(tr("Function Error: number of iterations must be non-negative"));
+      return output;
+    }
+
+    FnWord phi_un = phi(u,n);
+
+    if (!phi_un) {
+      output.setFailMessage(tr("Function Error: cannot iterate this morphism"));
+      return output;
+    }
+
+    output.setElement(phi_un);
+
+    return output;
+
+}
+
+FnData Calculator::MultiplyFunction(const FunctionInput & input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(MultiplyFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for Multiply"));
+    return output;
+  }
+
+  FnWord u1(input.at(0).wordData());
+  FnWord u2(input.at(1).wordData());
+
+  if (!u1.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u1).arg(basis));
+    return output;
+  }
+
+  if (!u2.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u2).arg(basis));
+    return output;
+  }
+
+  FnWord u1u2 = u1*u2;
+  output.setElement(u1u2);
+
+  return output;
+
+}
+
+FnData Calculator::WhiteheadProblemFunction(const FunctionInput & input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(WhiteheadProblemFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for WhiteheadProblem"));
+    return output;
+  }
+
+  FnWord u1(input.at(0).wordData());
+  FnWord u2(input.at(1).wordData());
+
+  if (input.size() == 3) {
+    int r = input.at(2).integerData();
+    if (r < Fn_MinRank || r > Fn_MaxRank) {
+      output.setFailMessage(tr("Basis Error: %1 is not a valid rank (2 < rank < %2)").arg(r)
+                            .arg(Fn_MinRank).arg(Fn_MaxRank));
+      return output;
+    }
+    basis.changeRank(r);
+  }
+
+  if (!u1.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u1).arg(basis));
+    return output;
+  }
+
+  if (!u2.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u2).arg(basis));
+    return output;
+  }
+
+  FnMap phi = whiteheadProblem(u1,u2,basis);
+  if (!phi)
+    output.setFailMessage(tr("%1 and %2 are not related by an automorphism").arg(u1).arg(u2));
+  else
+    output.setMorphism(phi);
+
+  return output;
+
+}
+
+/////////////////////////////////////////////////////////
+// PUBLIC SLOTS
+
+void Calculator::loadGraph(const QString &name, const FnGraph &Gamma)
+{
+
+  variableList.insert(name,FnData(Gamma));
+  emit updateVariableList(variableList);
+
+}
+
+void Calculator::loadMorphism(const QString &name, const FnMap &phi)
+{
+
+  variableList.insert(name,FnData(phi));
+  emit updateVariableList(variableList);
+
+}
+
+void Calculator::resetMorphisms()
+{
+
+  int r = QMessageBox::warning(0, tr("Free Group Calculator"),
+                               tr("Do you want to clear all of the morphisms?\n"
+                                  "This cannot be undone."),
+                               QMessageBox::Yes
+                               | QMessageBox::Cancel);
+
+  if (r == QMessageBox::Yes) {
+    VariableListMutableIterator x(variableList);
+    while (x.hasNext()) {
+      x.next();
+      if (x.value().type() == Morphism)
+        x.remove();
+    }
+    emit updateVariableList(variableList);
+  }
+
+}
+
+void Calculator::resetGraphs()
+{
+
+  int r = QMessageBox::warning(0, tr("Free Group Calculator"),
+                               tr("Do you want to clear all of the graphs?\n"
+                                  "This cannot be undone."),
+                               QMessageBox::Yes
+                               | QMessageBox::Cancel);
+
+  if (r == QMessageBox::Yes) {
+    VariableListMutableIterator x(variableList);
+    while (x.hasNext()) {
+      x.next();
+      if (x.value().type() == Graph)
+        x.remove();
+    }
+    emit updateVariableList(variableList);
+  }
+
+}
+
+void Calculator::resetVariables()
+{
+
+    int r = QMessageBox::warning(0, tr("Free Group Calculator"),
+                                 tr("Do you want to clear all of the variables?\n"
+                                    "This cannot be undone."),
+                                 QMessageBox::Yes
+                                 | QMessageBox::Cancel);
+
+    if (r == QMessageBox::Yes) {
+      VariableListMutableIterator x(variableList);
+      while (x.hasNext()) {
+        x.next();
+        if (x.value().type() == Element || x.value().type() == Integer)
+          x.remove();
+      }
+      variableList.insert(Id,FnData(Id));
+      emit updateVariableList(variableList);
+    }
+
+}
+
+/////////////////////////////////////////////////////////
+// OTHER FUNCTIONS
+
+QStringList breakAtTopLevel(const QString &input)
+{
+
+  // returns a list of strings broken at the top level commas
+  
+  QString word;
+  QString piece;
+  QStringList words = input.split(QChar(','));
+  QStringList brokenInput;
+  int totalLeft = 0;
+  int totalRight = 0;
+  int leftBracket = 0;
+  int rightBracket = 0;
+
+  QStringListIterator i(words);
+  while(i.hasNext()) {
+
+    word = i.next();
+    piece += word;
+    totalLeft += word.count(QChar('('));
+    totalRight += word.count(QChar(')'));
+    leftBracket += word.count(QChar('{'));
+    rightBracket += word.count(QChar('}'));
+
+    if (totalLeft == totalRight && leftBracket == rightBracket) {
+
+      brokenInput.append(piece.trimmed());
+      piece.clear();
+
+    } else piece += ",";
+
+  }
+
+  return brokenInput;
+
+}
