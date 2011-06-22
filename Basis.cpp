@@ -17,6 +17,28 @@ Basis::Basis(int r) : QString(Fn_BasisCharacters)
 
 }
 
+Basis::Basis(QString basisCharacters) : QString(basisCharacters)
+{
+
+    // peel off identity element
+    QString Identity=at(0);
+    remove(0,1);
+    rank = size()/2;
+
+    // make sure MinRank <= rank <= MaxRank, if not set to DefaultRank
+    if(rank < Fn_MinRank || rank > Fn_MaxRank) rank = Fn_DefaultRank;
+    resize(2*rank);
+
+    basisRegExp.setPattern(Identity + QString("|[" + *this + "]+"));
+    QString TightRegExp;
+    for(int i = 0; i < size(); i+=2) {
+        TightRegExp.append("|");
+        TightRegExp.append(mid(i,2));
+    }
+    tightRegExp.setPattern(Identity + TightRegExp);
+
+}
+
 /////////////////////////////////////////////////////////
 // PUBLIC
 

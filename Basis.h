@@ -25,6 +25,7 @@ private:
 
 public:
     Basis(int r = Fn_DefaultRank);
+    Basis(QString basisCharacters);
 
     QRegExp basisValidate(void) const;
     void changeRank(int r);
@@ -36,6 +37,6 @@ public:
 
 };
 
-const Basis BASIS(Fn_MaxRank);
+const Basis BASIS(QString("1aAbBcCdDeEfFgGhHiIjJ"));
 
 #endif // BASIS_H

@@ -6,6 +6,8 @@
 #########################
 Fn
 Makefile
+moc_*
+qrc_*
 *.user*
 
 # OS generated files #
