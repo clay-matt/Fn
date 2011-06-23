@@ -80,7 +80,7 @@ provides an alphabet for the free group.
       <span class="input">r</span> )</td>
   </tr>
 
-    <tr>
+   <tr>
     <td class="type">QRegExp</td>
     <td><a class="membername" href="#basisValidate">basisValidate</a> ( )
       <span class="type">const</span>
@@ -131,10 +131,9 @@ provides an alphabet for the free group.
 
 <table class="classmembers">
 
-  <tr>
-    <td class="type">Basis</td>
-    <td><a class="membername" href="#BASIS">BASIS</a></td>
-  </tr>
+  <tr> <td class="type">Basis</td> <td><a class="membername"
+    href="#BASIS-CONST">BASIS</a> </td>
+    </tr>
 
 </table>
 
@@ -175,9 +174,9 @@ class="code">Basis(<a class="code" href="Fn.html#DefaultRank">Fn_DefaultRank</a>
 
 Constructs a basis of rank <span class="input">r</span>.  If <span
 class="input">r</span> < <a class="code"
-href="Fn.html#MinRank">Fn_MinRank</a> or <span class="input">r</span>
-> <a class="code" href="Fn.html#MaxRank">Fn_MaxRank</a>, then a basis
-of rank <a class="code" href="Fn.html#DefaultRank">Fn_DefaultRank</a>
+href="fn.html#MinRank">Fn_MinRank</a> or <span class="input">r</span>
+> <a class="code" href="fn.html#MaxRank">Fn_MaxRank</a>, then a basis
+of rank <a class="code" href="fn.html#DefaultRank">Fn_DefaultRank</a>
 is constructed.
 
 </p>
@@ -201,8 +200,7 @@ Returns the a copy of the private memeber basisRegExp.  See <a
 <p class="memberdescription"><a name="changeRank" />
 
 <table class="memberheader">
-  <tr><td><span class="membername"><span class="type">void</span> Basis::changeRank</span> ( <span class="type">int</span><span class="input"> r</span> )
-  <span class="type">const</span></td></tr>
+  <tr><td><span class="membername"><span class="type">void</span> Basis::changeRank</span> ( <span class="type">int</span><span class="input"> r</span> )</td></tr>
 </table>
 
 <br />
@@ -255,10 +253,22 @@ href="http://doc.qt.nokia.com/4.7/qregexp.html#exactMatch">basisRegExp.exactmatc
 Returns the QChar corresponding to the inverse of <span
 class="input">x</span>.  If <span class="input">x</span> is not in the
 basis, then 0 (casted as a QChar) is returned.  As the identity
-element (Id) is treated as a QString and not a member of the basis,
-this function cannot be used to compute the inverse Id.
-See <a class="code" href="FnWord.html#inverse">FnWord::inverse</a> and
-<a class="code" href="FnWord.html">Id</a> for more details.
+element (ID) is treated as a QString and not a member of the basis,
+this function cannot be applied to ID.  See <a class="code"
+href="fnword.html#inverse">FnWord::inverse</a> and <a class="code"
+href="fnword.html#ID">ID</a> for more details.
+
+</p>
+
+<p class="memberdescription"><a name="BASIS-CONST" />
+
+<table class="memberheader"> <tr> <td> <span
+  class="type">const</span> <span class="membername">Basis BASIS</span> </td> </tr> </table>
+
+<br />
+
+This is a global constant that provides a maximal basis.  It is
+constructed using Basis BASIS(<a class="code" href="fn.html#MaxRank">Fn_MaxRank</a>).
 
 </p>
 

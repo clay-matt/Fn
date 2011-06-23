@@ -343,6 +343,10 @@ FnData Calculator::applyFunction(enum FunctionNames fcn, const FunctionInput & i
     return ConjugacyProblemFunction(input);
     break;
 
+  case ConnectedComponentsFcn:
+    return ConnectedComponentsFunction(input);
+    break;
+
   case ExpFcn:
     return ExponentiationFunction(input);
     break;
@@ -357,6 +361,10 @@ FnData Calculator::applyFunction(enum FunctionNames fcn, const FunctionInput & i
 
   case IsAutomorphismFcn:
     return IsAutomorphismFunction(input);
+    break;
+
+  case IsolatedVerticesFcn:
+    return IsolatedVerticesFunction(input);
     break;
 
   case IsPrimitiveElementFcn:
@@ -519,6 +527,32 @@ FnData Calculator::ConjugacyProblemFunction(const FunctionInput & input)
 
 }
 
+FnData Calculator::ConnectedComponentsFunction(const FunctionInput & input)
+{
+
+    FnData output;
+
+    if (!input.isAcceptable(presetFunctions.fcnInput(ConnectedComponentsFcn))) {
+      output.setFailMessage(tr("Function Error: invalid input for ConnectedComponents"));
+      return output;
+    }
+
+    FnGraph Gamma(input.at(0).graphData());
+
+    QList<FnGraph> components = Gamma.connectedComponents();
+    QString graphstring;
+
+    foreach(FnGraph graph,components) {
+        FnData graphdata(graph);
+        graphstring += graphdata.toOutput() + " ";
+    }
+
+    output.setFailMessage(graphstring);
+
+    return output;
+
+}
+
 FnData Calculator::ExponentiationFunction(const FunctionInput & input)
 {
 
@@ -615,6 +649,29 @@ FnData Calculator::IsAutomorphismFunction(const FunctionInput & input)
 
   return output;
 
+}
+
+FnData Calculator::IsolatedVerticesFunction(const FunctionInput &input)
+{
+
+    FnData output;
+
+    if (!input.isAcceptable(presetFunctions.fcnInput(IsolatedVerticesFcn))) {
+      output.setFailMessage(tr("Function Error: invalid input for IsolatedVertices"));
+      return output;
+    }
+
+    FnGraph Gamma(input.at(0).graphData());
+
+    QList<QString> verticesList = Gamma.isolatedVertices();
+
+    QString vertices;
+    foreach(QString vertex, verticesList) {
+        vertices += vertex + " ";
+    }
+
+    output.setFailMessage(vertices);
+    return output;
 }
 
 FnData Calculator::IsPrimitiveElementFunction(const FunctionInput & input)

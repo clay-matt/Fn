@@ -5,10 +5,14 @@
 # QMake Automatic Files #
 #########################
 Fn
+Fn.app/
+Fn.xcodeproj/
+Info.plist
 Makefile
 moc_*
 qrc_*
 *.user*
+
 
 # OS generated files #
 ######################

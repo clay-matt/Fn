@@ -1,0 +1,327 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.77 [en] (X11; U; SunOS 5.7 sun4u) [Netscape]">
+   <meta name="Author" content="Matt Clay">
+
+<link rel="stylesheet" type="text/css" href="../../style.css" />
+
+<title>Free Group Calculator: Classes</title>
+
+</head>
+
+<body>
+
+<ul class="list-nav">
+
+  <li><a href="../../index.html">Home</a></li>
+
+  <li><a href="../../Functions/index.html">Functions</a></li>
+
+  <li><a href="../../Tutorial/index.html">Tutorial</a></li>
+
+  <li><a class="thispage" href="../index.html">Classes</a></li>
+
+  <li><a href="../../Download/index.html">Download</a></li>
+
+</ul>
+
+<br>
+<br>
+<br>
+<hr>
+
+<img class="icon" src="../../Images/icon.png" alt="Fn" />
+
+<p class="pagetitle">FnWord</p>
+
+<p class="paragraph"> Inherits <a class="class"
+href="http://doc.qt.nokia.com/4.7/qstring.html">QString</a>.  FnWord
+is an element of the free group.  </p>
+
+<p class="header">#include "FnWord.h"</p>
+
+<p class="subsectionheader">Public Members</p>
+
+<table class="classmembers">
+
+  <tr>
+    <td class="type"></td>
+    <td><a class="membername" href="#FnWord">FnWord</a> ( )</td>
+  </tr>
+
+  <tr>
+    <td class="type"></td>
+    <td><a class="membername" href="#FnWord-qstring">FnWord</a> ( <span
+    class="type">const QString</span> &
+      <span class="input">other</span> )</td>
+  </tr>
+
+    <tr>
+    <td class="type"></td>
+    <td><a class="membername" href="#FnWord-qchar">FnWord</a> ( <span
+    class="type">const QChar</span>
+      <span class="input">a</span> )</td>
+  </tr>
+
+  <tr>
+    <td class="type">bool</td>
+    <td><a class="membername" href="#checkBasis">checkBasis</a> (
+      <span class="type">const
+  Basis</span> & <span class="input">basis = <a
+      class="code" href="basis.html#BASIS-CONST">BASIS</a></span> )
+    <span class="type">const</span></td>
+  </tr>
+  
+  <tr>
+    <td class="type">FnWord</td>
+    <td><a class="membername" href="#cyclicWord">cyclicWord</a> ( )
+    <span class="type">const</span></td>
+  </tr>
+
+  <tr>
+    <td class="type">FnWord</td>
+    <td><a class="membername" href="#exp">exp</a> (<span
+    class="type">int</span> <span class="input">n</span> )
+    <span class="type">const</span></td>
+  </tr>
+
+  <tr>
+    <td class="type">FnWord</td>
+    <td><a class="membername" href="#inverse">inverse</a> ( )
+    <span class="type">const</span></td>
+  </tr>
+
+  <tr>
+    <td class="type">void</td>
+    <td><a class="membername" href="#tighten">tighten</a> ( ) </td>
+  </tr>
+
+  <tr>
+    <td class="type">bool</td>
+    <td><a class="membername" href="operator!">operator ! </a>
+    ( ) <span class="type">const</span></td>
+  </tr>
+
+  <tr>
+    <td class="type">FnWord &</td>
+    <td><a class="membername" href="operator=qchar">operator = </a>
+    ( <span class="type">const QChar</span> <span
+    class="input">a</span> )</td>
+  </tr>
+
+  <tr>
+    <td class="type">FnWord &</td>
+    <td><a class="membername" href="operator*=fnword">operator *= </a>
+    ( <span class="type">const FnWord</span> & <span
+    class="input">u</span> )</td>
+  </tr>
+
+    <tr>
+    <td class="type">FnWord &</td>
+    <td><a class="membername" href="operator*=qchar">operator *= </a>
+    ( <span class="type">const QChar</span> <span
+    class="input">a</span> )</td>
+  </tr>
+
+</table>
+
+<p class="subsectionheader">Friends</p>
+
+<table class="classmembers">
+
+  <tr>
+    <td class="type">FnWord</td>
+    <td><a class="membername" href="operator*fnword">operator *</a>
+    ( <span class="type">const FnWord</span> & <span
+    class="input">u</span>, <span class="type">const FnWord</span> & <span
+    class="input">v</span> ) </td>
+  </tr>
+
+  <tr>
+    <td class="type">FnWord</td>
+    <td><a class="membername" href="operator*qcharfnword">operator *</a>
+    ( <span class="type">const QChar</span> <span
+    class="input">a</span>, <span class="type">const FnWord</span> & <span
+    class="input">v</span> ) </td>
+  </tr>
+
+  <tr>
+    <td class="type">FnWord</td>
+    <td><a class="membername" href="operator*fnwordqchar">operator *</a>
+    ( <span class="type">const FnWord</span> & <span
+    class="input">u</span>, <span class="type">const QChar</span> <span
+    class="input">a</span> ) </td>
+  </tr>
+
+    <tr>
+    <td class="type">FnWord</td>
+    <td><a class="membername" href="operator^fnword">operator ^</a>
+    ( <span class="type">const FnWord</span> & <span
+    class="input">u</span>, <span class="type">const FnWord</span> & <span
+    class="input">v</span> ) </td>
+  </tr>
+
+  <tr>
+    <td class="type">FnWord</td>
+    <td><a class="membername" href="operator^fnwordqchar">operator ^</a>
+    ( <span class="type">const FnWord</span> & <span
+    class="input">u</span>, <span class="type">const QChar</span> <span
+    class="input">a</span> ) </td>
+  </tr>
+
+  <tr>
+    <td class="type">FnWord</td>
+    <td><a class="membername"
+    href="conjugacyproblem">conjugacyProblem</a> ( <span
+    class="type">const FnWord</span> & <span class="input">u</span>,
+    <span class="type">const FnWord</span> & <span
+    class="input">v</span> )</td>
+  </tr>
+  
+</table>
+
+<p class="subsectionheader">Constants</p>
+
+<table class="classmembers">
+
+  <tr> <td class="type">FnWord</td> <td><a class="membername"
+    href="#FAIL">FAIL</a> </td>
+  </tr>
+
+  <tr> <td class="type">FnWord</td> <td><a class="membername"
+    href="#ID">ID</a> </td>
+  </tr>
+
+</table>
+
+<p class="paragraph">  FnWord
+is an element of the free group.
+
+<br /><br />
+
+This class is used to define a basis and contains the regular
+expressions used in determining membership in the basis (basisRegExp)
+used in transforming a word to its freely reduced representative (tightRegExp).
+
+</p>
+
+<p class="subsectionheader">Member Definitions</p>
+
+<p class="memberdescription"><a name="FnWord" />
+
+<table class="memberheader">
+  <tr><td><span class="membername">FnWord::FnWord</span> ( )</tr></td>
+</table>
+
+<br />
+
+Default constructor for the class.  The constructs an empty QString.
+
+</p>
+
+<p class="memberdescription"><a name="FnWord-qstring" />
+
+<table class="memberheader">
+  <tr><td><span class="membername">FnWord::FnWord</span> ( <span
+  class="type">const QString</span> & <span class="input">other</span>
+  )</tr></td>
+</table>
+
+<br />
+
+Constructs an FnWord using the word <span class="input">other</span>.
+
+</p>
+
+<p class="memberdescription"><a name="FnWord-qchar" />
+
+<table class="memberheader">
+  <tr><td><span class="membername">FnWord::FnWord</span> ( <span
+  class="type">const QChar</span> <span class="input">a</span> )</tr></td>
+</table>
+
+<br />
+
+Constructs an FnWord of length one with the element <span
+class="input">a</span>.
+
+</p>
+
+<p class="memberdescription"><a name="checkBasis" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">bool</span>
+      FnWord::checkBasis</span> ( <span class="type">const
+  Basis</span> & <span class="input">basis = <a
+      class="code" href="basis.html#BASIS-CONST">BASIS</a></span> ) <span
+  class="type">const</span></td></tr> </table>
+
+<br />
+
+Checks whether or not the FnWord is a valid word in the basis <span
+class="input">basis</span>.
+  
+</p>
+
+<p class="memberdescription"><a name="cyclicWord" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnWord</span>
+      FnWord::cyclicWord</span> ( ) <span
+  class="type">const</span></td></tr> </table>
+
+<br />
+
+Returns the FnWord obtained by removing all instances of
+  initial-terminal <i>x</i> - <i>x<sup>&minus;1</sup></i> pairs.  To
+  check if two words define the same cylic word (i.e., are conjugate)
+  use <a class="code" href="#conjugacyProblem">FnWord::conjugacyProblem</a>.
+  
+</p>
+
+  <p class="memberdescription"><a name="exp" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnWord</span>
+      FnWord::exp</span> ( <span class="type">int</span> <span
+  class="input">n</span> ) <span
+  class="type">const</span>
+    </td>
+  </tr>
+</table>
+
+<br />
+
+Returns the <span class="input">n</span><sup>th</sup> power of the
+  FnWord.
+  
+</p>
+
+<p class="memberdescription"><a name="ID" />
+
+<table class="memberheader">
+  <tr>
+    <td> <span
+  class="type">const</span> <span class="membername">FnWord ID</span>
+    </td>
+  </tr>
+</table>
+
+<br />
+
+This is a global constant represents the identity element in the free
+  group.  It is constructed by FnWord ID(QString(<a class="code"
+  href="fn.html#Fn_Identity">Fn_Identity</a>)).
+  
+</p>
+
+<p><a class="toptop" href="#">BACK TO TOP</a></p>
+
+</body>
+</html>
+

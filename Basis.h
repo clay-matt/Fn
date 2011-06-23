@@ -2,7 +2,7 @@
 // inherits QString
 
 // author Matt Clay
-// version 110525
+// version 110622
 
 /////////////////////////////////////////////////////////
 

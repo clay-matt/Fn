@@ -67,10 +67,12 @@ private:
     FnData ComposeFunction(const FunctionInput &input);
     FnData ConjugationFunction(const FunctionInput &input);
     FnData ConjugacyProblemFunction(const FunctionInput &input);
+    FnData ConnectedComponentsFunction(const FunctionInput &input);
     FnData ExponentiationFunction(const FunctionInput &input);
     FnData IdentityFunction(const FunctionInput &input);
     FnData InverseFunction(const FunctionInput &input);
     FnData IsAutomorphismFunction(const FunctionInput &input);
+    FnData IsolatedVerticesFunction(const FunctionInput &input);
     FnData IsPrimitiveElementFunction(const FunctionInput &input);
     FnData IterateFunction(const FunctionInput &input);
     FnData LengthFunction(const FunctionInput &input);
