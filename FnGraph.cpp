@@ -44,11 +44,19 @@ QList<QString> FnGraph::isolatedVertices() const {
 
     // Returns the list of isolated vertices of the graph
 
-    QList<QString> isolated;
-    isolated << QString("test1") << QString("test2");
+        QList<QString> isolated;
+
+
+
+        foreach(QString edge, keys())
+        {
+               isolated.removeAll(initialVertex(edge));
+               isolated.removeAll(terminalVertex(edge));
+
+
+        }
 
     return isolated;
-
 }
 
 QList<FnGraph> FnGraph::connectedComponents() const {
