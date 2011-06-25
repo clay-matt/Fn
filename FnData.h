@@ -2,7 +2,7 @@
 // union of typical data types
 
 // author Matt Clay
-// version 110525
+// version 110624
 
 /////////////////////////////////////////////////////////
 
@@ -10,6 +10,7 @@
 #define FNDATA_H
 
 #include <QHash>
+#include <QList>
 #include <QString>
 
 #include "Fn.h"
@@ -17,47 +18,56 @@
 #include "FnMap.h"
 #include "FnWord.h"
 
-class QString;
-
 /////////////////////////////////////////////////////////
 
 class FnData
 {
 
-public:
-  FnData();
-  FnData(int i);
-  FnData(const FnWord &u);
-  FnData(const FnMap &phi);
-  FnData(const FnGraph &Gamma);
-
-  enum VariableTypes type() const { return data_type; }
-
-  FnGraph graphData() const;
-  int integerData() const;
-  FnMap mapData() const;
-  FnWord wordData() const;
-  QString toOutput() const;
-
-  void setInteger(int i);
-  void setElement(FnWord &u);
-  void setGraph(FnGraph &Gamma);
-  void setMorphism(FnMap &phi);
-  void setFailMessage(QString fail);
-
 private:
 
-  enum VariableTypes data_type;
-  FnGraph g_value;
-  FnMap f_value;
-  FnWord u_value;
-  int i_value;
-  QString failMessage;
+    enum VariableTypes data_type;
+    FnGraph g_value;
+    FnMap f_value;
+    FnWord u_value;
+    int i_value;
+    QList<FnGraph> g_list;
+    QList<QString> s_list;
+    QString failMessage;
 
-  QString graphOutput() const;
-  QString integerOutput() const;
-  QString mapOutput() const;
-  QString wordOutput() const;
+    QString graphOutput() const;
+    QString integerOutput() const;
+    QString mapOutput() const;
+    QString wordOutput() const;
+    QString graphListOutput() const;
+    QString stringListOutput() const;
+
+public:
+    FnData();
+    FnData(int i);
+    FnData(const FnGraph &Gamma);
+    FnData(const FnMap &phi);
+    FnData(const FnWord &u);
+    FnData(const QList<FnGraph> &list);
+    FnData(const QList<QString> &list);
+
+    enum VariableTypes type() const { return data_type; }
+
+    int integerData() const;
+    FnGraph graphData() const;
+    FnMap mapData() const;
+    FnWord wordData() const;
+    QList<FnGraph> graphListData() const;
+    QList<QString> stringListData() const;
+
+    QString toOutput() const;
+
+    void setInteger(int i);
+    void setElement(FnWord &u);
+    void setGraph(FnGraph &Gamma);
+    void setMorphism(FnMap &phi);
+    void setGraphList(QList<FnGraph> &list);
+    void setStringList(QList<QString> &list);
+    void setFailMessage(QString fail);
 
 };
 

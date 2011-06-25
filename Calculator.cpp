@@ -540,14 +540,7 @@ FnData Calculator::ConnectedComponentsFunction(const FunctionInput & input)
     FnGraph Gamma(input.at(0).graphData());
 
     QList<FnGraph> components = Gamma.connectedComponents();
-    QString graphstring;
-
-    foreach(FnGraph graph,components) {
-        FnData graphdata(graph);
-        graphstring += graphdata.toOutput() + " ";
-    }
-
-    output.setFailMessage(graphstring);
+    output.setGraphList(components);
 
     return output;
 
@@ -665,13 +658,13 @@ FnData Calculator::IsolatedVerticesFunction(const FunctionInput &input)
 
     QList<QString> verticesList = Gamma.isolatedVertices();
 
-    QString vertices;
-    foreach(QString vertex, verticesList) {
-        vertices += vertex + " ";
-    }
+    if (verticesList.isEmpty())
+        output.setFailMessage(tr("There are no isolated vertices"));
+    else
+        output.setStringList(verticesList);
 
-    output.setFailMessage(vertices);
     return output;
+
 }
 
 FnData Calculator::IsPrimitiveElementFunction(const FunctionInput & input)
