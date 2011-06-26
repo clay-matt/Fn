@@ -13,7 +13,8 @@ FnGraph::FnGraph()
 void FnGraph::addVertex(const QString &vertex) {
 
     if(!vertices.contains(vertex)) {
-        vertices.append(vertex);
+        QVector<QString> s;
+        vertices.insert(vertex,s);
     }
 
 }
@@ -22,10 +23,11 @@ void FnGraph::addEdge(const QString &edge, const QVector<QString> &endpoints) {
 
     if (!vertices.contains(endpoints.at(0)))
         addVertex(endpoints.at(0));
-
+        vertices[endpoints.at(0)].push_back(edge);
     if (!vertices.contains(endpoints.at(1)))
         addVertex(endpoints.at(1));
-
+    if(endpoints.at(0)!=endpoints.at(1))
+        vertices[endpoints.at(1)].push_back(edge);
     if(!keys().contains(edge)) {
         insert(edge,endpoints);
     }
@@ -48,10 +50,12 @@ QList<QString> FnGraph::isolatedVertices() const {
 
 
 
-        foreach(QString edge, keys())
+        foreach(QString vertex, vertices.keys())
         {
-               isolated.removeAll(initialVertex(edge));
-               isolated.removeAll(terminalVertex(edge));
+            if(vertices.value(vertex).size()==0)
+            {
+                   isolated.append(vertex);
+            }
 
 
         }
