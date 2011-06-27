@@ -2,7 +2,7 @@
 // union of typical data types
 
 // author Matt Clay
-// version 110624
+// version 110627
 
 /////////////////////////////////////////////////////////
 
@@ -70,15 +70,15 @@ public:
     void setFailMessage(QString fail);
 
     friend FnData loadGraphData(const QString & graph);
+    friend FnData loadMorphismData(const QString & morphism);
 
 };
 
 FnData loadGraphData(const QString & graph);
+FnData loadMorphismData(const QString & morphism);
 
 typedef QHash<QString, FnData> VariableList;
 typedef QHashIterator<QString, FnData> VariableListIterator;
 typedef QMutableHashIterator<QString, FnData> VariableListMutableIterator;
-
-/////////////////////////////////////////////////////////
 
 #endif // FNDATA_H

@@ -161,38 +161,34 @@ void FnXmlReader::readVariableElement()
         variable.setInteger(i);
     }
 
+    else if(varType == "graph") {
+        if(!varValue.startsWith(QChar('(')) || !varValue.endsWith(QChar(')'))) {
+            reader.raiseError(QObject::tr("Variable Error: %1 is not a valid graph").arg(varValue));
+            return;
+        }
+
+        variable = loadGraphData(varValue);
+
+        if(variable.type() == FailMessage) {
+            reader.raiseError(variable.toOutput());
+            return;
+        }
+
+    }
+
     else if(varType == "morphism") {
         if(!varValue.startsWith(QChar('{')) || !varValue.endsWith(QChar('}'))) {
             reader.raiseError(QObject::tr("Variable Error: %1 is not a valid morphism").arg(varValue));
             return;
         }
-        QString images = varValue;
-        images.chop(1); // remove trailing }
-        images.remove(0,1); // remove initial {
-        QStringList imageList = breakAtTopLevel(images);
 
-        int rank = imageList.size(); // try to determine image rank
-        QString lastEntry = imageList.takeLast();
-        if (lastEntry.contains(QChar(':'))) {
-          int index = lastEntry.indexOf(QChar(':'));
-          rank = lastEntry.mid(index+1).trimmed().toInt();
-          if (rank < Fn_MinRank || rank > Fn_MaxRank) {
-              reader.raiseError(QObject::tr("Variable Error: %1 is not a valid rank (%2 < rank < %3)")
-                                          .arg(lastEntry.mid(index+1)).arg(Fn_MinRank).arg(Fn_MaxRank));
+        variable = loadMorphismData(varValue);
+
+        if(variable.type() == FailMessage) {
+            reader.raiseError(variable.toOutput());
             return;
-          }
-          lastEntry = lastEntry.left(index).trimmed();
         }
 
-        imageList.append(lastEntry);
-
-        FnMap phi(imageList,rank);
-        if (!phi) {
-            reader.raiseError(QObject::tr("Variable Error: images %1 are not in specified basis").arg(varValue));
-          return;
-        }
-
-        variable.setMorphism(phi);
     }
 
     else {

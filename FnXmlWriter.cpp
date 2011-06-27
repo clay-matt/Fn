@@ -30,9 +30,9 @@ void FnXmlWriter::writeXml(QFile *file)
     }
     xmlWriter.writeEndElement();
 
-    xmlWriter.writeStartElement("output");
-    writeDisplay(&xmlWriter);
-    xmlWriter.writeEndElement();
+    //xmlWriter.writeStartElement("output");
+    //writeDisplay(&xmlWriter);
+    //xmlWriter.writeEndElement();
 
     xmlWriter.writeEndDocument();
 
@@ -49,6 +49,10 @@ void FnXmlWriter::writeVariableEntry(QXmlStreamWriter *xmlWriter, QString &varia
 
     case Element:
         xmlWriter->writeAttribute("type","element");
+        break;
+
+    case Graph:
+        xmlWriter->writeAttribute("type","graph");
         break;
 
     case Integer:
