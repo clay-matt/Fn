@@ -32,28 +32,28 @@ class FunctionInfo : public QObject
     }
     enum FunctionNames fcnTag(const QString & fcn) const {
       return functionEnum.value(fcn,ERROR);
-    };
+    }
     QString fcnName(enum FunctionNames fcn) const {
       return functionName.value(fcn);
-    };
+    }
     QHash<enum FunctionNames, QString> fcnNames() const {
       return functionName;
-    };
+    }
     QString fcnSkeleton(enum FunctionNames fcn) const {
       return functionSkeleton.value(fcn);
-    };
+    }
     QString fcnStatusTip(enum FunctionNames fcn) const {
       return functionStatusTip.value(fcn);
-    };
+    }
     QList<enum VariableTypes> fcnInput(enum FunctionNames fcn) const {
       return functionInput.value(fcn);
-    };
+    }
     int fcnNVariables(enum FunctionNames fcn) const {
       return functionInput.value(fcn).size();
-    };
+    }
     enum VariableTypes fcnOutput(enum FunctionNames fcn) const {
       return functionOutput.value(fcn,NoType);
-    };
+    }
 
     private:
     QHash<QString, enum FunctionNames> functionEnum;

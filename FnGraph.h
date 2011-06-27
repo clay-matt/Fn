@@ -1,8 +1,8 @@
 // Header file for class FnGraph
 // inherits QHash<QString, QVector<QString> >
 
-// author Matt Clay
-// version 110407
+// authors Matt Clay, Jack Conant and Nivetha Ramasubramanian
+// version 110627
 
 /////////////////////////////////////////////////////////
 
@@ -46,6 +46,7 @@ public:
 
     //friends
     friend FnGraph operator + (const FnGraph & gamma, const FnGraph & beta);
+
 private:
     QHash<QString, QVector<QString> > vertices;
 

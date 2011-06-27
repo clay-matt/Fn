@@ -1,7 +1,7 @@
 // Header file for class FnWord
 // inherits QString
 
-// author Matt Clay
+// authors Matt Clay, Jack Conant and Nivetha Ramasubramanian
 // version 110627
 
 /////////////////////////////////////////////////////////
@@ -60,7 +60,6 @@ class FnWord : public QString {
     FnWord exp(int n) const;
     bool operator ! () const;
     FnGraph whiteheadGraph(const Basis & basis = BASIS) const;
-    FnGraph whiteheadGraph(QList<FnWord> words, const Basis & basis = BASIS) const;
 
     // friends
     friend FnWord operator * (const FnWord & u, const FnWord & v);
@@ -69,11 +68,15 @@ class FnWord : public QString {
     friend FnWord operator ^ (const FnWord & u, const FnWord & v);
     friend FnWord operator ^ (const FnWord & u, const QChar a);
     friend FnWord conjugacyProblem(const FnWord & u, const FnWord & v);
+    friend FnGraph whiteheadGraph(QList<FnWord> words, const Basis & basis);
 
 };
 
 const FnWord Id(Fn_Identity);
 const FnWord Fail(QString("Fail 0"));
+
+FnWord conjugacyProblem(const FnWord & u, const FnWord & v);
+FnGraph whiteheadGraph(QList<FnWord> words, const Basis & basis = BASIS);
 
 /////////////////////////////////////////////////////////
 

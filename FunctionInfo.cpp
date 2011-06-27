@@ -107,12 +107,12 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionOutput[ComposeFcn] = Morphism;
   functionOutput[ConjugateFcn] = Element;
   functionOutput[ConjugacyProblemFcn] = Element;
-  functionOutput[ConnectedComponentsFcn] = GraphList;
+  functionOutput[ConnectedComponentsFcn] = Graph;
   functionOutput[ExpFcn] = Element;
   functionOutput[IdentityFcn] = Element;
   functionOutput[InverseFcn] = Element;
   functionOutput[IsAutomorphismFcn] = Morphism;
-  functionOutput[IsolatedVerticesFcn] = StringList;
+  functionOutput[IsolatedVerticesFcn] = String;
   functionOutput[IsPrimitiveElementFcn] = Morphism;
   functionOutput[IterateFcn] = Morphism;
   functionOutput[LengthFcn] = Integer;

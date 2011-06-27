@@ -20,7 +20,6 @@
 #include "FunctionInfo.h"
 #include "FunctionInput.h"
 
-class FnXmlReader;
 class QRegExp;
 
 /////////////////////////////////////////////////////////
@@ -50,6 +49,7 @@ private:
     QRegExp assignmentRegExp;
     QRegExp functionRegExp;
     QRegExp graphRegExp;
+    QRegExp listRegExp;
     QRegExp morphismRegExp;
     QRegExp stringRegExp;
     QRegExp variableRegExp;

@@ -113,15 +113,6 @@ FnGraph FnWord::whiteheadGraph(const Basis &basis) const {
     return whitehead;
 
 }
-FnGraph FnWord::whiteheadGraph(QList<FnWord> words, const Basis &basis) const
-{
-    FnGraph whitehead;
-    for(int i=0;i<words.size();i++)
-    {
-        whitehead=whitehead+words[i].whiteheadGraph(basis);
-    }
-    return whitehead;
-}
 
 bool FnWord::operator ! () const {
 
@@ -185,3 +176,14 @@ FnWord conjugacyProblem(const FnWord & u, const FnWord & v) {
   return(Fail);
 
 }
+
+FnGraph whiteheadGraph(QList<FnWord> words, const Basis &basis)
+{
+    FnGraph whitehead;
+    for(int i=0;i<words.size();i++)
+    {
+        whitehead=whitehead+words[i].whiteheadGraph(basis);
+    }
+    return whitehead;
+}
+

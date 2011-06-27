@@ -26,19 +26,21 @@ class FnData
 private:
 
     enum VariableTypes data_type;
-    FnGraph g_value;
+    bool list;
     FnMap f_value;
-    FnWord u_value;
     int i_value;
     QList<FnGraph> g_list;
+    QList<FnWord> u_list;
     QList<QString> s_list;
     QString failMessage;
 
     QString graphOutput() const;
     QString integerOutput() const;
     QString mapOutput() const;
+    QString stringOutput() const;
     QString wordOutput() const;
     QString graphListOutput() const;
+    QString wordListOutput() const;
     QString stringListOutput() const;
 
 public:
@@ -47,16 +49,21 @@ public:
     FnData(const FnGraph &Gamma);
     FnData(const FnMap &phi);
     FnData(const FnWord &u);
-    FnData(const QList<FnGraph> &list);
-    FnData(const QList<QString> &list);
+    FnData(const QString &s);
+    FnData(const QList<FnGraph> &graphList);
+    FnData(const QList<FnWord> &wordList);
+    FnData(const QList<QString> &stringList);
 
     enum VariableTypes type() const { return data_type; }
+    bool isList() const { return list;  }
 
     int integerData() const;
     FnGraph graphData() const;
     FnMap mapData() const;
+    QString stringData() const;
     FnWord wordData() const;
     QList<FnGraph> graphListData() const;
+    QList<FnWord> wordListData() const;
     QList<QString> stringListData() const;
 
     QString toOutput() const;
@@ -65,9 +72,12 @@ public:
     void setElement(FnWord &u);
     void setGraph(FnGraph &Gamma);
     void setMorphism(FnMap &phi);
+    void setString(QString &s);
     void setGraphList(QList<FnGraph> &list);
+    void setWordList(QList<FnWord> &list);
     void setStringList(QList<QString> &list);
     void setFailMessage(QString fail);
+    void addToList(const FnData &listItem);
 
     friend FnData loadGraphData(const QString & graph);
     friend FnData loadMorphismData(const QString & morphism);

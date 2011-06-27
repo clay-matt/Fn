@@ -11,6 +11,7 @@ FnData::FnData()
 {
 
   data_type = NoType;
+  list = false;
   failMessage = "Unknown data type encountered for FnData.";
 
 }
@@ -19,6 +20,7 @@ FnData::FnData(int i)
 {
 
   data_type = Integer;
+  list = false;
   i_value = i;
 
 }
@@ -27,7 +29,8 @@ FnData::FnData(const FnGraph &Gamma)
 {
 
     data_type = Graph;
-    g_value = Gamma;
+    list = false;
+    g_list.prepend(Gamma);
 
 }
 
@@ -35,6 +38,7 @@ FnData::FnData(const FnMap &phi)
 {
 
   data_type = Morphism;
+  list = false;
   f_value = phi;
 
 }
@@ -43,23 +47,44 @@ FnData::FnData(const FnWord &u)
 {
 
   data_type = Element;
-  u_value = u;
+  list = false;
+  u_list.prepend(u);
 
 }
 
-FnData::FnData(const QList<FnGraph> &list)
+FnData::FnData(const QString &s)
 {
 
-    data_type = GraphList;
-    g_list = list;
+  data_type = String;
+  list = false;
+  s_list.prepend(s);
 
 }
 
-FnData::FnData(const QList<QString> &list)
+FnData::FnData(const QList<FnGraph> &graphList)
 {
 
-    data_type = StringList;
-    s_list = list;
+    data_type = Graph;
+    list = true;
+    g_list = graphList;
+
+}
+
+FnData::FnData(const QList<FnWord> &wordList)
+{
+
+    data_type = Element;
+    list = true;
+    u_list = wordList;
+
+}
+
+FnData::FnData(const QList<QString> &stringList)
+{
+
+    data_type = String;
+    list = true;
+    s_list = stringList;
 
 }
 
@@ -68,14 +93,14 @@ FnData::FnData(const QList<QString> &list)
 int FnData::integerData() const
 {
 
-  return i_value;
+    return i_value;
 
 }
 
 FnGraph FnData::graphData() const
 {
 
-    return g_value;
+    return g_list.at(0);
 
 }
 
@@ -86,10 +111,17 @@ FnMap FnData::mapData() const
 
 }
 
+QString FnData::stringData() const
+{
+
+    return s_list.at(0);
+
+}
+
 FnWord FnData::wordData() const
 {
 
-  return u_value;
+    return u_list.at(0);
 
 }
 
@@ -97,6 +129,13 @@ QList<FnGraph> FnData::graphListData() const
 {
 
     return g_list;
+
+}
+
+QList<FnWord> FnData::wordListData() const
+{
+
+    return u_list;
 
 }
 
@@ -117,14 +156,14 @@ QString FnData::graphOutput() const
     output += "( ";
 
     // add vertices
-    foreach(QString vertex, g_value.vertexList()) {
+    foreach(QString vertex, g_list.at(0).vertexList()) {
         output += vertex + " ";
     }
 
     output += ": ";
 
-    foreach(QString edge, g_value.edgeList()) {
-        output += "(" + edge + "," + g_value.initialVertex(edge) + "," + g_value.terminalVertex(edge) + ") ";
+    foreach(QString edge, g_list.at(0).edgeList()) {
+        output += "(" + edge + "," + g_list.at(0).initialVertex(edge) + "," + g_list.at(0).terminalVertex(edge) + ") ";
     }
 
     output += ")";
@@ -161,6 +200,20 @@ QString FnData::mapOutput() const
 
 }
 
+QString FnData::stringOutput() const
+{
+
+    return stringData();
+
+}
+
+QString FnData::wordOutput() const
+{
+
+    return wordData();
+
+}
+
 QString FnData::graphListOutput() const
 {
 
@@ -170,6 +223,24 @@ QString FnData::graphListOutput() const
 
     foreach(FnGraph Gamma, g_list) {
         output += FnData(Gamma).graphOutput() + ", ";
+    }
+
+    output.remove(output.length()-2,2); // remove final ", "
+    output += " ]";
+
+    return output;
+
+}
+
+QString FnData::wordListOutput() const
+{
+
+    QString output;
+
+    output = "[ ";
+
+    foreach(FnWord u, u_list) {
+        output += u + ", ";
     }
 
     output.remove(output.length()-2,2); // remove final ", "
@@ -197,13 +268,6 @@ QString FnData::stringListOutput() const
 
 }
 
-QString FnData::wordOutput() const
-{
-
-    return wordData();
-
-}
-
 /////////////////////////////////////////////////////////
 
 QString FnData::toOutput() const
@@ -211,43 +275,49 @@ QString FnData::toOutput() const
 
     QString output;
 
+
     switch(data_type) {
 
-    case Element:
-        output = wordOutput();
-        break;
+        case Element:
+            if(list)
+                output = wordListOutput();
+            else
+                output = wordOutput();
+            break;
 
-    case Graph:
-        output = graphOutput();
-        break;
+        case Graph:
+            if(list)
+                output = graphListOutput();
+            else
+                output = graphOutput();
+            break;
 
-    case GraphList:
-        output = graphListOutput();
-        break;
+        case Integer:
+            output = integerOutput();
+            break;
 
-    case Integer:
-        output = integerOutput();
-        break;
+        case Morphism:
+            output = mapOutput();
+            break;
 
-    case Morphism:
-        output = mapOutput();
-        break;
+        case String:
+            if(list)
+                output = stringListOutput();
+            else
+                output = stringOutput();
+            break;
 
-    case StringList:
-        output = stringListOutput();
-        break;
+        case FailMessage:
+            output = failMessage;
+            break;
 
-    case FailMessage:
-        output = failMessage;
-        break;
-
-    default:
-        output = failMessage;
-        break;
+        default:
+            output = failMessage;
+            break;
 
     }
 
-  return output;
+    return output;
 
 }
 
@@ -256,8 +326,9 @@ QString FnData::toOutput() const
 void FnData::setInteger(int i)
 {
 
-  data_type = Integer;
-  i_value = i;
+    data_type = Integer;
+    list = false;
+    i_value = i;
 
 }
 
@@ -265,7 +336,9 @@ void FnData::setElement(FnWord &u)
 {
 
     data_type = Element;
-    u_value = u;
+    list = false;
+    u_list.clear();
+    u_list.prepend(u);
 
 }
 
@@ -273,46 +346,108 @@ void FnData::setGraph(FnGraph &Gamma)
 {
 
     data_type = Graph;
-    g_value = Gamma;
+    list = false;
+    g_list.clear();
+    g_list.prepend(Gamma);
 
 }
 
 void FnData::setMorphism(FnMap &phi)
 {
 
-  data_type = Morphism;
-  f_value = phi;
+    data_type = Morphism;
+    list = false;
+    f_value = phi;
 
 }
 
-void FnData::setGraphList(QList<FnGraph> &list)
+void FnData::setString(QString &s)
 {
 
-    data_type = GraphList;
-    g_list = list;
+    data_type = String;
+    list = false;
+    s_list.clear();
+    s_list.prepend(s);
 
 }
 
-void FnData::setStringList(QList<QString> &list)
+void FnData::setGraphList(QList<FnGraph> &graphList)
 {
 
-    data_type = StringList;
-    s_list = list;
+    data_type = Graph;
+    list = true;
+    g_list = graphList;
+
+}
+
+void FnData::setWordList(QList<FnWord> &wordList)
+{
+
+    data_type = Element;
+    list = true;
+    u_list = wordList;
+
+}
+
+void FnData::setStringList(QList<QString> &stringList)
+{
+
+    data_type = String;
+    list = true;
+    s_list = stringList;
 
 }
 
 void FnData::setFailMessage(QString fail)
 {
 
-  data_type = FailMessage;
-  failMessage = fail;
+    data_type = FailMessage;
+    list = false;
+    failMessage = fail;
+
+}
+
+void FnData::addToList(const FnData &listItem)
+{
+
+    if(data_type != listItem.data_type) {
+        setFailMessage(QObject::tr("Data Error: Inconsistent types encountered in list."));
+        return;
+    }
+
+    if(listItem.isList()) {
+        setFailMessage(QObject::tr("Data Error: Variable type cannot be listed."));
+        return;
+    }
+
+    list = true;
+
+    switch(data_type) {
+
+        case Element:
+            u_list.append(listItem.wordData());
+            break;
+
+        case Graph:
+            g_list.append(listItem.graphData());
+            break;
+
+        case String:
+            s_list.append(listItem.stringData());
+            break;
+
+        default:
+            setFailMessage(QObject::tr("Data Error: Variable type cannot be listed."));
+            break;
+
+    }
 
 }
 
 /////////////////////////////////////////////////////////
 // Other Functions
 
-FnData loadGraphData(const QString & graphData)
+FnData loadGraphData(const QString &graphData)
 {
 
     FnData graph;
@@ -390,7 +525,7 @@ FnData loadGraphData(const QString & graphData)
 
 }
 
-FnData loadMorphismData(const QString & morphismData) {
+FnData loadMorphismData(const QString &morphismData) {
 
     FnData morphism;
 

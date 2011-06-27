@@ -13,13 +13,12 @@
 
 enum VariableTypes {NoType,
                     Element,
-                    FailMessage,
                     Graph,
-                    GraphList,
                     Integer,
                     Morphism,
                     OptionalInteger,
-                    StringList};
+                    String,
+                    FailMessage};
 
 enum FunctionNames {ERROR,
                     CommutatorFcn,

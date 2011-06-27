@@ -27,6 +27,9 @@ Calculator::Calculator(QObject *parent) : QObject(parent)
     // matches ( anything )
     graphRegExp.setPattern(QString("^\\(.+\\)$"));
 
+    // matches [ anything ]
+    listRegExp.setPattern(QString("^\\[.+\\]$"));
+
     // matches string_(anything)
     functionRegExp.setPattern(QString("^\\S+_\\(.+\\)$"));
 
@@ -170,24 +173,40 @@ FnData Calculator::compute(const QString & input)
 
         output = loadMorphismData(input);
 
-  }
+      }
 
-  // try to match with preset function
-  else if (functionRegExp.exactMatch(input)) {
+    // try to match with list
+    else if (listRegExp.exactMatch(input)){
 
-    // functionName =  everything to the left of first (
-    QString functionName = input.section(QChar('('),0,0);
-    enum FunctionNames fcn = presetFunctions.fcnTag(functionName);
-    QString functionInput = input.section(QChar('('),1);
-    functionInput.chop(1);
+        QString list = input.simplified();
+        // remove [ and ]
+        list.chop(1);
+        list.remove(0,1);
 
-    FunctionInput converted_input = stringToInput(functionInput);
-    output = applyFunction(fcn,converted_input);
+        QStringList listData = breakAtTopLevel(list);
+        output = compute(listData.takeFirst());
+        foreach(QString listItem, listData) {
+            output.addToList(compute(listItem));
+        }
+
+    }
+
+    // try to match with preset function
+    else if (functionRegExp.exactMatch(input)) {
+
+        // functionName =  everything to the left of first (
+        QString functionName = input.section(QChar('('),0,0);
+        enum FunctionNames fcn = presetFunctions.fcnTag(functionName);
+        QString functionInput = input.section(QChar('('),1);
+        functionInput.chop(1);
+
+        FunctionInput converted_input = stringToInput(functionInput);
+        output = applyFunction(fcn,converted_input);
     
-   }
+    }
 
     else {
-        // default returns failedOutput
+        // default returns output
         output.setFailMessage(tr("Input Error: unknown input %1").arg(input));
     }
 
@@ -750,8 +769,6 @@ FnData Calculator::WhiteheadGraphFunction(const FunctionInput &input)
       return output;
     }
 
-    FnWord u(input.at(0).wordData());
-
     if (input.size() == 2) {
       int r = input.at(1).integerData();
       if (r < Fn_MinRank || r > Fn_MaxRank) {
@@ -762,12 +779,21 @@ FnData Calculator::WhiteheadGraphFunction(const FunctionInput &input)
       basis.changeRank(r);
     }
 
-    if (!u.checkBasis(basis)) {
-      output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
-      return output;
+    QList<FnWord> wordList;
+
+    if (input.at(0).isList())
+        wordList = input.at(0).wordListData();
+    else
+        wordList.prepend(input.at(0).wordData());
+
+    foreach(FnWord u, wordList) {
+        if (!u.checkBasis(basis)) {
+          output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+         return output;
+        }
     }
 
-    FnGraph whitehead = u.whiteheadGraph(basis);
+    FnGraph whitehead = whiteheadGraph(wordList,basis);
     output.setGraph(whitehead);
 
     return output;
@@ -908,14 +934,16 @@ QStringList breakAtTopLevel(const QString &input)
 
   // returns a list of strings broken at the top level commas
 
-  QString word;
-  QString piece;
-  QStringList words = input.split(QChar(','));
-  QStringList brokenInput;
-  int totalLeft = 0;
-  int totalRight = 0;
-  int leftBracket = 0;
-  int rightBracket = 0;
+    QString word;
+    QString piece;
+    QStringList words = input.split(QChar(','));
+    QStringList brokenInput;
+    int totalLeft = 0;
+    int totalRight = 0;
+    int leftBracket = 0;
+    int rightBracket = 0;
+    int leftBrace = 0;
+    int rightBrace = 0;
 
   QStringListIterator i(words);
   while(i.hasNext()) {
@@ -926,8 +954,11 @@ QStringList breakAtTopLevel(const QString &input)
     totalRight += word.count(QChar(')'));
     leftBracket += word.count(QChar('{'));
     rightBracket += word.count(QChar('}'));
+    leftBrace += word.count(QChar('['));
+    rightBrace += word.count(QChar(']'));
 
-    if (totalLeft == totalRight && leftBracket == rightBracket) {
+    if (totalLeft == totalRight && leftBracket == rightBracket
+            && leftBrace == rightBrace) {
 
       brokenInput.append(piece.trimmed());
       piece.clear();
