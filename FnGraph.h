@@ -44,6 +44,8 @@ public:
     QList<QString> vertexList() const { return vertices.keys(); }
     QList<QString> edgeList() const { return keys(); }
 
+    //friends
+    friend FnGraph operator + (const FnGraph & gamma, const FnGraph & beta);
 private:
     QHash<QString, QVector<QString> > vertices;
 

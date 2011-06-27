@@ -113,4 +113,27 @@ QList<FnGraph> FnGraph::connectedComponents() const {
 
 }
 
+//Friends
+FnGraph operator + (const FnGraph & gamma, const FnGraph & beta)
+{
+    FnGraph tau;
+    QString num;
+    foreach(QString vertex, gamma.vertices.keys())
+        tau.addVertex(vertex);
+    foreach(QString vertex, beta.vertices.keys())
+        tau.addVertex(vertex);
+
+    foreach(QString edge, gamma.keys())
+    {
+        tau.addEdge(edge,gamma.value(edge));
+    }
+    foreach(QString edge, beta.keys())
+    {
+        tau.addEdge(edge+"."+num.setNum(tau.count(edge)),beta.value(edge));
+    }
+
+    return tau;
+}
+
+
 /////////////////////////////////////////////////////////
