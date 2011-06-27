@@ -1,7 +1,7 @@
 // Header file for constants
 
 // author Matt Clay
-// version 110622
+// version 110624
 
 /////////////////////////////////////////////////////////
 
@@ -15,9 +15,11 @@ enum VariableTypes {NoType,
                     Element,
                     FailMessage,
                     Graph,
+                    GraphList,
                     Integer,
                     Morphism,
-                    OptionalInteger};
+                    OptionalInteger,
+                    StringList};
 
 enum FunctionNames {ERROR,
                     CommutatorFcn,
