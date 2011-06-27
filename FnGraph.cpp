@@ -68,13 +68,47 @@ QList<FnGraph> FnGraph::connectedComponents() const {
     // Return the list of connected components of the graph
 
     QList<FnGraph> components;
+    QHash<QString, QVector <QString> > unused=vertices;
+    QList<QString> queue;
+    QString edge,vertex;
+    int j=0;
 
-    FnGraph gamma1,gamma2;
+    while(!unused.isEmpty())
+    {
+        FnGraph component;
+        queue.append(unused.begin().key());//puts the first unused vertex it finds in the queue
 
-    gamma1.addEdge(QString("e"),QString("v0"),QString("v1"));
-    gamma2.addEdge(QString("f"),QString("w0"),QString("w1"));
+        while(!queue.isEmpty())
+        {
+            vertex=queue[0];//sets the vertex to next key in the queue
+            component.addVertex(vertex);
+            for(j=0; j<unused.value(vertex).size();j++)//loops through all of the edges of vertex
+            {
 
-    components << gamma1 << gamma2;
+                edge=unused.value(vertex).at(j);
+                if(!component.contains(edge))//if the edge hasn't been used
+                {
+                    component.addEdge(edge,value(edge));//add it to the graph
+
+                    if(initialVertex(edge)!=vertex)//finds the other vertex along the edge
+                    {
+                        if(!queue.contains(initialVertex(edge)))//if the other vertex isn't in the queue
+                            queue.push_back(initialVertex(edge));//add it
+                    }
+                    if(terminalVertex(edge)!=vertex)
+                    {
+                        if(!queue.contains(terminalVertex(edge)))
+                            queue.push_back(terminalVertex(edge));
+                    }
+                }
+
+            }
+            queue.pop_front();//removes the vertex from the queue
+            unused.remove(vertex);//the vertex has been used
+        }
+        components.append(component);
+    }
+
 
     return components;
 
