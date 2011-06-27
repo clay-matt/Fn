@@ -60,6 +60,7 @@ class FnWord : public QString {
     FnWord exp(int n) const;
     bool operator ! () const;
     FnGraph whiteheadGraph(const Basis & basis = BASIS) const;
+    //FnGraph whiteheadGraph(QList<FnWord> words, const Basis & basis = BASIS) const;
 
     // friends
     friend FnWord operator * (const FnWord & u, const FnWord & v);

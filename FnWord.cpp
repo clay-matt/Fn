@@ -97,12 +97,31 @@ FnWord FnWord::exp(int n) const {
 FnGraph FnWord::whiteheadGraph(const Basis &basis) const {
 
     FnGraph whitehead;
+    QString e="e",num;
+    int i=0;
+    for(i=0;i<2*basis.getRank();i++)
+    {
+        whitehead.addVertex(basis.at(i));
+    }
+    for(i=0;i<length()-1;i++)
+    {
 
-    whitehead.addVertex(basis.at(0));
+        whitehead.addEdge(e+num.setNum(i),at(i),basis.inverse(at(i+1)));
+    }
+    whitehead.addEdge(e+num.setNum(i), at(i), basis.inverse(at(0)));
 
     return whitehead;
 
 }
+/*FnGraph FnWord::whiteheadGraph(QList<FnWord> words, const Basis &basis) const
+{
+    FnGraph whitehead;
+    for(int i=0;i<words.size();i++)
+    {
+        whitehead+=words[i].whiteheadGraph(basis);
+    }
+    return whitehead;
+}*/
 
 bool FnWord::operator ! () const {
 
