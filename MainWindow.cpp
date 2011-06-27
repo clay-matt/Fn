@@ -508,6 +508,8 @@ bool MainWindow::loadFile(const QString &fileName)
   // load variables
   variableList->updateList(calculator->varList());
   morphismList->updateList(calculator->varList());
+  graphList->updateList(calculator->varList());
+
   QApplication::restoreOverrideCursor();
   setCurrentFile(fileName);
   statusBar()->showMessage(tr("File loaded"), 2000);

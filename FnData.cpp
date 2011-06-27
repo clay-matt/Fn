@@ -310,6 +310,7 @@ void FnData::setFailMessage(QString fail)
 }
 
 /////////////////////////////////////////////////////////
+// Other Functions
 
 FnData loadGraphData(const QString & graphData)
 {
@@ -317,33 +318,69 @@ FnData loadGraphData(const QString & graphData)
     FnData graph;
     FnGraph Gamma;
 
-    QString input = graphData;
+    QString input = graphData.simplified();
     // remove ( and )
     input.chop(1);
     input.remove(0,1);
 
-    // extract vertex and edge lists
+    // extract vertex lists
+    if(input.count(":") != 1) {
+        graph.setFailMessage(QObject::tr("Invalid Input: %1 is not a graph").arg(graphData));
+        return(graph);
+    }
     QStringList vertices_edges = input.split(":",QString::SkipEmptyParts);
-    QStringList vertexList = vertices_edges.at(0).trimmed().simplified().split(" ",QString::SkipEmptyParts);
-    QString edges = vertices_edges.at(1).trimmed().simplified();
+    QStringList vertexList = vertices_edges.at(0).split(QRegExp("\\s+"),QString::SkipEmptyParts);
 
     if(vertexList.isEmpty()) {
-        graph.setFailMessage("Invalid input: a graph needs vertices.");
-                return(graph);
+        graph.setFailMessage(QObject::tr("Invalid input: a graph needs vertices."));
+        return(graph);
     }
 
     // add vertices
-    foreach(QString vertex, vertexList)
+    foreach(QString vertex, vertexList) {
+        if(Gamma.vertexList().contains(vertex)) {
+            graph.setFailMessage(QObject::tr("Invalid Input: the vertex %1 appears multiple times.")
+                                 .arg(vertex));
+            return(graph);
+        }
         Gamma.addVertex(vertex);
+    }
 
-    // add edges
-    if(!edges.isEmpty()) {
+    // add edges if necessary
+    if(vertices_edges.size() == 2) {
+        QString edges = vertices_edges.at(1).trimmed();
         edges.chop(1);
         edges.remove(0,1);
-        QStringList edgeList = edges.split(QRegExp("\\)\\s*\\(")); // splits at ) possible whitespace (
+        QStringList edgeList = edges.split(QRegExp("\\)\\s*\\("),QString::SkipEmptyParts); // splits at ) possible whitespace (
         QStringList edgeData;
+        QString edgeName;
+        QVector<QString> edgeVertices(2);
         foreach(QString edge, edgeList) {
             edgeData = edge.split(",");
+            if(edgeData.size() != 3) {
+                graph.setFailMessage(QObject::tr("Invalid Input: ( %1 ) is not a valid edge.").arg(edge));
+                return(graph);
+            }
+            edgeName = edgeData.at(0).trimmed();
+            if(Gamma.contains(edgeName)) {
+                graph.setFailMessage(QObject::tr("Invalid Input: the edge %1 has already been defined.")
+                                     .arg(edgeName));
+                return(graph);
+            }
+            // check that vertices are in the graph
+            edgeVertices[0] = edgeData.at(1).trimmed();
+            if(!Gamma.vertexList().contains(edgeVertices.at(0))) {
+                graph.setFailMessage(QObject::tr("Invalid Input: %1 is not a vertex of %2.")
+                                     .arg(edgeVertices.at(0)).arg(graphData));
+                return(graph);
+            }
+            edgeVertices[1] = edgeData.at(2).trimmed();
+            if(!Gamma.vertexList().contains(edgeVertices.at(1))) {
+                graph.setFailMessage(QObject::tr("Invalid Input: %1 is not a vertex of %2.")
+                                     .arg(edgeVertices.at(1)).arg(graphData));
+                return(graph);
+            }
+            Gamma.addEdge(edgeName,edgeVertices);
         }
     }
 
@@ -352,3 +389,42 @@ FnData loadGraphData(const QString & graphData)
     return(graph);
 
 }
+
+FnData loadMorphismData(const QString & morphismData) {
+
+    FnData morphism;
+
+    QString images = morphismData;
+    images.remove(QRegExp("\\s+")); // remove whitespace
+    images.chop(1); // remove trailing }
+    images.remove(0,1); // remove initial {
+
+    // get images
+    QStringList imageList = images.split(",",QString::SkipEmptyParts);
+
+    int rank = imageList.size(); // try to determine image rank
+    QString lastEntry = imageList.takeLast();
+    if (lastEntry.contains(QChar(':'))) {
+      int index = lastEntry.indexOf(QChar(':'));
+      rank = lastEntry.mid(index+1).trimmed().toInt();
+      if (rank < Fn_MinRank || rank > Fn_MaxRank) {
+          morphism.setFailMessage(QObject::tr("Input Error: %1 is not a valid rank (%2 < rank < %3)")
+                                      .arg(QString::number(rank)).arg(Fn_MinRank).arg(Fn_MaxRank));
+          return(morphism);
+      }
+      lastEntry = lastEntry.left(index).trimmed();
+    }
+    imageList.append(lastEntry);
+
+    FnMap phi(imageList,rank);
+    if (!phi) {
+        morphism.setFailMessage(QObject::tr("Input Error: images %1 are not in specified basis").arg(imageList.join(",")));
+        return(morphism);
+    }
+
+    morphism.setMorphism(phi);
+
+    return(morphism);
+
+}
+

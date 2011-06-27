@@ -126,91 +126,54 @@ QString Calculator::processInput(const QString & user_input)
 FnData Calculator::compute(const QString & input)
 {
 
-    FnData failedOutput;
-
-    // default returns failedOutput
-    failedOutput.setFailMessage(tr("Input Error: unknown input %1").arg(input));
+    FnData output;
 
     // try to match with integer
     bool isInt;
     int n = input.toInt(&isInt);
     if (isInt) {
-        return FnData(n);
+        output.setInteger(n);
     }
 
     // try to match with variable
-    if (variableRegExp.exactMatch(input)) {
+    else if (variableRegExp.exactMatch(input)) {
 
-        failedOutput.setFailMessage(tr("Name Error: \"%1\" is not defined").arg(input));
+        output.setFailMessage(tr("Name Error: \"%1\" is not defined").arg(input));
 
         // check variable list for input - last _
-        return variableList.value(input.left(input.size() - 1),failedOutput);
+        output = variableList.value(input.left(input.size() - 1),output);
 
     }
 
     // try to match with element
-    if (wordRegExp.exactMatch(input)) {
+    else if (wordRegExp.exactMatch(input)) {
 
-        failedOutput.setFailMessage(tr("Basis Error: %1 is not a word in the basis %2").arg(input).arg(basis));
+        output.setFailMessage(tr("Basis Error: %1 is not a word in the basis %2").arg(input).arg(basis));
 
         FnWord u(input);
         if (u.checkBasis(basis)) {
             u.tighten();
-            return FnData(u);
+            output.setElement(u);
         }
-
-        return failedOutput;
 
     }
 
     // try to match with graph
-    if (graphRegExp.exactMatch(input)) {
+    else if (graphRegExp.exactMatch(input)) {
 
-        //failedOutput = loadGraphData(input);
-        return failedOutput;
+        output = loadGraphData(input);
 
     }
 
     // try to match with morphism
     else if (morphismRegExp.exactMatch(input)) {
 
-        QString images = input;
-        images.chop(1);
-        images.remove(0,1);
-        QStringList imageList = breakAtTopLevel(images);
-
-        int rank = imageList.size();
-        QString lastEntry = imageList.takeLast();
-
-        if (lastEntry.contains(QChar(':'))) {
-
-            int index = lastEntry.indexOf(QChar(':'));
-            rank = lastEntry.mid(index+1).trimmed().toInt();
-
-            if (rank < Fn_MinRank || rank > Fn_MaxRank) {
-                failedOutput.setFailMessage(tr("Basis Error: %1 is not a valid rank (%2 < rank < %3)")
-                                          .arg(lastEntry.mid(index+1)).arg(Fn_MinRank).arg(Fn_MaxRank));
-                return failedOutput;
-            }
-
-            lastEntry = lastEntry.left(index).trimmed();
-
-        }
-
-        imageList.append(lastEntry);
-
-        FnMap phi(imageList,rank);
-        if (!phi) {
-            failedOutput.setFailMessage(tr("Morphism Error: images are not in specified basis"));
-            return failedOutput;
-        }
-
-        return FnData(phi);
+        output = loadMorphismData(input);
 
   }
 
   // try to match with preset function
-  if (functionRegExp.exactMatch(input)) {
+  else if (functionRegExp.exactMatch(input)) {
 
     // functionName =  everything to the left of first (
     QString functionName = input.section(QChar('('),0,0);
@@ -219,106 +182,27 @@ FnData Calculator::compute(const QString & input)
     functionInput.chop(1);
 
     FunctionInput converted_input = stringToInput(functionInput);
-    return applyFunction(fcn,converted_input);
+    output = applyFunction(fcn,converted_input);
     
    }
 
-  return failedOutput;
+    else {
+        // default returns failedOutput
+        output.setFailMessage(tr("Input Error: unknown input %1").arg(input));
+    }
+
+  return output;
 
 }
 
 FunctionInput Calculator::stringToInput(const QString & input)
 {
 
-  QStringList input_list = breakAtTopLevel(input);
-
-  bool isInt;
-  FnData dataItem;
+  QStringList inputList = breakAtTopLevel(input);
   FunctionInput computed_input;
-  QString listItem;
 
-  QStringListIterator i(input_list);
-  while (i.hasNext()) {
-    listItem = i.next();
-
-    // try to guess the type of listItem
-
-    // integer?
-    dataItem.setInteger(listItem.toInt(&isInt));
-    if (isInt) {
-      computed_input.append(dataItem);
-    }
-
-    // previous?
-    else if (listItem == PreviousOutput) {
-      computed_input.append(previousOutput);
-    }
-
-    // variable?
-    else if (variableRegExp.exactMatch(listItem)) {
-      if (variableList.contains(listItem.left(listItem.size() - 1)))
-        dataItem = variableList.value(listItem.left(listItem.size() - 1));
-      else
-        dataItem.setFailMessage(tr("Name Error: \"%1\" is not defined").arg(listItem));
-      computed_input.append(dataItem);
-    }
-
-    // element?
-    else if (wordRegExp.exactMatch(listItem)) {
-      FnWord u(listItem);
-      dataItem.setElement(u);
-      computed_input.append(dataItem);
-    }
-
-    // morphism?
-    else if (morphismRegExp.exactMatch(listItem)) {
-      listItem.chop(1);
-      listItem.remove(0,1);
-      QStringList imageList = breakAtTopLevel(listItem);
-
-      int rank = imageList.size();
-      QString lastEntry = imageList.takeLast();
-      if (lastEntry.contains(QChar(':'))) {
-        int index = lastEntry.indexOf(QChar(':'));
-        rank = lastEntry.mid(index+1).trimmed().toInt();
-        if (rank < Fn_MinRank || rank > Fn_MaxRank) {
-          dataItem.setFailMessage(tr("Basis Error: %1 is not a valid rank (%2 < rank < %3)").arg(lastEntry.mid(index+1))
-                                  .arg(Fn_MinRank).arg(Fn_MaxRank));
-        }
-        lastEntry = lastEntry.left(index).trimmed();
-      }
-
-      imageList.append(lastEntry);
-
-      if ( rank >= Fn_MinRank && rank <= Fn_MaxRank) {
-        FnMap phi(imageList,rank);
-        if (!phi) {
-          dataItem.setFailMessage(tr("Morphism Error: images are not in specified basis"));
-        } else
-          dataItem.setMorphism(phi);
-      }
-
-      computed_input.append(dataItem);
-    }
-
-    // function?
-    else if (functionRegExp.exactMatch(listItem)) {
-      QString functionName  = listItem.section(QChar('('),0,0);
-      enum FunctionNames fcn = presetFunctions.fcnTag(functionName);
-      QString functionInput = listItem.section(QChar('('),1);
-      functionInput.chop(1);
-
-      FunctionInput converted_input = stringToInput(functionInput);
-      dataItem = applyFunction(fcn,converted_input);
-      computed_input.append(dataItem);
-    }
-
-    // unknown input
-    else {
-      dataItem.setFailMessage(tr("Input Error: unknown input \"%1\"").arg(listItem));
-      computed_input.append(dataItem);
-    }
-
+  foreach(QString listItem,inputList) {
+    computed_input.append(compute(listItem));
   }
 
   return computed_input;
@@ -1023,7 +907,7 @@ QStringList breakAtTopLevel(const QString &input)
 {
 
   // returns a list of strings broken at the top level commas
-  
+
   QString word;
   QString piece;
   QStringList words = input.split(QChar(','));

@@ -96,9 +96,6 @@ public slots:
 
 };
 
-/////////////////////////////////////////////////////////
-
-// non-class functions
-QStringList breakAtTopLevel(const QString & input);
+QStringList breakAtTopLevel(const QString &input);
 
 #endif // CALCULATOR_H

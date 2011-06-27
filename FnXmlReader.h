@@ -2,7 +2,7 @@
 // used to read xml files
 
 // author Matt Clay
-// version 110524
+// version 110627
 
 /////////////////////////////////////////////////////////
 
