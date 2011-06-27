@@ -24,6 +24,9 @@ Calculator::Calculator(QObject *parent) : QObject(parent)
     // matches string = anything
     assignmentRegExp.setPattern(QString("^\\b\\S+\\b\\s*=.+$"));
 
+    // matches ( anything )
+    graphRegExp.setPattern(QString("^\\(.+\\)$"));
+
     // matches string_(anything)
     functionRegExp.setPattern(QString("^\\S+_\\(.+\\)$"));
 
@@ -123,72 +126,86 @@ QString Calculator::processInput(const QString & user_input)
 FnData Calculator::compute(const QString & input)
 {
 
-  FnData failedOutput;
+    FnData failedOutput;
 
-  // default returns failedOutput
-  failedOutput.setFailMessage(tr("Input Error: unknown input %1").arg(input));
+    // default returns failedOutput
+    failedOutput.setFailMessage(tr("Input Error: unknown input %1").arg(input));
 
-  // try to match with integer
-  bool isInt;
-  int n = input.toInt(&isInt);
-  if (isInt) {
-    return FnData(n);
-  }
-
-  // try to match with variable
-  if (variableRegExp.exactMatch(input)) {
-
-    failedOutput.setFailMessage(tr("Name Error: \"%1\" is not defined").arg(input));
-
-    // check variable list for input - last _
-    return variableList.value(input.left(input.size() - 1),failedOutput);
-
-  }
-
-  // try to match with element
-  if (wordRegExp.exactMatch(input)) {
-
-    failedOutput.setFailMessage(tr("Basis Error: %1 is not a word in the basis %2").arg(input).arg(basis));
-
-    FnWord u(input);
-    if (u.checkBasis(basis)) {
-      u.tighten();
-      return FnData(u);
+    // try to match with integer
+    bool isInt;
+    int n = input.toInt(&isInt);
+    if (isInt) {
+        return FnData(n);
     }
 
-    return failedOutput;
+    // try to match with variable
+    if (variableRegExp.exactMatch(input)) {
 
-  }
+        failedOutput.setFailMessage(tr("Name Error: \"%1\" is not defined").arg(input));
 
-  // try to match with morphism
-  else if (morphismRegExp.exactMatch(input)) {
+        // check variable list for input - last _
+        return variableList.value(input.left(input.size() - 1),failedOutput);
 
-    QString images = input;
-    images.chop(1);
-    images.remove(0,1);
-    QStringList imageList = breakAtTopLevel(images);
+    }
 
-    int rank = imageList.size();
-    QString lastEntry = imageList.takeLast();
-    if (lastEntry.contains(QChar(':'))) {
-      int index = lastEntry.indexOf(QChar(':'));
-      rank = lastEntry.mid(index+1).trimmed().toInt();
-      if (rank < Fn_MinRank || rank > Fn_MaxRank) {
-          failedOutput.setFailMessage(tr("Basis Error: %1 is not a valid rank (%2 < rank < %3)")
-                                      .arg(lastEntry.mid(index+1)).arg(Fn_MinRank).arg(Fn_MaxRank));
+    // try to match with element
+    if (wordRegExp.exactMatch(input)) {
+
+        failedOutput.setFailMessage(tr("Basis Error: %1 is not a word in the basis %2").arg(input).arg(basis));
+
+        FnWord u(input);
+        if (u.checkBasis(basis)) {
+            u.tighten();
+            return FnData(u);
+        }
+
         return failedOutput;
-      }
-      lastEntry = lastEntry.left(index).trimmed();
+
     }
 
-    imageList.append(lastEntry);
+    // try to match with graph
+    if (graphRegExp.exactMatch(input)) {
 
-    FnMap phi(imageList,rank);
-    if (!phi) {
-      failedOutput.setFailMessage(tr("Morphism Error: images are not in specified basis"));
-      return failedOutput;
+        //failedOutput = loadGraphData(input);
+        return failedOutput;
+
     }
-    return FnData(phi);
+
+    // try to match with morphism
+    else if (morphismRegExp.exactMatch(input)) {
+
+        QString images = input;
+        images.chop(1);
+        images.remove(0,1);
+        QStringList imageList = breakAtTopLevel(images);
+
+        int rank = imageList.size();
+        QString lastEntry = imageList.takeLast();
+
+        if (lastEntry.contains(QChar(':'))) {
+
+            int index = lastEntry.indexOf(QChar(':'));
+            rank = lastEntry.mid(index+1).trimmed().toInt();
+
+            if (rank < Fn_MinRank || rank > Fn_MaxRank) {
+                failedOutput.setFailMessage(tr("Basis Error: %1 is not a valid rank (%2 < rank < %3)")
+                                          .arg(lastEntry.mid(index+1)).arg(Fn_MinRank).arg(Fn_MaxRank));
+                return failedOutput;
+            }
+
+            lastEntry = lastEntry.left(index).trimmed();
+
+        }
+
+        imageList.append(lastEntry);
+
+        FnMap phi(imageList,rank);
+        if (!phi) {
+            failedOutput.setFailMessage(tr("Morphism Error: images are not in specified basis"));
+            return failedOutput;
+        }
+
+        return FnData(phi);
 
   }
 
@@ -386,6 +403,10 @@ FnData Calculator::applyFunction(enum FunctionNames fcn, const FunctionInput & i
   case MultiplyFcn:
     return MultiplyFunction(input);
     break;
+
+  case WhiteheadGraphFcn:
+      return WhiteheadGraphFunction(input);
+      break;
 
   case WhiteheadProblemFcn:
     return WhiteheadProblemFunction(input);
@@ -832,6 +853,40 @@ FnData Calculator::MultiplyFunction(const FunctionInput & input)
   output.setElement(u1u2);
 
   return output;
+
+}
+
+FnData Calculator::WhiteheadGraphFunction(const FunctionInput &input)
+{
+
+    FnData output;
+
+    if (!input.isAcceptable(presetFunctions.fcnInput(WhiteheadGraphFcn))) {
+      output.setFailMessage(tr("Function Error: invalid input for WhiteheadGraph"));
+      return output;
+    }
+
+    FnWord u(input.at(0).wordData());
+
+    if (input.size() == 2) {
+      int r = input.at(1).integerData();
+      if (r < Fn_MinRank || r > Fn_MaxRank) {
+        output.setFailMessage(tr("Basis Error: %1 is not a valid rank (2 < rank < %2)").arg(r)
+                              .arg(Fn_MinRank).arg(Fn_MaxRank));
+        return output;
+      }
+      basis.changeRank(r);
+    }
+
+    if (!u.checkBasis(basis)) {
+      output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+      return output;
+    }
+
+    FnGraph whitehead = u.whiteheadGraph(basis);
+    output.setGraph(whitehead);
+
+    return output;
 
 }
 

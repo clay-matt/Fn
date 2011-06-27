@@ -23,6 +23,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionEnum["Length_"] = LengthFcn;
   functionEnum["Map_"] = MapFcn;
   functionEnum["Multiply_"] = MultiplyFcn;
+  functionEnum["WhiteheadGraph_"] = WhiteheadGraphFcn;
   functionEnum["WhiteheadProblem_"] = WhiteheadProblemFcn;
 
   // place function names into list
@@ -41,6 +42,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionName[LengthFcn] = "Length_";
   functionName[MapFcn] = "Map_";
   functionName[MultiplyFcn] = "Multiply_";
+  functionName[WhiteheadGraphFcn] = "WhiteheadGraph_";
   functionName[WhiteheadProblemFcn] = "WhiteheadProblem_";
 
   // place function Skeleta into list
@@ -59,6 +61,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionSkeleton[LengthFcn] = "Length_( u_ )";
   functionSkeleton[MapFcn] = "Map_( f_ , u_ , <n_> )";
   functionSkeleton[MultiplyFcn] = "Multiply_( u_ , v_ )";
+  functionSkeleton[WhiteheadGraphFcn] = "WhiteheadGraph_( u_ , <n_> )";
   functionSkeleton[WhiteheadProblemFcn] = "WhiteheadProblem_( u_, v_, <n_> )";
 
   // place function Status Tips into list
@@ -77,6 +80,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionStatusTip[LengthFcn] = tr(": return the length of u");
   functionStatusTip[MapFcn] = tr(": returns f^n(u), by default n = 1");
   functionStatusTip[MultiplyFcn] = tr(": returns uv");
+  functionStatusTip[WhiteheadGraphFcn] = tr(": return the Whitehead graph of u (n is the optional rank)");
   functionStatusTip[WhiteheadProblemFcn] = tr(": returns f such that f(v) = u if such an f exists (n is the optional rank)");
 
   // place variable types for functions into list
@@ -95,6 +99,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionInput[LengthFcn] << Element;
   functionInput[MapFcn] << Morphism << Element << OptionalInteger;
   functionInput[MultiplyFcn] << Element << Element;
+  functionInput[WhiteheadGraphFcn] << Element << OptionalInteger;
   functionInput[WhiteheadProblemFcn] << Element << Element << OptionalInteger;
 
   // place function output into list
@@ -102,17 +107,18 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionOutput[ComposeFcn] = Morphism;
   functionOutput[ConjugateFcn] = Element;
   functionOutput[ConjugacyProblemFcn] = Element;
-  functionOutput[ConnectedComponentsFcn] = NoType;
+  functionOutput[ConnectedComponentsFcn] = GraphList;
   functionOutput[ExpFcn] = Element;
   functionOutput[IdentityFcn] = Element;
   functionOutput[InverseFcn] = Element;
   functionOutput[IsAutomorphismFcn] = Morphism;
-  functionOutput[IsolatedVerticesFcn] = NoType;
+  functionOutput[IsolatedVerticesFcn] = StringList;
   functionOutput[IsPrimitiveElementFcn] = Morphism;
   functionOutput[IterateFcn] = Morphism;
   functionOutput[LengthFcn] = Integer;
   functionOutput[MapFcn] = Element;
   functionOutput[MultiplyFcn] = Element;
+  functionOutput[WhiteheadGraphFcn] = Graph;
   functionOutput[WhiteheadProblemFcn] = Element;
 
 }

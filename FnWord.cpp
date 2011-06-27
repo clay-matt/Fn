@@ -94,6 +94,16 @@ FnWord FnWord::exp(int n) const {
 
 }
 
+FnGraph FnWord::whiteheadGraph(const Basis &basis) const {
+
+    FnGraph whitehead;
+
+    whitehead.addVertex(basis.at(0));
+
+    return whitehead;
+
+}
+
 bool FnWord::operator ! () const {
 
     return *this == Fail;

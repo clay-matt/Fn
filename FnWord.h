@@ -2,7 +2,7 @@
 // inherits QString
 
 // author Matt Clay
-// version 110222
+// version 110627
 
 /////////////////////////////////////////////////////////
 
@@ -14,6 +14,7 @@
 
 #include "Basis.h"
 #include "Fn.h"
+#include "FnGraph.h"
 
 class FnWord : public QString {
     
@@ -58,6 +59,7 @@ class FnWord : public QString {
     FnWord inverse() const;
     FnWord exp(int n) const;
     bool operator ! () const;
+    FnGraph whiteheadGraph(const Basis & basis = BASIS) const;
 
     // friends
     friend FnWord operator * (const FnWord & u, const FnWord & v);

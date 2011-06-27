@@ -12,6 +12,9 @@ FnGraph::FnGraph()
 
 void FnGraph::addVertex(const QString &vertex) {
 
+    // adds the vertex named vertex with an empty list
+    // of adjacent edges
+
     if(!vertices.contains(vertex)) {
         QVector<QString> s;
         vertices.insert(vertex,s);
@@ -23,11 +26,10 @@ void FnGraph::addEdge(const QString &edge, const QVector<QString> &endpoints) {
 
     if (!vertices.contains(endpoints.at(0)))
         addVertex(endpoints.at(0));
-        vertices[endpoints.at(0)].push_back(edge);
+    vertices[endpoints.at(0)].push_back(edge);
     if (!vertices.contains(endpoints.at(1)))
         addVertex(endpoints.at(1));
-    if(endpoints.at(0)!=endpoints.at(1))
-        vertices[endpoints.at(1)].push_back(edge);
+    vertices[endpoints.at(1)].push_back(edge);
     if(!keys().contains(edge)) {
         insert(edge,endpoints);
     }
@@ -71,7 +73,6 @@ QList<FnGraph> FnGraph::connectedComponents() const {
     QHash<QString, QVector <QString> > unused=vertices;
     QList<QString> queue;
     QString edge,vertex;
-    int j=0;
 
     while(!unused.isEmpty())
     {
@@ -82,10 +83,8 @@ QList<FnGraph> FnGraph::connectedComponents() const {
         {
             vertex=queue[0];//sets the vertex to next key in the queue
             component.addVertex(vertex);
-            for(j=0; j<unused.value(vertex).size();j++)//loops through all of the edges of vertex
+            foreach(edge,unused.value(vertex))
             {
-
-                edge=unused.value(vertex).at(j);
                 if(!component.contains(edge))//if the edge hasn't been used
                 {
                     component.addEdge(edge,value(edge));//add it to the graph

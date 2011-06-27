@@ -69,7 +69,11 @@ public:
     void setStringList(QList<QString> &list);
     void setFailMessage(QString fail);
 
+    friend FnData loadGraphData(const QString & graph);
+
 };
+
+FnData loadGraphData(const QString & graph);
 
 typedef QHash<QString, FnData> VariableList;
 typedef QHashIterator<QString, FnData> VariableListIterator;

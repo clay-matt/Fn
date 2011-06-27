@@ -311,3 +311,44 @@ void FnData::setFailMessage(QString fail)
 
 /////////////////////////////////////////////////////////
 
+FnData loadGraphData(const QString & graphData)
+{
+
+    FnData graph;
+    FnGraph Gamma;
+
+    QString input = graphData;
+    // remove ( and )
+    input.chop(1);
+    input.remove(0,1);
+
+    // extract vertex and edge lists
+    QStringList vertices_edges = input.split(":",QString::SkipEmptyParts);
+    QStringList vertexList = vertices_edges.at(0).trimmed().simplified().split(" ",QString::SkipEmptyParts);
+    QString edges = vertices_edges.at(1).trimmed().simplified();
+
+    if(vertexList.isEmpty()) {
+        graph.setFailMessage("Invalid input: a graph needs vertices.");
+                return(graph);
+    }
+
+    // add vertices
+    foreach(QString vertex, vertexList)
+        Gamma.addVertex(vertex);
+
+    // add edges
+    if(!edges.isEmpty()) {
+        edges.chop(1);
+        edges.remove(0,1);
+        QStringList edgeList = edges.split(QRegExp("\\)\\s*\\(")); // splits at ) possible whitespace (
+        QStringList edgeData;
+        foreach(QString edge, edgeList) {
+            edgeData = edge.split(",");
+        }
+    }
+
+    graph.setGraph(Gamma);
+
+    return(graph);
+
+}

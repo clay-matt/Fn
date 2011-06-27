@@ -2,7 +2,7 @@
 // inherits QObject
 
 // author Matt Clay
-// version 110608
+// version 110627
 
 /////////////////////////////////////////////////////////
 
@@ -49,6 +49,7 @@ private:
     // regular expressions
     QRegExp assignmentRegExp;
     QRegExp functionRegExp;
+    QRegExp graphRegExp;
     QRegExp morphismRegExp;
     QRegExp stringRegExp;
     QRegExp variableRegExp;
@@ -78,6 +79,7 @@ private:
     FnData LengthFunction(const FunctionInput &input);
     FnData MapFunction(const FunctionInput &input);
     FnData MultiplyFunction(const FunctionInput &input);
+    FnData WhiteheadGraphFunction(const FunctionInput &input);
     FnData WhiteheadProblemFunction(const FunctionInput &input);
 
 signals:

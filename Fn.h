@@ -1,7 +1,7 @@
 // Header file for constants
 
 // author Matt Clay
-// version 110624
+// version 110627
 
 /////////////////////////////////////////////////////////
 
@@ -37,6 +37,7 @@ enum FunctionNames {ERROR,
                     LengthFcn,
                     MapFcn,
                     MultiplyFcn,
+                    WhiteheadGraphFcn,
                     WhiteheadProblemFcn};
 
 const int Fn_MinRank = 2;
