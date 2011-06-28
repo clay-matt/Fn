@@ -125,11 +125,11 @@ FnGraph operator + (const FnGraph & gamma, const FnGraph & beta)
 
     foreach(QString edge, gamma.keys())
     {
-        tau.addEdge(edge,gamma.value(edge));
+        tau.addEdge("e."+num.setNum(tau.size()),gamma.value(edge));
     }
     foreach(QString edge, beta.keys())
     {
-        tau.addEdge(edge+"."+num.setNum(tau.count(edge)),beta.value(edge));
+        tau.addEdge("e."+num.setNum(tau.size()),beta.value(edge));
     }
 
     return tau;
