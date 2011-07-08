@@ -8,6 +8,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
 {
 
   // place function tags into list
+  functionEnum["Bicomponents_"] = BicomponentsFcn;
   functionEnum["Commutator_"] = CommutatorFcn;
   functionEnum["Compose_"] = ComposeFcn;
   functionEnum["Conjugate_"] = ConjugateFcn;
@@ -27,6 +28,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionEnum["WhiteheadProblem_"] = WhiteheadProblemFcn;
 
   // place function names into list
+  functionName[BicomponentsFcn] = "Bicomponents_";
   functionName[CommutatorFcn] = "Commutator_";
   functionName[ComposeFcn] = "Compose_";
   functionName[ConjugateFcn] = "Conjugate_";
@@ -46,6 +48,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionName[WhiteheadProblemFcn] = "WhiteheadProblem_";
 
   // place function Skeleta into list
+  functionSkeleton[BicomponentsFcn] = "Bicomponents_( Gamma_ )";
   functionSkeleton[CommutatorFcn] = "Commutator_( u_ , v_ )";
   functionSkeleton[ComposeFcn] = "Compose_( f_ , g_ )";
   functionSkeleton[ConjugateFcn] = "Conjugate_( u_ , v_ )";
@@ -65,6 +68,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionSkeleton[WhiteheadProblemFcn] = "WhiteheadProblem_( u_, v_, <n_> )";
 
   // place function Status Tips into list
+  functionStatusTip[BicomponentsFcn] = tr(": returns the bicomponents of Gamma");
   functionStatusTip[CommutatorFcn] = tr(": returns uvUV");
   functionStatusTip[ComposeFcn] = tr(": returns the composition fg");
   functionStatusTip[ConjugateFcn] = tr(": returns vuV");
@@ -84,6 +88,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionStatusTip[WhiteheadProblemFcn] = tr(": returns f such that f(v) = u if such an f exists (n is the optional rank)");
 
   // place variable types for functions into list
+  functionInput[BicomponentsFcn] << Graph;
   functionInput[CommutatorFcn] << Element << Element;
   functionInput[ComposeFcn] << Morphism << Morphism;
   functionInput[ConjugateFcn] << Element << Element;
@@ -103,6 +108,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionInput[WhiteheadProblemFcn] << Element << Element << OptionalInteger;
 
   // place function output into list
+  functionOutput[BicomponentsFcn] = Graph;
   functionOutput[CommutatorFcn] = Element;
   functionOutput[ComposeFcn] = Morphism;
   functionOutput[ConjugateFcn] = Element;
