@@ -23,6 +23,7 @@ enum VariableTypes {NoType,
                     FailMessage};
 
 enum FunctionNames {ERROR,
+                    BicomponentsFcn,
                     CommutatorFcn,
                     ComposeFcn,
                     ConjugateFcn,

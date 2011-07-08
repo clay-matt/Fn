@@ -247,6 +247,10 @@ FnData Calculator::applyFunction(enum FunctionNames fcn, const FunctionInput & i
 
   switch (fcn) {
 
+  case BicomponentsFcn:
+    return BicomponentsFunction(input);
+    break;
+
   case CommutatorFcn:
     return CommutatorFunction(input);
     break;
@@ -327,6 +331,25 @@ FnData Calculator::applyFunction(enum FunctionNames fcn, const FunctionInput & i
 
 /////////////////////////////////////////////////////////
 // PRESET FUNCTIONS
+
+FnData Calculator::BicomponentsFunction(const FunctionInput & input)
+{
+
+    FnData output;
+
+    if (!input.isAcceptable(presetFunctions.fcnInput(BicomponentsFcn))) {
+      output.setFailMessage(tr("Function Error: invalid input for Bicomponents"));
+      return output;
+    }
+
+    FnGraph Gamma(input.at(0).graphData());
+
+    QList<FnGraph> bicomponents = Gamma.biconnectedComponents();
+    output.setGraphList(bicomponents);
+
+    return output;
+
+}
 
 FnData Calculator::CommutatorFunction(const FunctionInput & input)
 {
