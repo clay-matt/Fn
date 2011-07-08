@@ -48,12 +48,12 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   // place function Skeleta into list
   functionSkeleton[CommutatorFcn] = "Commutator_( u_ , v_ )";
   functionSkeleton[ComposeFcn] = "Compose_( f_ , g_ )";
-  functionSkeleton[ConjugateFcn] = "Conjugate_( u_ , v_ )";
+  functionSkeleton[ConjugateFcn] = "Conjugate_( [u_] , v_ )";
   functionSkeleton[ConjugacyProblemFcn] = "ConjugacyProblem_( u_ , v_ )";
   functionSkeleton[ConnectedComponentsFcn] = "ConnectedComponents_( Gamma_ )";
-  functionSkeleton[ExpFcn] = "Exp_( u_ , n_ )";
-  functionSkeleton[IdentityFcn] = "Identity_( u_ )";
-  functionSkeleton[InverseFcn] = "Inverse_( u_ )";
+  functionSkeleton[ExpFcn] = "Exp_( [u_] , n_ )";
+  functionSkeleton[IdentityFcn] = "Identity_( [u_] )";
+  functionSkeleton[InverseFcn] = "Inverse_( [u_] )";
   functionSkeleton[IsAutomorphismFcn] = "IsAutomorphism_( f_ )";
   functionSkeleton[IsolatedVerticesFcn] = "IsolatedVertices_( Gamma_ )";
   functionSkeleton[IsPrimitiveElementFcn] = "IsPrimitiveElement_( u_ , <n_> )";
@@ -61,7 +61,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionSkeleton[LengthFcn] = "Length_( u_ )";
   functionSkeleton[MapFcn] = "Map_( f_ , u_ , <n_> )";
   functionSkeleton[MultiplyFcn] = "Multiply_( u_ , v_ )";
-  functionSkeleton[WhiteheadGraphFcn] = "WhiteheadGraph_( u_ , <n_> )";
+  functionSkeleton[WhiteheadGraphFcn] = "WhiteheadGraph_( [u_] , <n_> )";
   functionSkeleton[WhiteheadProblemFcn] = "WhiteheadProblem_( u_, v_, <n_> )";
 
   // place function Status Tips into list
@@ -84,23 +84,23 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionStatusTip[WhiteheadProblemFcn] = tr(": returns f such that f(v) = u if such an f exists (n is the optional rank)");
 
   // place variable types for functions into list
-  functionInput[CommutatorFcn] << Element << Element;
-  functionInput[ComposeFcn] << Morphism << Morphism;
-  functionInput[ConjugateFcn] << Element << Element;
-  functionInput[ConjugacyProblemFcn] << Element << Element;
-  functionInput[ConnectedComponentsFcn] << Graph;
-  functionInput[ExpFcn] << Element << Integer;
-  functionInput[IdentityFcn] << Element;
-  functionInput[InverseFcn] << Element;
-  functionInput[IsAutomorphismFcn] << Morphism;
-  functionInput[IsolatedVerticesFcn] << Graph;
-  functionInput[IsPrimitiveElementFcn] << Element << OptionalInteger;
-  functionInput[IterateFcn] << Morphism << Integer;
-  functionInput[LengthFcn] << Element;
-  functionInput[MapFcn] << Morphism << Element << OptionalInteger;
-  functionInput[MultiplyFcn] << Element << Element;
-  functionInput[WhiteheadGraphFcn] << Element << OptionalInteger;
-  functionInput[WhiteheadProblemFcn] << Element << Element << OptionalInteger;
+  functionInput[CommutatorFcn] << Element << NotListable << Element << NotListable;
+  functionInput[ComposeFcn] << Morphism << NotListable << Morphism << NotListable;
+  functionInput[ConjugateFcn] << Element << Listable << Element << NotListable;
+  functionInput[ConjugacyProblemFcn] << Element << NotListable << Element << NotListable;
+  functionInput[ConnectedComponentsFcn] << Graph << NotListable;
+  functionInput[ExpFcn] << Element << Listable << Integer << NotListable;
+  functionInput[IdentityFcn] << Element << Listable;
+  functionInput[InverseFcn] << Element << Listable;
+  functionInput[IsAutomorphismFcn] << Morphism << NotListable;
+  functionInput[IsolatedVerticesFcn] << Graph << NotListable;
+  functionInput[IsPrimitiveElementFcn] << Element << NotListable << OptionalInteger << NotListable;
+  functionInput[IterateFcn] << Morphism << NotListable << Integer << NotListable;
+  functionInput[LengthFcn] << Element << Listable;
+  functionInput[MapFcn] << Morphism << NotListable << Element << Listable << OptionalInteger << NotListable;
+  functionInput[MultiplyFcn] << Element << NotListable << Element << NotListable;
+  functionInput[WhiteheadGraphFcn] << Element << Listable << OptionalInteger << NotListable;
+  functionInput[WhiteheadProblemFcn] << Element << NotListable << Element << NotListable << OptionalInteger << NotListable;
 
   // place function output into list
   functionOutput[CommutatorFcn] = Element;

@@ -18,6 +18,8 @@ enum VariableTypes {NoType,
                     Morphism,
                     OptionalInteger,
                     String,
+                    Listable,
+                    NotListable,
                     FailMessage};
 
 enum FunctionNames {ERROR,

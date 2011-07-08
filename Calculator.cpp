@@ -395,21 +395,36 @@ FnData Calculator::ConjugationFunction(const FunctionInput & input)
     return output;
   }
 
-  FnWord u1(input.at(0).wordData());
-  FnWord u2(input.at(1).wordData());
-
-  if (!u1.checkBasis(basis)) {
-    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u1).arg(basis));
+  FnWord v(input.at(1).wordData());
+  if (!v.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(v).arg(basis));
     return output;
   }
 
-  if (!u2.checkBasis(basis)) {
-    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u2).arg(basis));
-    return output;
-  }
+  if (input.at(0).isList()) {
+      QList<FnWord> wordList;
 
-  FnWord u1u2 = u1^u2;
-  output.setElement(u1u2);
+      foreach(FnWord u, input.at(0).wordListData()) {
+          if (!u.checkBasis(basis)) {
+            output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+           return output;
+          }
+          FnWord u_conj_v = u^v;
+          wordList.append(u_conj_v);
+      }
+      output.setWordList(wordList);
+  }
+  else {
+      FnWord u(input.at(0).wordData());
+
+      if (!u.checkBasis(basis)) {
+        output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+        return output;
+      }
+
+      FnWord u_conj_v = u^v;
+      output.setElement(u_conj_v);
+  }
 
   return output;
 
@@ -473,25 +488,40 @@ FnData Calculator::ConnectedComponentsFunction(const FunctionInput & input)
 FnData Calculator::ExponentiationFunction(const FunctionInput & input)
 {
 
-  FnData output;
+    FnData output;
 
-  if (!input.isAcceptable(presetFunctions.fcnInput(ExpFcn))) {
-    output.setFailMessage(tr("Function Error: invalid input for Exp"));
-    return output;
+    if (!input.isAcceptable(presetFunctions.fcnInput(ExpFcn))) {
+        output.setFailMessage(tr("Function Error: invalid input for Exp"));
+        return output;
+    }
+
+    int n = input.at(1).integerData();
+
+    if (input.at(0).isList()) {
+        QList<FnWord> wordList;
+
+        foreach(FnWord u, input.at(0).wordListData()) {
+            if (!u.checkBasis(basis)) {
+                output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+                return output;
+            }
+            u.tighten();
+            FnWord un = u.exp(n);
+            wordList.append(un);
+        }
+        output.setWordList(wordList);
   }
+  else {
+      FnWord u(input.at(0).wordData());
 
-  FnWord u(input.at(0).wordData());
-  if (!u.checkBasis(basis)) {
-    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
-    return output;
+      if (!u.checkBasis(basis)) {
+        output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+        return output;
+      }
+      u.tighten();
+      FnWord un = u.exp(n);
+      output.setElement(un);
   }
-
-  u.tighten();
-
-  int n = input.at(1).integerData();
-  FnWord un = u.exp(n);
-
-  output.setElement(un);
 
   return output;
 
@@ -507,15 +537,29 @@ FnData Calculator::IdentityFunction(const FunctionInput & input)
     return output;
   }
 
-  FnWord u(input.at(0).wordData());
-  if (!u.checkBasis(basis)) {
-    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
-    return output;
+  if (input.at(0).isList()) {
+      QList<FnWord> wordList;
+
+      foreach(FnWord u, input.at(0).wordListData()) {
+          if (!u.checkBasis(basis)) {
+            output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+           return output;
+          }
+          u.tighten();
+          wordList.append(u);
+      }
+      output.setWordList(wordList);
   }
+  else {
+      FnWord u(input.at(0).wordData());
 
-  u.tighten();
-
-  output.setElement(u);
+      if (!u.checkBasis(basis)) {
+        output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+        return output;
+      }
+      u.tighten();
+      output.setElement(u);
+  }
 
   return output;
 
@@ -531,16 +575,31 @@ FnData Calculator::InverseFunction(const FunctionInput & input)
     return output;
   }
 
-  FnWord u(input.at(0).wordData());
-  if (!u.checkBasis(basis)) {
-    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
-    return output;
+  if (input.at(0).isList()) {
+      QList<FnWord> wordList;
+
+      foreach(FnWord u, input.at(0).wordListData()) {
+          if (!u.checkBasis(basis)) {
+            output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+           return output;
+          }
+          u.tighten();
+          FnWord U = u.inverse();
+          wordList.append(U);
+      }
+      output.setWordList(wordList);
   }
+  else {
+      FnWord u(input.at(0).wordData());
 
-  u.tighten();
-
-  FnWord U = u.inverse();
-  output.setElement(U);
+      if (!u.checkBasis(basis)) {
+        output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+        return output;
+      }
+      u.tighten();
+      FnWord U = u.inverse();
+      output.setElement(U);
+  }
 
   return output;
 
@@ -669,18 +728,35 @@ FnData Calculator::LengthFunction(const FunctionInput & input)
     return output;
   }
 
-  FnWord u(input.at(0).wordData());
-  if (!u.checkBasis(basis)) {
-    output.setFailMessage(QString("Function Error: invalid input for Length"));
-    return output;
+  if (input.at(0).isList()) {
+      QList<int> intList;
+
+      foreach(FnWord u, input.at(0).wordListData()) {
+          if (!u.checkBasis(basis)) {
+            output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+           return output;
+          }
+          u.tighten();
+          if (u == Id)
+            intList.append(0);
+          else
+            intList.append(u.length());
+      }
+      output.setIntegerList(intList);
   }
+  else {
+      FnWord u(input.at(0).wordData());
 
-  u.tighten();
-
-  if (u == Id)
-    output.setInteger(0);
-  else
-    output.setInteger(u.length());
+      if (!u.checkBasis(basis)) {
+        output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+        return output;
+      }
+      u.tighten();
+      if (u == Id)
+        output.setInteger(0);
+      else
+        output.setInteger(u.length());
+  }
 
   return output;
 
@@ -692,38 +768,54 @@ FnData Calculator::MapFunction(const FunctionInput & input)
     FnData output;
 
     if (!input.isAcceptable(presetFunctions.fcnInput(MapFcn))) {
-      output.setFailMessage(tr("Function Error: invalid input for Map"));
-      return output;
+        output.setFailMessage(tr("Function Error: invalid input for Map"));
+        return output;
     }
 
     FnMap phi(input.at(0).mapData());
     basis.changeRank(phi.domainRank());
 
-    FnWord u(input.at(1).wordData());
-    if (!u.checkBasis(basis)) {
-      output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
-      return output;
-    }
-
-    u.tighten();
-
     int n = 1;
     if (input.size() == 3)
-      n = input.at(2).integerData();
+        n = input.at(2).integerData();
 
     if (n < 0) {
-      output.setFailMessage(tr("Function Error: number of iterations must be non-negative"));
-      return output;
+        output.setFailMessage(tr("Function Error: number of iterations must be non-negative"));
+        return output;
     }
 
-    FnWord phi_un = phi(u,n);
+    if(input.at(1).isList()) {
+        QList<FnWord> wordList;
 
-    if (!phi_un) {
-      output.setFailMessage(tr("Function Error: cannot iterate this morphism"));
-      return output;
+        foreach(FnWord u, input.at(1).wordListData()) {
+            if (!u.checkBasis(basis)) {
+              output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+             return output;
+            }
+            FnWord phi_un = phi(u,n);
+            if (!phi_un) {
+                output.setFailMessage(tr("Function Error: cannot iterate this morphism"));
+                return output;
+            }
+            wordList.append(phi_un);
+        }
+        output.setWordList(wordList);
+
     }
+    else {
+        FnWord u(input.at(1).wordData());
 
-    output.setElement(phi_un);
+        if (!u.checkBasis(basis)) {
+            output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+            return output;
+        }
+        FnWord phi_un = phi(u,n);
+        if (!phi_un) {
+            output.setFailMessage(tr("Function Error: cannot iterate this morphism"));
+            return output;
+        }
+        output.setElement(phi_un);
+    }
 
     return output;
 

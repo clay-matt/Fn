@@ -89,8 +89,9 @@ void FnXmlReader::readVariableElement()
 {
 
     QString varType = reader.attributes().value("type").toString();
+    bool isList = (reader.attributes().value("list").toString() == "true") ? true : false;
     QString varName;
-    QString varValue;
+    QStringList varValue;
     bool readName = false;
     bool readValue = false;
 
@@ -117,11 +118,11 @@ void FnXmlReader::readVariableElement()
                     reader.readNext();
                 }
             } else if(reader.name() == "value") {
-                if(readValue) { // already read in value of variable
-                    reader.raiseError(QObject::tr("Variable Error: duplicate value field"));
+                if(readValue && !isList) { // already read in value of variable
+                    reader.raiseError(QObject::tr("Variable Error: duplicate value field in non-list"));
                 }
                 else {
-                    varValue = reader.readElementText();
+                    varValue.append(reader.readElementText());
                     readValue = true;
                     reader.readNext();
                 }
@@ -139,61 +140,11 @@ void FnXmlReader::readVariableElement()
         return;
     }
 
-    FnData variable;
+    FnData variable = processData(varValue.takeFirst(),varType);
 
-    if(varType == "element"){
-        FnWord u(varValue);
-        if(!u.checkBasis()) {
-            reader.raiseError(QObject::tr("Variable Error: %1 is not a valid element").arg(varValue));
-            return;
-        }
-        variable.setElement(u);
-    }
-
-    else if(varType == "integer") {
-        int i;
-        bool ok;
-        i = varValue.toInt(&ok);
-        if(!ok) {
-            reader.raiseError(QObject::tr("Variable Error: %1 is not a valid integer").arg(varValue));
-            return;
-        }
-        variable.setInteger(i);
-    }
-
-    else if(varType == "graph") {
-        if(!varValue.startsWith(QChar('(')) || !varValue.endsWith(QChar(')'))) {
-            reader.raiseError(QObject::tr("Variable Error: %1 is not a valid graph").arg(varValue));
-            return;
-        }
-
-        variable = loadGraphData(varValue);
-
-        if(variable.type() == FailMessage) {
-            reader.raiseError(variable.toOutput());
-            return;
-        }
-
-    }
-
-    else if(varType == "morphism") {
-        if(!varValue.startsWith(QChar('{')) || !varValue.endsWith(QChar('}'))) {
-            reader.raiseError(QObject::tr("Variable Error: %1 is not a valid morphism").arg(varValue));
-            return;
-        }
-
-        variable = loadMorphismData(varValue);
-
-        if(variable.type() == FailMessage) {
-            reader.raiseError(variable.toOutput());
-            return;
-        }
-
-    }
-
-    else {
-        reader.raiseError(QObject::tr("Variable Error: cannot identify type"));
-        return;
+    foreach(QString variableString, varValue) {
+        FnData nextData = processData(variableString,varType);
+        variable.addToList(nextData);
     }
 
     varList->insert(varName,variable);
@@ -238,5 +189,69 @@ void FnXmlReader::skipUnknownElement()
             reader.readNext();
         }
     }
+
+}
+
+FnData FnXmlReader::processData(const QString & varValue,const QString & varType) {
+
+    FnData variable;
+    variable.setFailMessage("Xml Reader Error");
+
+    if(varType == "element"){
+        FnWord u(varValue);
+        if(!u.checkBasis()) {
+            reader.raiseError(QObject::tr("Variable Error: %1 is not a valid element").arg(varValue));
+            return variable;
+        }
+        variable.setElement(u);
+    }
+
+    else if(varType == "integer") {
+        int i;
+        bool ok;
+        i = varValue.toInt(&ok);
+        if(!ok) {
+            reader.raiseError(QObject::tr("Variable Error: %1 is not a valid integer").arg(varValue));
+            return variable;
+        }
+        variable.setInteger(i);
+    }
+
+    else if(varType == "graph") {
+        if(!varValue.startsWith(QChar('(')) || !varValue.endsWith(QChar(')'))) {
+            reader.raiseError(QObject::tr("Variable Error: %1 is not a valid graph").arg(varValue));
+            return variable;
+        }
+
+        variable = loadGraphData(varValue);
+
+        if(variable.type() == FailMessage) {
+            reader.raiseError(variable.toOutput());
+            return variable;
+        }
+
+    }
+
+    else if(varType == "morphism") {
+        if(!varValue.startsWith(QChar('{')) || !varValue.endsWith(QChar('}'))) {
+            reader.raiseError(QObject::tr("Variable Error: %1 is not a valid morphism").arg(varValue));
+            return variable;
+        }
+
+        variable = loadMorphismData(varValue);
+
+        if(variable.type() == FailMessage) {
+            reader.raiseError(variable.toOutput());
+            return variable;
+        }
+
+    }
+
+    else {
+        reader.raiseError(QObject::tr("Variable Error: cannot identify type"));
+        return variable;
+    }
+
+    return variable;
 
 }

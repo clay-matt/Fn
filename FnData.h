@@ -28,7 +28,7 @@ private:
     enum VariableTypes data_type;
     bool list;
     FnMap f_value;
-    int i_value;
+    QList<int> i_list;
     QList<FnGraph> g_list;
     QList<FnWord> u_list;
     QList<QString> s_list;
@@ -39,6 +39,7 @@ private:
     QString mapOutput() const;
     QString stringOutput() const;
     QString wordOutput() const;
+    QString integerListOutput() const;
     QString graphListOutput() const;
     QString wordListOutput() const;
     QString stringListOutput() const;
@@ -50,6 +51,7 @@ public:
     FnData(const FnMap &phi);
     FnData(const FnWord &u);
     FnData(const QString &s);
+    FnData(const QList<int> &integerList);
     FnData(const QList<FnGraph> &graphList);
     FnData(const QList<FnWord> &wordList);
     FnData(const QList<QString> &stringList);
@@ -62,6 +64,7 @@ public:
     FnMap mapData() const;
     QString stringData() const;
     FnWord wordData() const;
+    QList<int> integerListData() const;
     QList<FnGraph> graphListData() const;
     QList<FnWord> wordListData() const;
     QList<QString> stringListData() const;
@@ -73,11 +76,14 @@ public:
     void setGraph(FnGraph &Gamma);
     void setMorphism(FnMap &phi);
     void setString(QString &s);
+    void setIntegerList(QList<int> &list);
     void setGraphList(QList<FnGraph> &list);
     void setWordList(QList<FnWord> &list);
     void setStringList(QList<QString> &list);
     void setFailMessage(QString fail);
     void addToList(const FnData &listItem);
+
+    QList<FnData> listData() const;
 
     friend FnData loadGraphData(const QString & graph);
     friend FnData loadMorphismData(const QString & morphism);

@@ -2,7 +2,7 @@
 // used to write Xml files
 
 // author Matt Clay
-// version 110525
+// version 110627
 
 /////////////////////////////////////////////////////////
 

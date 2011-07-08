@@ -21,7 +21,7 @@ FnData::FnData(int i)
 
   data_type = Integer;
   list = false;
-  i_value = i;
+  i_list.prepend(i);
 
 }
 
@@ -61,6 +61,15 @@ FnData::FnData(const QString &s)
 
 }
 
+FnData::FnData(const QList<int> &integerList)
+{
+
+    data_type = Integer;
+    list = true;
+    i_list = integerList;
+
+}
+
 FnData::FnData(const QList<FnGraph> &graphList)
 {
 
@@ -93,7 +102,7 @@ FnData::FnData(const QList<QString> &stringList)
 int FnData::integerData() const
 {
 
-    return i_value;
+    return i_list.at(0);
 
 }
 
@@ -122,6 +131,13 @@ FnWord FnData::wordData() const
 {
 
     return u_list.at(0);
+
+}
+
+QList<int> FnData::integerListData() const
+{
+
+    return i_list;
 
 }
 
@@ -176,7 +192,7 @@ QString FnData::integerOutput() const
 {
 
 
-  return QString::number(i_value);
+  return QString::number(i_list.at(0));
 
 }
 
@@ -211,6 +227,24 @@ QString FnData::wordOutput() const
 {
 
     return wordData();
+
+}
+
+QString FnData::integerListOutput() const
+{
+
+    QString output;
+
+    output = "[ ";
+
+    foreach(int i, i_list) {
+        output += QString::number(i) + ", ";
+    }
+
+    output.remove(output.length()-2,2); // remove final ", "
+    output += " ]";
+
+    return output;
 
 }
 
@@ -293,7 +327,10 @@ QString FnData::toOutput() const
             break;
 
         case Integer:
-            output = integerOutput();
+            if(list)
+                output = integerListOutput();
+            else
+                output = integerOutput();
             break;
 
         case Morphism:
@@ -328,7 +365,8 @@ void FnData::setInteger(int i)
 
     data_type = Integer;
     list = false;
-    i_value = i;
+    i_list.clear();
+    i_list.prepend(i);
 
 }
 
@@ -368,6 +406,15 @@ void FnData::setString(QString &s)
     list = false;
     s_list.clear();
     s_list.prepend(s);
+
+}
+
+void FnData::setIntegerList(QList<int> &integerList)
+{
+
+    data_type = Integer;
+    list = true;
+    i_list = integerList;
 
 }
 
@@ -432,6 +479,10 @@ void FnData::addToList(const FnData &listItem)
             g_list.append(listItem.graphData());
             break;
 
+        case Integer:
+            i_list.append(listItem.integerData());
+            break;
+
         case String:
             s_list.append(listItem.stringData());
             break;
@@ -441,6 +492,59 @@ void FnData::addToList(const FnData &listItem)
             break;
 
     }
+
+}
+
+QList<FnData> FnData::listData() const
+{
+
+    FnData data;
+    QList<FnData> dataList;
+
+    if(!list) {
+        data.setFailMessage(QObject::tr("Data Error: not a list."));
+        dataList.append(data);
+        return dataList;
+    }
+
+    switch(data_type) {
+
+        case Element:
+            foreach(FnWord u, u_list) {
+                data.setElement(u);
+                dataList.append(data);
+            }
+            break;
+
+        case Graph:
+            foreach(FnGraph Gamma, g_list) {
+                data.setGraph(Gamma);
+                dataList.append(data);
+            }
+            break;
+
+        case Integer:
+            foreach(int i, i_list) {
+                data.setInteger(i);
+                dataList.append(data);
+            }
+            break;
+
+        case String:
+            foreach(QString string, s_list) {
+                data.setString(string);
+                dataList.append(data);
+            }
+            break;
+
+        default:
+            data.setFailMessage(QObject::tr("Data Error: Variable type cannot be listed."));
+            dataList.append(data);
+            break;
+
+    }
+
+    return dataList;
 
 }
 

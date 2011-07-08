@@ -63,14 +63,31 @@ void FnXmlWriter::writeVariableEntry(QXmlStreamWriter *xmlWriter, QString &varia
         xmlWriter->writeAttribute("type","morphism");
         break;
 
+    case String:
+        xmlWriter->writeAttribute("type","string");
+        break;
+
     default:
         xmlWriter->writeAttribute("type","no type");
         break;
 
     }
 
+    QList<FnData> dataList;
+
+    if(variable.isList()) {
+        xmlWriter->writeAttribute("list","true");
+        dataList = variable.listData();
+    }
+    else
+        dataList.append(variable);
+
     xmlWriter->writeTextElement("name",variableName);
-    xmlWriter->writeTextElement("value",variable.toOutput());
+
+    foreach(FnData dataItem, dataList) {
+        xmlWriter->writeTextElement("value",dataItem.toOutput());
+    }
+
     xmlWriter->writeEndElement();
 
 }
