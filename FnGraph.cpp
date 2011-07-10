@@ -44,6 +44,29 @@ void FnGraph::addEdge(const QString &edge, const QString &initial, const QString
 
 }
 
+void FnGraph::removeVertex(const QString &vertex)
+{
+    QVector<QString> edges=vertices.take(vertex);
+    while(!edges.isEmpty())
+    {
+        removeEdge(edges.at(0));
+        edges.pop_front();
+    }
+}
+
+void FnGraph::removeEdge(const QString &edge)
+{
+    QVector<QString> nodes= take(edge);
+    QVector<QString> edges;
+    if(vertices.contains(nodes.at(0)))
+    {
+        edges=vertices.value(nodes.at(0));
+        vertices[nodes.at(0)].remove(edges.indexOf(edge));
+    }
+    else
+         vertices[nodes.at(1)].remove(vertices.value(nodes.at(1)).indexOf(edge));
+}
+
 QList<QString> FnGraph::isolatedVertices() const {
 
     // Returns the list of isolated vertices of the graph

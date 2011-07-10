@@ -38,6 +38,9 @@ public:
     void addEdge(const QString &edge, const QVector<QString> &vertices);
     void addEdge(const QString &edge, const QString &initial, const QString &terminal);
 
+    void removeVertex(const QString &vertex);
+    void removeEdge(const QString &edge);
+
     QList<QString> isolatedVertices(void) const;
     QList<FnGraph> connectedComponents(void) const;
 
