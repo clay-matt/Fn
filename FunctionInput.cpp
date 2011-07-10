@@ -15,17 +15,20 @@ FunctionInput::FunctionInput() :
 bool FunctionInput::isAcceptable(const QList<enum VariableTypes> & types) const
 {
 
-  if(types.size() < size()) return false;
+    if(types.size() < 2*size()) return false;
 
-  for (int i = 0; i < types.size(); i++) {
-    if (i < size()) {
-      if (at(i).type() != types.at(i)) {
-        if (optional(at(i).type()) != types.at(i)) return false;
-      }
-    } else {
-      if (types.at(i) != OptionalInteger) return false;
+    for (int i = 0; 2*i < types.size(); i++) {
+        if (i < size()) {
+            if (at(i).type() != types.at(2*i)) {
+                if (optional(at(i).type()) != types.at(2*i)) return false;
+            }
+            if (at(i).isList()) {
+                if (types.at(2*i + 1) != Listable) return false;
+            }
+        } else {
+            if (types.at(2*i) != OptionalInteger) return false;
+        }
     }
-  }
 
   return true;
 }

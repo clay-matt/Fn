@@ -136,6 +136,22 @@ QList<FnGraph> FnGraph::connectedComponents() const {
 
 }
 
+QList<FnGraph> FnGraph::biconnectedComponents() const {
+
+  QList<FnGraph> list;
+
+  FnGraph Gamma1, Gamma2;
+
+  Gamma1.addEdge(QString("e0"),QString("v0"),QString("v1"));
+  Gamma2.addEdge(QString("e1"),QString("w0"),QString("w0"));
+
+  list.append(Gamma1);
+  list.append(Gamma2);
+
+  return list;
+
+}
+
 //Friends
 FnGraph operator + (const FnGraph & gamma, const FnGraph & beta)
 {

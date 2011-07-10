@@ -43,6 +43,7 @@ public:
 
     QList<QString> isolatedVertices(void) const;
     QList<FnGraph> connectedComponents(void) const;
+    QList<FnGraph> biconnectedComponents(void) const;
 
     QList<QString> vertexList() const { return vertices.keys(); }
     QList<QString> edgeList() const { return keys(); }

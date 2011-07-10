@@ -64,6 +64,7 @@ private:
     FnData applyFunction(enum FunctionNames fcn, const FunctionInput &input);
 
     // preset functions
+    FnData BicomponentsFunction(const FunctionInput &input);
     FnData CommutatorFunction(const FunctionInput &input);
     FnData ComposeFunction(const FunctionInput &input);
     FnData ConjugationFunction(const FunctionInput &input);

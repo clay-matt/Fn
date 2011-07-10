@@ -2,7 +2,7 @@
 // inherits QList<FnData>
 
 // author Matt Clay
-// version 110216
+// version 110707
 
 /////////////////////////////////////////////////////////
 

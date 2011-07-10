@@ -35,6 +35,8 @@ private:
     void readVariableElement();
     void skipUnknownElement();
 
+    FnData processData(const QString & varValue, const QString & varType);
+
 };
 
 #endif // FNXMLREADER_H
