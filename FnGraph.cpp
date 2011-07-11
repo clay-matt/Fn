@@ -63,8 +63,12 @@ void FnGraph::removeEdge(const QString &edge)
         edges=vertices.value(nodes.at(0));
         vertices[nodes.at(0)].remove(edges.indexOf(edge));
     }
-    else
-         vertices[nodes.at(1)].remove(vertices.value(nodes.at(1)).indexOf(edge));
+     if(vertices.contains(nodes.at(1)))
+    {
+        edges=vertices.value(nodes.at(1));
+         vertices[nodes.at(1)].remove(edges.indexOf(edge));
+    }
+
 }
 
 QList<QString> FnGraph::isolatedVertices() const {
@@ -137,18 +141,107 @@ QList<FnGraph> FnGraph::connectedComponents() const {
 }
 
 QList<FnGraph> FnGraph::biconnectedComponents() const {
+    /*
+    This algorithm was derived from an algorithm found in
+    John Hopcroft's and Robert Tarjan's
+    article "Algorithm 447 Efficient Algorithms for Graph Manipulation"
+    in Communications of the ACM, 1973
+    */
+    //Note: I use the front of the stacks as the top of the stacks;
+  QList<FnGraph> biconnectedComponents;
+  FnGraph copyOfGraph= *this;
+  QList<QString> edgeStack;
+  QList<QString> vertexStack;
+  QList<int> dFSNumbers;//stores the number of each vertex;
+  QList<int> lowpoints;// stores the lowpoint of each vertex;
+  QString head;//the other vertex along an edge
+  QString edge;//the current edge being looked at
+  int count=0;//keeps track of the number vertices searched
 
-  QList<FnGraph> list;
+  vertexStack=copyOfGraph.isolatedVertices();
+  while(!vertexStack.isEmpty())//removes isolated vertices from the graph
+  {
+      copyOfGraph.removeVertex(vertexStack[0]);
+      vertexStack.pop_front();
+  }
+  vertexStack.push_front(copyOfGraph.vertexList().at(0));
+  count++;
+  dFSNumbers.push_front(count);//sets the number of the vertex
+  lowpoints.push_front(copyOfGraph.vertices.size());//sets the Lowpoint to the number of vertices as a place holder.
 
-  FnGraph Gamma1, Gamma2;
+  //chooses start point and puts it on the top of the stack;
 
-  Gamma1.addEdge(QString("e0"),QString("v0"),QString("v1"));
-  Gamma2.addEdge(QString("e1"),QString("w0"),QString("w0"));
+  while((vertexStack.size()>1)||(copyOfGraph.vertices.value(vertexStack[0]).size()>0))
+  {
+      if(copyOfGraph.vertices.value(vertexStack[0]).size()>0)//if there is an edge from the top of the stack
+      {
+          edge=copyOfGraph.vertices.value(vertexStack[0]).at(0);
 
-  list.append(Gamma1);
-  list.append(Gamma2);
+          if(copyOfGraph.value(edge).at(0)==vertexStack[0])
+              head=copyOfGraph.value(edge).at(1);
+          else
+              head=copyOfGraph.value(edge).at(0);
 
-  return list;
+          edgeStack.push_front(edge);
+          copyOfGraph.removeEdge(edge);
+
+          if(!vertexStack.contains(head))
+          {
+              vertexStack.push_front(head);//adds the new vertex to the stack
+              count++;
+              dFSNumbers.push_front(count);//numbers the vertex
+              lowpoints.push_front(dFSNumbers[1]);// sets the lowpoint to the number of the previous top of stack
+
+          }
+          else
+          {
+              int stackPosition=vertexStack.indexOf(head);
+              if(dFSNumbers[stackPosition]<lowpoints[0])
+                  lowpoints[0]=dFSNumbers[stackPosition];
+          }
+      }
+      else
+      {
+          if(lowpoints[0]==dFSNumbers[1])
+          {
+              FnGraph component;
+              if(vertexStack.size()>2)
+              {
+                    while(!value(edgeStack[0]).contains(vertexStack[2]))
+                    {
+                        component.addEdge(edgeStack[0],value(edgeStack[0]));
+                        edgeStack.pop_front();
+                    }
+              }
+              else
+              {
+                  while(!edgeStack.isEmpty())
+                  {
+                      component.addEdge(edgeStack[0],value(edgeStack[0]));
+                      edgeStack.pop_front();
+                  }
+              }
+              biconnectedComponents.push_back(component);
+          }
+          else
+          {
+              if(lowpoints[0]<lowpoints[1])
+                  lowpoints[1]=lowpoints[0];
+          }
+          vertexStack.pop_front();
+          dFSNumbers.pop_front();
+          lowpoints.pop_front();
+
+     }
+  }
+  if(count<copyOfGraph.vertices.size())
+  {
+      biconnectedComponents+=copyOfGraph.biconnectedComponents();
+  }
+
+
+
+  return biconnectedComponents;
 
 }
 
