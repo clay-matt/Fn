@@ -114,6 +114,12 @@ FnGraph FnWord::whiteheadGraph(const Basis &basis) const {
 
 }
 
+bool FnWord::isSeparable(const Basis &basis) const {
+
+    return true;
+
+}
+
 bool FnWord::operator ! () const {
 
     return *this == Fail;

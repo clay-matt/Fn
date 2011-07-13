@@ -1,7 +1,7 @@
 // Header file for constants
 
 // author Matt Clay
-// version 110712
+// version 110713
 
 /////////////////////////////////////////////////////////
 
@@ -35,6 +35,7 @@ enum FunctionNames {ERROR,
                     IsAutomorphismFcn,
                     IsolatedVerticesFcn,
                     IsPrimitiveElementFcn,
+                    IsSeparableFcn,
                     IterateFcn,
                     LengthFcn,
                     MapFcn,

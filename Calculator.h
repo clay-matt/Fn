@@ -77,6 +77,7 @@ private:
     FnData IsAutomorphismFunction(const FunctionInput &input);
     FnData IsolatedVerticesFunction(const FunctionInput &input);
     FnData IsPrimitiveElementFunction(const FunctionInput &input);
+    FnData IsSeparableFunction(const FunctionInput &input);
     FnData IterateFunction(const FunctionInput &input);
     FnData LengthFunction(const FunctionInput &input);
     FnData MapFunction(const FunctionInput &input);

@@ -2,7 +2,7 @@
 // inherits QString
 
 // authors Matt Clay, Jack Conant and Nivetha Ramasubramanian
-// version 110627
+// version 110713
 
 /////////////////////////////////////////////////////////
 
@@ -60,6 +60,7 @@ class FnWord : public QString {
     FnWord exp(int n) const;
     bool operator ! () const;
     FnGraph whiteheadGraph(const Basis & basis = BASIS) const;
+    bool isSeparable(const Basis & basis = BASIS) const;
 
     // friends
     friend FnWord operator * (const FnWord & u, const FnWord & v);

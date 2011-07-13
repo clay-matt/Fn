@@ -295,6 +295,10 @@ FnData Calculator::applyFunction(enum FunctionNames fcn, const FunctionInput & i
         return IsPrimitiveElementFunction(input);
         break;
 
+    case IsSeparableFcn:
+        return IsSeparableFunction(input);
+        break;
+
     case IterateFcn:
         return IterateFunction(input);
         break;
@@ -669,7 +673,7 @@ FnData Calculator::IsolatedVerticesFunction(const FunctionInput &input)
     QList<QString> verticesList = Gamma.isolatedVertices();
 
     if (verticesList.isEmpty())
-        output.setFailMessage(tr("There are no isolated vertices"));
+        output.setString(tr("There are no isolated vertices"));
     else
         output.setStringList(verticesList);
 
@@ -711,6 +715,48 @@ FnData Calculator::IsPrimitiveElementFunction(const FunctionInput & input)
     output.setMorphism(phi);
 
   return output;
+
+}
+
+FnData Calculator::IsSeparableFunction(const FunctionInput &input) {
+
+    FnData output;
+
+    if (!input.isAcceptable(presetFunctions.fcnInput(IsSeparableFcn))) {
+      output.setFailMessage(tr("Function Error: invalid input for IsSeparable"));
+      return output;
+    }
+
+    int r = input.at(1).integerData();
+    if (r < Fn_MinRank || r > Fn_MaxRank) {
+      output.setFailMessage(tr("Basis Error: %1 is not a valid rank (%2 < rank < %3)").arg(r)
+                            .arg(Fn_MinRank).arg(Fn_MaxRank));
+      return output;
+    }
+    basis.changeRank(r);
+
+    QList<FnWord> wordList;
+
+    if (input.at(0).isList())
+        wordList = input.at(0).wordListData();
+    else
+        wordList.prepend(input.at(0).wordData());
+
+    foreach(FnWord u, wordList) {
+        if (!u.checkBasis(basis)) {
+          output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+         return output;
+        }
+    }
+
+    FnWord v = wordList.takeFirst();
+
+    if (v.isSeparable())
+        output.setString(tr("%1 is separable.").arg(v));
+    else
+        output.setString(tr("%1 is not separable.").arg(v));
+
+    return output;
 
 }
 
@@ -893,25 +939,30 @@ FnData Calculator::WhiteheadAutomorphismFunction(const FunctionInput &input)
         return output;
     }
 
-    int rank = input.at(2).integerData();
-    basis.changeRank(rank);
+    int r = input.at(2).integerData();
+    if (r < Fn_MinRank || r > Fn_MaxRank) {
+      output.setFailMessage(tr("Basis Error: %1 is not a valid rank (%2 < rank < %3)").arg(r)
+                            .arg(Fn_MinRank).arg(Fn_MaxRank));
+      return output;
+    }
+    basis.changeRank(r);
 
     QString A;
     QChar a = input.at(1).wordData().at(0);
-    foreach(FnWord x,input.at(0).wordListData()) {
-        if (x.length() != 1) {
+    foreach(FnWord u,input.at(0).wordListData()) {
+        if (u.length() != 1) {
             output.setFailMessage(tr("Function Error: %1 must be a list of basis elements").arg(input.at(0).toOutput()));
             return output;
         }
-        if (!x.checkBasis(basis)) {
-            output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(x).arg(basis));
+        if (!u.checkBasis(basis)) {
+            output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
            return output;
         }
-        if (A.contains(a)) {
+        if (A.contains(u)) {
             output.setFailMessage(tr("Function Error: %1 must be a list of basis elements").arg(input.at(0).toOutput()));
             return output;
         }
-        A += x;
+        A += u;
     }
 
     if (!A.contains(a)) {
@@ -923,10 +974,9 @@ FnData Calculator::WhiteheadAutomorphismFunction(const FunctionInput &input)
         return output;
     }
 
-    WhiteheadData whData(rank,A,a);
+    WhiteheadData whData(r,A,a);
 
-    FnMap phi(rank);
-    phi = whitehead(whData,basis);
+    FnMap phi = whitehead(whData,basis);
 
     output.setMorphism(phi);
 

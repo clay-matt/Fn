@@ -399,7 +399,7 @@ void FnData::setMorphism(FnMap &phi)
 
 }
 
-void FnData::setString(QString &s)
+void FnData::setString(QString s)
 {
 
     data_type = String;

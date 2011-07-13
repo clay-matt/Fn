@@ -75,7 +75,7 @@ public:
     void setElement(FnWord &u);
     void setGraph(FnGraph &Gamma);
     void setMorphism(FnMap &phi);
-    void setString(QString &s);
+    void setString(QString s);
     void setIntegerList(QList<int> &list);
     void setGraphList(QList<FnGraph> &list);
     void setWordList(QList<FnWord> &list);
