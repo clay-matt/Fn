@@ -1,7 +1,7 @@
 // Header file for constants
 
 // author Matt Clay
-// version 110627
+// version 110712
 
 /////////////////////////////////////////////////////////
 
@@ -39,6 +39,7 @@ enum FunctionNames {ERROR,
                     LengthFcn,
                     MapFcn,
                     MultiplyFcn,
+                    WhiteheadAutomorphismFcn,
                     WhiteheadGraphFcn,
                     WhiteheadProblemFcn};
 

@@ -24,6 +24,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionEnum["Length_"] = LengthFcn;
   functionEnum["Map_"] = MapFcn;
   functionEnum["Multiply_"] = MultiplyFcn;
+  functionEnum["WhiteheadAutomorphism_"] = WhiteheadAutomorphismFcn;
   functionEnum["WhiteheadGraph_"] = WhiteheadGraphFcn;
   functionEnum["WhiteheadProblem_"] = WhiteheadProblemFcn;
 
@@ -44,6 +45,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionName[LengthFcn] = "Length_";
   functionName[MapFcn] = "Map_";
   functionName[MultiplyFcn] = "Multiply_";
+  functionName[WhiteheadAutomorphismFcn] = "WhiteheadAutomorphism_";
   functionName[WhiteheadGraphFcn] = "WhiteheadGraph_";
   functionName[WhiteheadProblemFcn] = "WhiteheadProblem_";
 
@@ -64,6 +66,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionSkeleton[LengthFcn] = "Length_( u_ )";
   functionSkeleton[MapFcn] = "Map_( f_ , u_ , <n_> )";
   functionSkeleton[MultiplyFcn] = "Multiply_( u_ , v_ )";
+  functionSkeleton[WhiteheadAutomorphismFcn] = "WhiteheadAutomorphism_( [A_] , a_ , n_ )";
   functionSkeleton[WhiteheadGraphFcn] = "WhiteheadGraph_( [u_] , <n_> )";
   functionSkeleton[WhiteheadProblemFcn] = "WhiteheadProblem_( u_, v_, <n_> )";
 
@@ -84,6 +87,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionStatusTip[LengthFcn] = tr(": return the length of u");
   functionStatusTip[MapFcn] = tr(": returns f^n(u), by default n = 1");
   functionStatusTip[MultiplyFcn] = tr(": returns uv");
+  functionStatusTip[WhiteheadAutomorphismFcn] = tr(": returns the Whitehead Automorphism (A,a) in rank n");
   functionStatusTip[WhiteheadGraphFcn] = tr(": return the Whitehead graph of u (n is the optional rank)");
   functionStatusTip[WhiteheadProblemFcn] = tr(": returns f such that f(v) = u if such an f exists (n is the optional rank)");
 
@@ -104,6 +108,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionInput[LengthFcn] << Element << Listable;
   functionInput[MapFcn] << Morphism << NotListable << Element << Listable << OptionalInteger << NotListable;
   functionInput[MultiplyFcn] << Element << NotListable << Element << NotListable;
+  functionInput[WhiteheadAutomorphismFcn] << Element << Listable << Element << NotListable << Integer << NotListable;
   functionInput[WhiteheadGraphFcn] << Element << Listable << OptionalInteger << NotListable;
   functionInput[WhiteheadProblemFcn] << Element << NotListable << Element << NotListable << OptionalInteger << NotListable;
 
@@ -124,6 +129,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionOutput[LengthFcn] = Integer;
   functionOutput[MapFcn] = Element;
   functionOutput[MultiplyFcn] = Element;
+  functionOutput[WhiteheadAutomorphismFcn] = Morphism;
   functionOutput[WhiteheadGraphFcn] = Graph;
   functionOutput[WhiteheadProblemFcn] = Element;
 

@@ -231,97 +231,101 @@ FunctionInput Calculator::stringToInput(const QString & input)
 FnData Calculator::applyFunction(enum FunctionNames fcn, const FunctionInput & input)
 {
 
-  FnData failedOutput;
+    FnData failedOutput;
 
-  // a fall through for error messages
-  if (input.varTypes().contains(FailMessage)) {
-    FunctionInputIterator x(input);
-    while (x.hasNext()) {
-      failedOutput = x.next();
-      if (failedOutput.type() == FailMessage)
-        return failedOutput;
+    // a fall through for error messages
+    if (input.varTypes().contains(FailMessage)) {
+        FunctionInputIterator x(input);
+        while (x.hasNext()) {
+        failedOutput = x.next();
+        if (failedOutput.type() == FailMessage)
+            return failedOutput;
+        }
     }
-  }
 
-  failedOutput.setFailMessage(tr("Function Error: \"%1\" is not a valid function").arg(presetFunctions.fcnName(fcn)));
+    failedOutput.setFailMessage(tr("Function Error: \"%1\" is not a valid function").arg(presetFunctions.fcnName(fcn)));
 
-  switch (fcn) {
+    switch (fcn) {
 
-  case BicomponentsFcn:
-    return BicomponentsFunction(input);
-    break;
+    case BicomponentsFcn:
+        return BicomponentsFunction(input);
+        break;
 
-  case CommutatorFcn:
-    return CommutatorFunction(input);
-    break;
+    case CommutatorFcn:
+        return CommutatorFunction(input);
+        break;
 
-  case ComposeFcn:
-    return ComposeFunction(input);
-    break;
+    case ComposeFcn:
+        return ComposeFunction(input);
+        break;
 
-  case ConjugateFcn:
-    return ConjugationFunction(input);
-    break;
+    case ConjugateFcn:
+        return ConjugationFunction(input);
+        break;
 
-  case ConjugacyProblemFcn:
-    return ConjugacyProblemFunction(input);
-    break;
+    case ConjugacyProblemFcn:
+        return ConjugacyProblemFunction(input);
+        break;
 
-  case ConnectedComponentsFcn:
-    return ConnectedComponentsFunction(input);
-    break;
+    case ConnectedComponentsFcn:
+        return ConnectedComponentsFunction(input);
+        break;
 
-  case ExpFcn:
-    return ExponentiationFunction(input);
-    break;
+    case ExpFcn:
+        return ExponentiationFunction(input);
+        break;
 
-  case IdentityFcn:
-    return IdentityFunction(input);
-    break;
+    case IdentityFcn:
+        return IdentityFunction(input);
+        break;
 
-  case InverseFcn:
-    return InverseFunction(input);
-    break;
+    case InverseFcn:
+        return InverseFunction(input);
+        break;
 
-  case IsAutomorphismFcn:
-    return IsAutomorphismFunction(input);
-    break;
+    case IsAutomorphismFcn:
+        return IsAutomorphismFunction(input);
+        break;
 
-  case IsolatedVerticesFcn:
-    return IsolatedVerticesFunction(input);
-    break;
+    case IsolatedVerticesFcn:
+        return IsolatedVerticesFunction(input);
+        break;
 
-  case IsPrimitiveElementFcn:
-    return IsPrimitiveElementFunction(input);
-    break;
+    case IsPrimitiveElementFcn:
+        return IsPrimitiveElementFunction(input);
+        break;
 
-  case IterateFcn:
-    return IterateFunction(input);
-    break;
+    case IterateFcn:
+        return IterateFunction(input);
+        break;
 
-  case LengthFcn:
-    return LengthFunction(input);
-    break;
+    case LengthFcn:
+        return LengthFunction(input);
+        break;
 
-  case MapFcn:
-    return MapFunction(input);
-    break;
+    case MapFcn:
+        return MapFunction(input);
+        break;
 
-  case MultiplyFcn:
-    return MultiplyFunction(input);
-    break;
+    case MultiplyFcn:
+        return MultiplyFunction(input);
+        break;
 
-  case WhiteheadGraphFcn:
-      return WhiteheadGraphFunction(input);
-      break;
+    case WhiteheadAutomorphismFcn:
+        return WhiteheadAutomorphismFunction(input);
+        break;
 
-  case WhiteheadProblemFcn:
-    return WhiteheadProblemFunction(input);
-    break;
+    case WhiteheadGraphFcn:
+        return WhiteheadGraphFunction(input);
+        break;
 
-  default:
-    return failedOutput;
-    break;
+    case WhiteheadProblemFcn:
+        return WhiteheadProblemFunction(input);
+        break;
+
+    default:
+        return failedOutput;
+        break;
 
   }
 
@@ -871,6 +875,62 @@ FnData Calculator::MultiplyFunction(const FunctionInput & input)
   output.setElement(u1u2);
 
   return output;
+
+}
+
+FnData Calculator::WhiteheadAutomorphismFunction(const FunctionInput &input)
+{
+
+    FnData output;
+
+    if (!input.isAcceptable(presetFunctions.fcnInput(WhiteheadAutomorphismFcn))) {
+      output.setFailMessage(tr("Function Error: invalid input for WhiteheadAutomorphism"));
+      return output;
+    }
+
+    if (!input.at(0).isList()) {
+        output.setFailMessage(tr("Function Error: invalid input for WhiteheadAutomorphism"));
+        return output;
+    }
+
+    int rank = input.at(2).integerData();
+    basis.changeRank(rank);
+
+    QString A;
+    QChar a = input.at(1).wordData().at(0);
+    foreach(FnWord x,input.at(0).wordListData()) {
+        if (x.length() != 1) {
+            output.setFailMessage(tr("Function Error: %1 must be a list of basis elements").arg(input.at(0).toOutput()));
+            return output;
+        }
+        if (!x.checkBasis(basis)) {
+            output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(x).arg(basis));
+           return output;
+        }
+        if (A.contains(a)) {
+            output.setFailMessage(tr("Function Error: %1 must be a list of basis elements").arg(input.at(0).toOutput()));
+            return output;
+        }
+        A += x;
+    }
+
+    if (!A.contains(a)) {
+        output.setFailMessage(tr("Function Error: %1 must contain %2").arg(input.at(0).toOutput()).arg(a));
+        return output;
+    }
+    if (A.contains(basis.inverse(a))) {
+        output.setFailMessage(tr("Function Error: %1 cannot contain %2").arg(input.at(0).toOutput()).arg(basis.inverse(a)));
+        return output;
+    }
+
+    WhiteheadData whData(rank,A,a);
+
+    FnMap phi(rank);
+    phi = whitehead(whData,basis);
+
+    output.setMorphism(phi);
+
+    return output;
 
 }
 

@@ -2,7 +2,7 @@
 // inherits QObject
 
 // author Matt Clay
-// version 110627
+// version 110712
 
 /////////////////////////////////////////////////////////
 
@@ -19,6 +19,7 @@
 #include "FnWord.h"
 #include "FunctionInfo.h"
 #include "FunctionInput.h"
+#include "WhiteheadData.h"
 
 class QRegExp;
 
@@ -80,6 +81,7 @@ private:
     FnData LengthFunction(const FunctionInput &input);
     FnData MapFunction(const FunctionInput &input);
     FnData MultiplyFunction(const FunctionInput &input);
+    FnData WhiteheadAutomorphismFunction(const FunctionInput &input);
     FnData WhiteheadGraphFunction(const FunctionInput &input);
     FnData WhiteheadProblemFunction(const FunctionInput &input);
 
