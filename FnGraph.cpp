@@ -266,6 +266,19 @@ FnGraph operator + (const FnGraph & gamma, const FnGraph & beta)
 
     return tau;
 }
+FnGraph operator - (const FnGraph & gamma, const FnGraph & beta)
+{
+    FnGraph tau=gamma;
 
 
+    foreach(QString vertex, beta.vertices.keys())
+    {
+        if(tau.vertices.contains(vertex)&&tau.vertices.value(vertex)==beta.vertices.value(vertex))
+            tau.removeVertex(vertex);
+        else
+            return gamma;
+    }
+
+    return tau;
+}
 /////////////////////////////////////////////////////////

@@ -41,6 +41,10 @@ public:
     void removeVertex(const QString &vertex);
     void removeEdge(const QString &edge);
 
+    QVector<QString> getAdjacentEdges(const QString &vertex) const {
+        return vertices.value(vertex);
+    }
+
     QList<QString> isolatedVertices(void) const;
     QList<FnGraph> connectedComponents(void) const;
     QList<FnGraph> biconnectedComponents(void) const;
@@ -50,7 +54,7 @@ public:
 
     //friends
     friend FnGraph operator + (const FnGraph & gamma, const FnGraph & beta);
-
+    friend FnGraph operator - (const FnGraph & gamma, const FnGraph & beta);
 private:
     QHash<QString, QVector<QString> > vertices;
 

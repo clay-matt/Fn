@@ -6,6 +6,8 @@
 #include <QString>
 
 #include "FnWord.h"
+#include "WhiteheadData.h"
+
                        
 /////////////////////////////////////////////////////////
 // Private Members
@@ -115,8 +117,55 @@ FnGraph FnWord::whiteheadGraph(const Basis &basis) const {
 }
 
 bool FnWord::isSeparable(const Basis &basis) const {
-
-    return true;
+    FnGraph graph=whiteheadGraph(basis);
+    QList<FnGraph> components=graph.connectedComponents();
+    QList<QString> vertices;
+    QString setZ;
+    QString cutVertex;
+    if(components.size()>1)
+    {
+        return true;
+    }
+    else  //this part needs to be cleaned up
+    {
+        components=graph.biconnectedComponents();
+        if(components.size()>2)
+        {
+           vertices=components[0].vertexList();
+           for(int i=0;i<vertices.size();i++)
+           {
+               for(int j=1;j<components.size();j++)
+               {
+                   if(components[j].vertexList().contains(vertices[i]))
+                   {
+                       cutVertex=vertices[i];
+                       break;
+                   }
+               }
+               if(!cutVertex.isEmpty())
+                   break;
+           }
+           FnGraph temp=graph;
+           temp.removeVertex(cutVertex);
+           FnWord word(cutVertex);
+           components=temp.connectedComponents();
+           if(components[0].vertexList().contains(word.inverse()))
+               temp=graph-components[1];
+           else
+               temp=graph-components[0];
+           temp.removeVertex(word.inverse());
+           vertices=temp.vertexList();
+           for(int i=0;i<vertices.size();i++)
+           {
+               setZ+=vertices[i];
+           }
+           WhiteheadData whData(basis.getRank(),setZ,cutVertex.at(0));
+           FnMap phi=whitehead(whData, basis);
+           word=phi(*this);
+           return word.isSeparable();
+        }
+    }
+    return false;
 
 }
 
