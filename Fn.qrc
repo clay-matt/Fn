@@ -10,5 +10,9 @@
         <file>Documentation/Images/email.gif</file>
         <file>Images/backarrow.png</file>
         <file>Images/forwardarrow.png</file>
+        <file>Documentation/Classes/ClassInfo/fnword.html</file>
+        <file>Documentation/Classes/ClassInfo/fndata.html</file>
+        <file>Documentation/Classes/ClassInfo/fngraph.html</file>
+        <file>Documentation/Classes/ClassInfo/whiteheaddata.html</file>
     </qresource>
 </RCC>

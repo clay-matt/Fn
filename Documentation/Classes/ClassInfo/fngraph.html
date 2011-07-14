@@ -1,0 +1,414 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.77 [en] (X11; U; SunOS 5.7 sun4u) [Netscape]">
+   <meta name="Author" content="Matt Clay">
+
+<link rel="stylesheet" type="text/css" href="../../style.css" />
+
+<title>Free Group Calculator: FnGraph</title>
+
+</head>
+
+<body>
+
+<ul class="list-nav">
+
+  <li><a href="../../index.html">Home</a></li>
+
+  <li><a href="../../Functions/index.html">Functions</a></li>
+
+  <li><a href="../../Tutorial/index.html">Tutorial</a></li>
+
+  <li><a class="thispage" href="../index.html">Classes</a></li>
+
+  <li><a href="../../Download/index.html">Download</a></li>
+
+</ul>
+
+<br>
+<br>
+<br>
+<hr>
+
+<img class="icon" src="../../Images/icon.png" alt="Fn" />
+
+<p class="pagetitle">FnGraph</p>
+
+<p class="paragraph"> Inherits <a class="class"
+href="http://doc.qt.nokia.com/4.7/qhash.html">QHash</a>&lt;<a
+ class="class"
+href="http://doc.qt.nokia.com/4.7/qstring.html">QString</a>, <a
+class="class"
+href="http://doc.qt.nokia.com/4.7/qvector.html">QVector</a>&lt;<a
+ class="class"
+href="http://doc.qt.nokia.com/4.7/qstring.html">QString</a>&gt; &gt;.
+FnGraph is a function from a set of edges to a set of ordered pairs of
+vertices representing adjacency relations in a (directed) graph.</p>
+
+<p class="header">#include "FnGraph.h"</p>
+
+<p class="subsectionheader">Private Members</p>
+
+<table class="classmembers">
+
+  <tr>
+    <td class="type">QHash&lt;QString, QVector&lt;QString&gt; &gt;</td>
+    <td><span style="font-weight:bold;">vertices</span></td>
+  </tr>
+
+</table>
+
+<p class="subsectionheader">Public Members</p>
+
+<table class="classmembers">
+
+  <tr>
+    <td class="type"></td>
+    <td><a class="membername" href="#FnGraph">FnGraph</a> ( )</td>
+  </tr>
+
+   <tr>
+     <td class="type">void</td>
+     <td><a class="membername" href="#addedgeqvector">addEdge</a>
+     ( <span class="type">const QString</span> & <span
+     class="input">edge</span>, <span class="type">const
+       QVector&lt;QString&gt;</span> & <span
+     class="input">endpoints</span> )</td>
+  </tr>
+
+     <tr>
+     <td class="type">void</td>
+     <td><a class="membername" href="#addedgeqstringqstring">addEdge</a>
+     ( <span class="type">const QString</span> & <span
+     class="input">edge</span>, <span class="type">const QString</span> & <span
+     class="input">initial</span>, <span class="type">const QString</span> & <span
+     class="input">terminal</span> )</td>
+  </tr>
+
+     <tr>
+     <td class="type">void</td>
+     <td><a class="membername" href="#addvertex">addVertex</a>
+     ( <span class="type">const QString</span> & <span
+     class="input">vertex</span> )</td>
+  </tr>
+
+  <tr>
+     <td class="type">QStringList</td>
+     <td><a class="membername"
+     href="#edgelist">edgeList</a>
+       ( ) <span class="type">const</span> </td>
+  </tr>
+
+  <tr>
+     <td class="type">int</td>
+     <td><a class="membername"
+     href="#eulercharacteristic">eulerCharacteristic</a>
+       ( ) <span class="type">const</span> </td>
+  </tr>
+
+  <tr>
+     <td class="type">QString</td>
+     <td><a class="membername" href="#initialvertex">initialVertex</a>
+     ( <span class="type">const QString</span> & <span
+     class="input">edge</span> )
+       <span class="type">const</span> </td>
+  </tr>
+
+  <tr>
+     <td class="type">int</td>
+     <td><a class="membername" href="#nedges">nEdges</a> ( ) <span
+    class="type">const</span> </td>
+  </tr>
+
+  <tr>
+     <td class="type">int</td>
+     <td><a class="membername" href="#nvertices">nVertices</a> ( ) <span
+    class="type">const</span> </td>
+  </tr>
+
+  <tr>
+     <td class="type">QString</td>
+     <td><a class="membername" href="#terminalvertex">terminalVertex</a>
+     ( <span class="type">const QString</span> & <span
+     class="input">edge</span> )
+       <span class="type">const</span> </td>
+  </tr>
+
+  <tr>
+     <td class="type">QStringList</td>
+     <td><a class="membername"
+     href="#vertexlist">vertexList</a>
+       ( ) <span class="type">const</span> </td>
+  </tr>
+
+</table>
+
+<p class="subsectionheader">Related Non-Members</p>
+
+<table class="classmembers">
+
+  <tr>
+    <td class="type">FnGraph</td>
+    <td><a class="membername" href="#operator+">operator + </a>(
+    <span class="type">const FnGraph</span> & <span
+    class="input">Gamma1</span>, <span class="type">const FnGraph</span> & <span
+    class="input">Gamma2</span> )</td>
+  </tr>
+     
+</table>
+
+<p class="subsectionheader">Type Definitions</p>
+
+<table class="classmembers">
+
+  <tr>
+    <td class="type">QHashIterator&lt;QString,
+    QVector&lt;QString&gt; &gt;</td>
+    <td><span class="type">GraphIterator</span></td>
+  </tr>
+  <tr>
+    <td class="type">QMutatbleHashIterator&lt;QString,
+    QVector&lt;QString&gt; &gt;</td>
+    <td><span class="type">GraphMutableIterator</span></td>
+  </tr>
+
+</table>
+
+<p class="paragraph">FnGraph is a function from a set of
+edges to a set of ordered pairs of vertices representing adjacency
+relations in a (directed) graph.
+
+<br /><br />
+
+A more descriptive paragraph describing the class.
+
+</p>
+
+<p class="subsectionheader">Member Definitions</p>
+
+<p class="memberdescription"><a name="FnGraph" />
+
+<table class="memberheader">
+  <tr><td><span class="membername">FnGraph::FnGraph</span> ( )</tr></td>
+</table>
+
+<br />
+
+Constructs an empty graph.
+
+</p>
+
+<p class="memberdescription"><a name="addedgeqvector" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">void</span>
+      FnGraph::addEdge</span> ( <span class="type">const QString</span> & <span
+     class="input">edge</span>, <span class="type">const
+       QVector&lt;QString&gt;</span> & <span
+     class="input">endpoints</span> )
+    </td>
+  </tr>
+</table>
+
+<br />
+
+The function adds an edge named <span class="input">edge</span> to the
+FnGraph with initial vertex <span class="input">endpoints</span><span
+class="membername">.at(0)</span> and terminal vertex <span
+class="input">endpoints</span><span class="membername">.at(1)</span>.
+These vertices are added to the FnGraph if necessary.  If an edge with
+name <span class="input">edge</span> already exists, it is redefined
+to have initial and terminal vertices defined by <span
+class="input">endpoints</span>.
+
+</p>
+
+<p class="memberdescription"><a name="addedgeqstringqstring" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">void</span>
+      FnGraph::addEdge</span> ( <span class="type">const QString</span> & <span
+     class="input">edge</span>, <span class="type">const
+       QString</span> & <span
+     class="input">initial</span>, <span class="type">const
+       QString</span> & <span
+     class="input">terminal</span>  )
+    </td>
+  </tr>
+</table>
+
+<br />
+
+This function overloads <a class="code"
+href="#addedgeqvector">FnGraph::addEdge ( <span class="type">const QString</span> & <span
+     class="input">edge</span>, <span class="type">const
+       QVector&lt;QString&gt;</span> & <span
+     class="input">endpoints</span> )</a>.
+
+<br />
+<br />
+
+The function adds an edge named <span class="input">edge</span> to the
+FnGraph with initial vertex <span class="input">initial</span> and
+terminal vertex <span class="input">terminal</span>.  These vertices
+are added to the FnGraph if necessary.  If an edge with name <span
+class="input">edge</span> already exists, it is redefined to have
+initial and terminal vertices <span class="input">initial</span> and
+<span class="input">terminal</span> respectively.
+
+</p>
+
+<p class="memberdescription"><a name="addvertex" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">void</span>
+      FnGraph::addVertex</span> ( <span class="type">const QString</span> & <span
+     class="input">vertex</span> )
+    </td>
+  </tr>
+</table>
+
+<br />
+
+This function adds an isolated vertex named <span
+class="input">vertex</span> to the FnGraph.
+ 
+</p>
+
+<p class="memberdescription"><a name="edgelist" />
+
+<table class="memberheader"> <tr>
+  <td><span class="membername"><span class="type">QStringList</span>
+    FnGraph::edgeList</span> ( ) <span
+  class="type">const</span></td></tr> </table>
+
+<br />
+
+Returns <span class="membername">keys( )</span>, the list of edges in the FnGraph.
+  
+</p>
+
+  <p class="memberdescription"><a name="eulercharacteristic" />
+
+<table class="memberheader"> <tr>
+  <td><span class="membername"><span class="type">int</span>
+    FnGraph::eulerCharacteristic</span> ( ) <span
+  class="type">const</span></td></tr> </table>
+
+<br />
+
+Returns the Euler Characteristic of the FnGraph, i.e., the number of
+  vertices minus the number of edges.
+  
+</p>
+
+<p class="memberdescription"><a name="initialvertex" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">QString</span>
+      FnGraph::initialVertex( <span class="type">const QString</span> & <span
+      class="input">edge</span> )
+      <span class="type">const</span>
+    </td>
+  </tr>
+</table>
+
+<br />
+
+Returns the name of the initial vertex of <span
+class="input">edge</span>.  If <span class="input">edge</span> is not
+an edge of the FnGraph, an empty QString is returned.
+  
+</p>
+
+<p class="memberdescription"><a name="nedges" />
+
+<table class="memberheader"> <tr>
+  <td><span class="membername"><span class="type">int</span>
+    FnGraph::nEdges</span> ( ) <span
+  class="type">const</span></td></tr> </table>
+
+<br />
+
+Returns <span class="membername">size( )</span>, the number of edges in
+  the FnGraph.
+  
+</p>
+
+<p class="memberdescription"><a name="nvertices" />
+
+<table class="memberheader"> <tr>
+  <td><span class="membername"><span class="type">int</span>
+    FnGraph::nVertices</span> ( ) <span
+  class="type">const</span></td></tr> </table>
+
+<br />
+
+Returns <span class="membername">vertices.size( )</span>, the number of
+  vertices in the FnGraph.
+  
+</p>
+
+<p class="memberdescription"><a name="terminalvertex" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">QString</span>
+      FnGraph::terminalVertex( <span class="type">const QString</span> & <span
+      class="input">edge</span> )
+      <span class="type">const</span>
+    </td>
+  </tr>
+</table>
+
+<br />
+
+Returns the name of the terminal vertex of <span
+class="input">edge</span>.  If <span class="input">edge</span> is not
+an edge of the FnGraph, an empty QString is returned.
+  
+</p>
+
+<p class="memberdescription"><a name="vertexlist" />
+
+<table class="memberheader"> <tr>
+  <td><span class="membername"><span class="type">QStringList</span>
+    FnGraph::vertexList</span> ( ) <span
+  class="type">const</span></td></tr> </table>
+
+<br />
+
+Returns <span class="membername">vertices.keys( )</span>, the list of
+vertices in the FnGraph.
+  
+</p>
+
+<p class="subsectionheader">Non-Member Definitions</p>
+
+<p class="memberdescription"><a name="operator+" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnGraph</span>
+      operator + ( <span class="type">const FnGraph</span> & <span
+      class="input">Gamma1</span>,  <span class="type">const FnGraph</span> & <span
+      class="input">Gamma2</span> )
+    </td>
+  </tr>
+</table>
+
+<br />
+ 
+</p>
+
+<p><a class="toptop" href="#">BACK TO TOP</a></p>
+
+</body>
+</html>
+

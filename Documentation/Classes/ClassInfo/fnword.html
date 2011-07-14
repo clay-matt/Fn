@@ -7,7 +7,7 @@
 
 <link rel="stylesheet" type="text/css" href="../../style.css" />
 
-<title>Free Group Calculator: Classes</title>
+<title>Free Group Calculator: FnWord</title>
 
 </head>
 
@@ -69,8 +69,8 @@ is an element of the free group.  </p>
     <td class="type">bool</td>
     <td><a class="membername" href="#checkBasis">checkBasis</a> (
       <span class="type">const
-  Basis</span> & <span class="input">basis = <a
-      class="code" href="basis.html#BASIS-CONST">BASIS</a></span> )
+  Basis</span> & <span class="input">basis</span> = <a
+      class="code" href="basis.html#BASIS-CONST">BASIS</a> )
     <span class="type">const</span></td>
   </tr>
   
@@ -100,40 +100,40 @@ is an element of the free group.  </p>
 
   <tr>
     <td class="type">bool</td>
-    <td><a class="membername" href="operator!">operator ! </a>
+    <td><a class="membername" href="#operator!">operator ! </a>
     ( ) <span class="type">const</span></td>
   </tr>
 
   <tr>
     <td class="type">FnWord &</td>
-    <td><a class="membername" href="operator=qchar">operator = </a>
+    <td><a class="membername" href="#operator=qchar">operator = </a>
     ( <span class="type">const QChar</span> <span
     class="input">a</span> )</td>
   </tr>
 
   <tr>
     <td class="type">FnWord &</td>
-    <td><a class="membername" href="operator*=fnword">operator *= </a>
+    <td><a class="membername" href="#operator*=fnword">operator *= </a>
     ( <span class="type">const FnWord</span> & <span
     class="input">u</span> )</td>
   </tr>
 
     <tr>
     <td class="type">FnWord &</td>
-    <td><a class="membername" href="operator*=qchar">operator *= </a>
+    <td><a class="membername" href="#operator*=qchar">operator *= </a>
     ( <span class="type">const QChar</span> <span
     class="input">a</span> )</td>
   </tr>
 
 </table>
 
-<p class="subsectionheader">Friends</p>
+<p class="subsectionheader">Related Non-Members</p>
 
 <table class="classmembers">
 
   <tr>
     <td class="type">FnWord</td>
-    <td><a class="membername" href="operator*fnword">operator *</a>
+    <td><a class="membername" href="#operator*fnword">operator *</a>
     ( <span class="type">const FnWord</span> & <span
     class="input">u</span>, <span class="type">const FnWord</span> & <span
     class="input">v</span> ) </td>
@@ -141,7 +141,7 @@ is an element of the free group.  </p>
 
   <tr>
     <td class="type">FnWord</td>
-    <td><a class="membername" href="operator*qcharfnword">operator *</a>
+    <td><a class="membername" href="#operator*qcharfnword">operator *</a>
     ( <span class="type">const QChar</span> <span
     class="input">a</span>, <span class="type">const FnWord</span> & <span
     class="input">v</span> ) </td>
@@ -149,7 +149,7 @@ is an element of the free group.  </p>
 
   <tr>
     <td class="type">FnWord</td>
-    <td><a class="membername" href="operator*fnwordqchar">operator *</a>
+    <td><a class="membername" href="#operator*fnwordqchar">operator *</a>
     ( <span class="type">const FnWord</span> & <span
     class="input">u</span>, <span class="type">const QChar</span> <span
     class="input">a</span> ) </td>
@@ -157,7 +157,7 @@ is an element of the free group.  </p>
 
     <tr>
     <td class="type">FnWord</td>
-    <td><a class="membername" href="operator^fnword">operator ^</a>
+    <td><a class="membername" href="#operator^fnword">operator ^</a>
     ( <span class="type">const FnWord</span> & <span
     class="input">u</span>, <span class="type">const FnWord</span> & <span
     class="input">v</span> ) </td>
@@ -165,7 +165,7 @@ is an element of the free group.  </p>
 
   <tr>
     <td class="type">FnWord</td>
-    <td><a class="membername" href="operator^fnwordqchar">operator ^</a>
+    <td><a class="membername" href="#operator^fnwordqchar">operator ^</a>
     ( <span class="type">const FnWord</span> & <span
     class="input">u</span>, <span class="type">const QChar</span> <span
     class="input">a</span> ) </td>
@@ -174,7 +174,7 @@ is an element of the free group.  </p>
   <tr>
     <td class="type">FnWord</td>
     <td><a class="membername"
-    href="conjugacyproblem">conjugacyProblem</a> ( <span
+    href="#conjugacyproblem">conjugacyProblem</a> ( <span
     class="type">const FnWord</span> & <span class="input">u</span>,
     <span class="type">const FnWord</span> & <span
     class="input">v</span> )</td>
@@ -196,14 +196,12 @@ is an element of the free group.  </p>
 
 </table>
 
-<p class="paragraph">  FnWord
-is an element of the free group.
+<p class="paragraph">  FnWord is an element of the free group.
 
 <br /><br />
 
-This class is used to define a basis and contains the regular
-expressions used in determining membership in the basis (basisRegExp)
-used in transforming a word to its freely reduced representative (tightRegExp).
+This class provides functionality for multiplying elements of a free
+group and other basic group operations.  
 
 </p>
 
@@ -255,8 +253,8 @@ class="input">a</span>.
   <tr>
     <td><span class="membername"><span class="type">bool</span>
       FnWord::checkBasis</span> ( <span class="type">const
-  Basis</span> & <span class="input">basis = <a
-      class="code" href="basis.html#BASIS-CONST">BASIS</a></span> ) <span
+  Basis</span> & <span class="input">basis</span> = <a
+      class="code" href="basis.html#BASIS-CONST">BASIS</a> ) <span
   class="type">const</span></td></tr> </table>
 
 <br />
@@ -283,7 +281,7 @@ Returns the FnWord obtained by removing all instances of
   
 </p>
 
-  <p class="memberdescription"><a name="exp" />
+<p class="memberdescription"><a name="exp" />
 
 <table class="memberheader">
   <tr>
@@ -302,6 +300,271 @@ Returns the <span class="input">n</span><sup>th</sup> power of the
   
 </p>
 
+<p class="memberdescription"><a name="inverse" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnWord</span>
+      FnWord::inverse</span> ( ) <span
+  class="type">const</span>
+    </td>
+  </tr>
+</table>
+
+<br />
+
+Returns the inverse the FnWord.
+  
+</p>
+
+<p class="memberdescription"><a name="tighten" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnWord</span>
+      FnWord::tighten</span> ( ) <span
+  class="type"></span>
+    </td>
+  </tr>
+</table>
+
+<br />
+
+Removes all instances of <i>x</i> - <i>x<sup>&minus;1</sup></i> pairs.
+
+</p>
+
+<p class="memberdescription"><a name="operator!" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">bool</span>
+      FnWord::operator !</span> ( ) <span
+  class="type">const</span>
+    </td>
+  </tr>
+</table>
+
+<br />
+
+Returns true if the FnWord is equal to <a class="code" href="#FAIL">FAIL</a>.
+
+</p>
+
+<p class="memberdescription"><a name="operator=qchar" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnWord &</span>
+      FnWord::operator =</span> ( <span class="type">const QChar</span> <span
+    class="input">a</span> )
+    </td>
+  </tr>
+</table>
+
+<br />
+
+Sets the FnWord equal to the length one element <span
+class="input">a</span>.
+
+</p>
+
+<p class="memberdescription"><a name="operator*=fnword" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnWord &</span>
+      FnWord::operator *=</span> ( <span class="type">const
+  FnWord</span> & <span
+    class="input">u</span> )
+    </td>
+  </tr>
+</table>
+
+<br />
+
+Multiplies the FnWord on the right by <span class="input">u</span>.
+
+</p>
+
+<p class="memberdescription"><a name="operator*=qchar" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnWord &</span>
+      FnWord::operator *=</span> ( <span class="type">const QChar</span> <span
+    class="input">a</span> )
+    </td>
+  </tr>
+</table>
+
+<br />
+
+The overloads the function <a class="code"
+href="#operator*=fnowrd">FnWord::operator *= ( )</a>.
+
+<br />
+<br />
+
+Multiplies the FnWord on the right by the length one element <span
+class="input">a</span>.
+
+</p>
+
+<p class="subsectionheader">Non-Member Definitions</p>
+
+<p class="memberdescription"><a name="operator*fnword" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnWord</span>
+      operator *</span> ( <span class="type">const
+  FnWord</span> & <span
+    class="input">u</span>, <span class="type">const
+  FnWord</span> & <span
+    class="input">v</span> )
+    </td>
+  </tr>
+</table>
+
+<br />
+
+Returns the product of the elements <span class="input">u</span> and
+<span class="input">v</span>.
+
+</p>
+
+<p class="memberdescription"><a name="operator*qcharfnword" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnWord</span>
+      operator *</span> ( <span class="type">const
+  QChar</span> <span
+    class="input">a</span>, <span class="type">const
+  FnWord</span> & <span
+    class="input">v</span> )
+    </td>
+  </tr>
+</table>
+
+<br />
+
+The overloads the function <a class="code"
+href="#operator*fnword">operator * ( <span class="type">const
+FnWord</span> & <span class="input">u</span>, <span class="type">const
+FnWord</span> & <span class="input">v</span> )</a>.
+
+<br />
+<br />
+
+Returns the product of the element <span class="input">u</span> and
+the length one element <span class="input">a</span>.
+
+</p>
+
+<p class="memberdescription"><a name="operator*fnwordqchar" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnWord</span>
+      operator *</span> ( <span class="type">const
+  FnWord</span> & <span
+    class="input">u</span>, <span class="type">const
+  QChar</span> <span
+    class="input">a</span> )
+    </td>
+  </tr>
+</table>
+
+<br />
+
+The overloads the function <a class="code"
+href="#operator*fnword">operator * ( <span class="type">const
+FnWord</span> & <span class="input">u</span>, <span class="type">const
+FnWord</span> & <span class="input">v</span> )</a>.
+
+<br />
+<br />
+
+Returns the product of the length one element <span
+class="input">a</span> and the element <span class="input">v</span>.
+
+</p>
+
+<p class="memberdescription"><a name="operator^fnword" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnWord</span>
+      operator ^</span> ( <span class="type">const
+  FnWord</span> & <span
+    class="input">u</span>, <span class="type">const
+  FnWord</span> & <span
+    class="input">v</span> )
+    </td>
+  </tr>
+</table>
+
+<br />
+
+Returns the element <span class="input">vuv<sup>-1</sup></span>.
+
+</p>
+
+<p class="memberdescription"><a name="operator^fnwordqchar" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnWord</span>
+      operator ^</span> ( <span class="type">const
+  FnWord</span> & <span
+    class="input">u</span>, <span class="type">const
+  QChar</span> <span
+    class="input">a</span> )
+    </td>
+  </tr>
+</table>
+
+<br />
+
+The overloads the function <a class="code"
+href="#operator^fnword">operator ^ ( <span class="type">const
+FnWord</span> & <span class="input">u</span>, <span class="type">const
+FnWord</span> & <span class="input">v</span> )</a>.
+
+<br />
+<br />
+
+Returns the element <span class="input">aua<sup>-1</sup></span>.
+
+</p>
+
+<p class="memberdescription"><a name="conjugacyproblem" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnWord</span>
+      conjugacyProblem</span> ( <span class="type">const
+  FnWord</span> & <span
+    class="input">u</span>, <span class="type">const
+  FnWord</span> & <span
+    class="input">v</span> )
+    </td>
+  </tr>
+</table>
+
+<br />
+
+Returns the element <span class="input">w</span> such that <span
+class="input">u</span> = <span class="input">wvw<sup>-1</sup></span>
+if <span class="input">w</span> exist.  If not, <a class="code"
+href="#FAIL">FAIL</a> is returned.
+
+</p>
+
+<p class="subsectionheader">Constants</p>
+
 <p class="memberdescription"><a name="ID" />
 
 <table class="memberheader">
@@ -317,6 +580,25 @@ Returns the <span class="input">n</span><sup>th</sup> power of the
 This is a global constant represents the identity element in the free
   group.  It is constructed by FnWord ID(QString(<a class="code"
   href="fn.html#Fn_Identity">Fn_Identity</a>)).
+  
+</p>
+
+<p class="memberdescription"><a name="FAIL" />
+
+<table class="memberheader">
+  <tr>
+    <td> <span
+  class="type">const</span> <span class="membername">FnWord FAIL</span>
+    </td>
+  </tr>
+</table>
+
+<br />
+
+This is a global constant is used by <a class="code"
+href="#conjugacyproblem">conjugacyProblem</a> and various functions in
+<a class="code" href="fnmap.html">FnMap</a> as a way to pass a fail
+state.
   
 </p>
 
