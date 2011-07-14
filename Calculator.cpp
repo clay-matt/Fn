@@ -751,7 +751,7 @@ FnData Calculator::IsSeparableFunction(const FunctionInput &input) {
 
     FnWord v = wordList.takeFirst();
 
-    if (v.isSeparable())
+    if (v.isSeparable(basis))
         output.setString(tr("%1 is separable.").arg(v));
     else
         output.setString(tr("%1 is not separable.").arg(v));

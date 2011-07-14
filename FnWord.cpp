@@ -162,7 +162,7 @@ bool FnWord::isSeparable(const Basis &basis) const {
            WhiteheadData whData(basis.getRank(),setZ,cutVertex.at(0));
            FnMap phi=whitehead(whData, basis);
            word=phi(*this);
-           return word.isSeparable();
+           return word.isSeparable(basis);
         }
     }
     return false;
