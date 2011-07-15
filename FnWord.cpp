@@ -129,7 +129,7 @@ bool FnWord::isSeparable(const Basis &basis) const {
     else  //this part needs to be cleaned up
     {
         components=graph.biconnectedComponents();
-        if(components.size()>2)
+        if(components.size()>1)
         {
            vertices=components[0].vertexList();
            for(int i=0;i<vertices.size();i++)
@@ -162,6 +162,7 @@ bool FnWord::isSeparable(const Basis &basis) const {
            WhiteheadData whData(basis.getRank(),setZ,cutVertex.at(0));
            FnMap phi=whitehead(whData, basis);
            word=phi(*this);
+           word=word.cyclicWord();
            return word.isSeparable(basis);
         }
     }

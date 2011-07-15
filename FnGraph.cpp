@@ -269,14 +269,34 @@ FnGraph operator + (const FnGraph & gamma, const FnGraph & beta)
 FnGraph operator - (const FnGraph & gamma, const FnGraph & beta)
 {
     FnGraph tau=gamma;
+    bool subGraph=true;
 
 
     foreach(QString vertex, beta.vertices.keys())
     {
-        if(tau.vertices.contains(vertex)&&tau.vertices.value(vertex)==beta.vertices.value(vertex))
-            tau.removeVertex(vertex);
-        else
-            return gamma;
+        if(!tau.vertices.contains(vertex))
+        {
+            subGraph=false;
+            break;
+        }
+    }
+    if(subGraph)
+    {
+        foreach(QString edge, beta.keys())
+        {
+            if(!tau.contains(edge))
+            {
+                subGraph=false;
+                break;
+            }
+        }
+    }
+    if(subGraph)
+    {
+        foreach(QString vertex, beta.vertices.keys())
+        {
+          tau.removeVertex(vertex);
+        }
     }
 
     return tau;
