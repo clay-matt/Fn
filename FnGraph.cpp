@@ -58,6 +58,15 @@ void FnGraph::removeEdge(const QString &edge)
 {
     QVector<QString> nodes= take(edge);
     QVector<QString> edges;
+    if(nodes.at(0)==nodes.at(1))
+    {
+        if(vertices.contains(nodes.at(0)))
+        {
+            edges=vertices.value(nodes.at(0));
+            vertices[nodes.at(0)].remove(edges.indexOf(edge));
+        }
+        return;
+    }
     if(vertices.contains(nodes.at(0)))
     {
         edges=vertices.value(nodes.at(0));
@@ -245,6 +254,27 @@ QList<FnGraph> FnGraph::biconnectedComponents() const {
 
 }
 
+bool FnGraph::isSubGraph(const FnGraph &gamma) const
+{
+    foreach(QString vertex, vertices.keys())
+    {
+        if(!gamma.vertices.contains(vertex))
+        {
+            return false;
+        }
+    }
+
+    foreach(QString edge, keys())
+    {
+        if(!gamma.contains(edge))
+        {
+            return false;
+        }
+    }
+    return true;
+
+}
+
 //Friends
 FnGraph operator + (const FnGraph & gamma, const FnGraph & beta)
 {
@@ -269,29 +299,8 @@ FnGraph operator + (const FnGraph & gamma, const FnGraph & beta)
 FnGraph operator - (const FnGraph & gamma, const FnGraph & beta)
 {
     FnGraph tau=gamma;
-    bool subGraph=true;
 
-
-    foreach(QString vertex, beta.vertices.keys())
-    {
-        if(!tau.vertices.contains(vertex))
-        {
-            subGraph=false;
-            break;
-        }
-    }
-    if(subGraph)
-    {
-        foreach(QString edge, beta.keys())
-        {
-            if(!tau.contains(edge))
-            {
-                subGraph=false;
-                break;
-            }
-        }
-    }
-    if(subGraph)
+    if(beta.isSubGraph(gamma))
     {
         foreach(QString vertex, beta.vertices.keys())
         {

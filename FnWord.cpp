@@ -117,17 +117,21 @@ FnGraph FnWord::whiteheadGraph(const Basis &basis) const {
 }
 
 bool FnWord::isSeparable(const Basis &basis) const {
+    FnWord word=cyclicWord();
     FnGraph graph=whiteheadGraph(basis);
     QList<FnGraph> components=graph.connectedComponents();
     QList<QString> vertices;
     QString setZ;
     QString cutVertex;
+
+
     if(components.size()>1)
     {
         return true;
     }
     else  //this part needs to be cleaned up
     {
+        components.pop_back();
         components=graph.biconnectedComponents();
         if(components.size()>1)
         {
@@ -147,7 +151,7 @@ bool FnWord::isSeparable(const Basis &basis) const {
            }
            FnGraph temp=graph;
            temp.removeVertex(cutVertex);
-           FnWord word(cutVertex);
+           word=cutVertex;
            components=temp.connectedComponents();
            if(components[0].vertexList().contains(word.inverse()))
                temp=graph-components[1];
@@ -162,7 +166,6 @@ bool FnWord::isSeparable(const Basis &basis) const {
            WhiteheadData whData(basis.getRank(),setZ,cutVertex.at(0));
            FnMap phi=whitehead(whData, basis);
            word=phi(*this);
-           word=word.cyclicWord();
            return word.isSeparable(basis);
         }
     }
