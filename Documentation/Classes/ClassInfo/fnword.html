@@ -94,8 +94,23 @@ is an element of the free group.  </p>
   </tr>
 
   <tr>
+    <td class="type">bool</td>
+    <td><a class="membername" href="#isSeparable">isSeparable</a> (
+      <span class="type">const
+  Basis</span> & <span class="input">basis</span> = <a
+      class="code" href="basis.html#BASIS-CONST">BASIS</a> )
+    <span class="type">const</span></td>
+  </tr>
+
+  <tr>
     <td class="type">void</td>
     <td><a class="membername" href="#tighten">tighten</a> ( ) </td>
+  </tr>
+
+
+  <tr>
+    <td class="type">FnGraph FnWord</td>
+    <td><a class="membername" href="#whiteheadGraph">whiteheadGraph</a> (<span class="type"> const </span> <span class = "type"> Basis </span>&<span class = "type">basis</span> = <a class ="code" href ="basis.html#BASIS-CONST">BASIS</a>)<span class="type">const </span></td>
   </tr>
 
   <tr>
@@ -179,7 +194,16 @@ is an element of the free group.  </p>
     <span class="type">const FnWord</span> & <span
     class="input">v</span> )</td>
   </tr>
-  
+
+ <tr>
+    <td class="type">FnWord</td>
+    <td><a class="membername"
+    href="#whiteheadGraph">whiteheadGraph</a>(<span
+    class="type">QList &lt;FnWord &gt; </span> words, <span class="type">const</span>
+    <span class="type"> Basis</span> & <span
+    class="type">basis</span> )</td>
+  </tr>
+    
 </table>
 
 <p class="subsectionheader">Constants</p>
@@ -305,7 +329,7 @@ Returns the <span class="input">n</span><sup>th</sup> power of the
 <table class="memberheader">
   <tr>
     <td><span class="membername"><span class="type">FnWord</span>
-      FnWord::inverse</span> ( ) <span
+      FnWord::inverse </span> ( ) <span
   class="type">const</span>
     </td>
   </tr>
@@ -314,6 +338,30 @@ Returns the <span class="input">n</span><sup>th</sup> power of the
 <br />
 
 Returns the inverse the FnWord.
+  
+</p>
+
+</p>
+
+<p class="memberdescription"><a name="isSeparable" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">bool</span>
+      FnWord::isSeparable</span> ( <span class="type">const
+  Basis</span> & <span class="input">basis</span> = <a
+      class="code" href="basis.html#BASIS-CONST">BASIS</a> ) <span
+  class="type">const</span></td></tr> </table>
+
+<br />
+Bibliography:
+Stallings, John R. Whitehead graphs on handlebodies. Geometric group theory down under (Canberra, 1996), 317-330,de Gruyter, Berlin, 1999.
+
+<br />
+
+A subset of A of a free group F is separable when there is a non-trivial free factorization F = F<SUB>1</SUB> * F<SUB>2</SUB> such that each element of A is conjugate to an element factor.
+<br />
+Takes in a basis and returns a bool if the FnWord is separable or not separable.
   
 </p>
 
@@ -332,6 +380,25 @@ Returns the inverse the FnWord.
 
 Removes all instances of <i>x</i> - <i>x<sup>&minus;1</sup></i> pairs.
 
+</p>
+
+
+</p>
+
+<p class="memberdescription"><a name="whiteheadGraph" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnGraph</span>
+      FnWord::whiteheadGraph</span> ( <span class="type">const
+  Basis</span> & <span class="input">basis</span> = <a
+      class="code" href="basis.html#BASIS-CONST">BASIS</a> ) <span
+  class="type">const</span></td></tr> </table>
+
+<br />
+
+Returns the whitehead graph with number of edges
+  
 </p>
 
 <p class="memberdescription"><a name="operator!" />
@@ -560,6 +627,29 @@ Returns the element <span class="input">w</span> such that <span
 class="input">u</span> = <span class="input">wvw<sup>-1</sup></span>
 if <span class="input">w</span> exist.  If not, <a class="code"
 href="#FAIL">FAIL</a> is returned.
+
+</p>
+
+
+</p>
+
+<p class="memberdescription"><a name="whiteheadGraph" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">FnGraph</span>
+      whiteheadGraph</span> ( <span class="type">QList&lt;
+  FnWord&gt;</span> words, <span
+    class="type">const</span> <span class="type">
+  Basis</span> & <span
+    class="type">basis</span> )
+    </td>
+  </tr>
+</table>
+
+<br />
+
+Returns the whitehead
 
 </p>
 
