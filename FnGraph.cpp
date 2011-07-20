@@ -220,16 +220,12 @@ QList<FnGraph> FnGraph::biconnectedComponents() const {
                     inComponent=true;
                     while(inComponent)
                     {
+                        if(value(edgeStack[0]).contains(vertexStack[0])&&value(edgeStack[0]).contains(vertexStack[1]))
+                        {
+                            inComponent=false;
+                        }
                         component.addEdge(edgeStack[0],value(edgeStack[0]));
                         edgeStack.pop_front();
-                        for(int i=2;i<vertexStack.size();i++)
-                        {
-                            if(value(edgeStack[0]).contains(vertexStack[i]))
-                            {
-                                inComponent=false;
-                                break;
-                            }
-                        }
 
                     }
               }
