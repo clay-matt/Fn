@@ -220,16 +220,12 @@ QList<FnGraph> FnGraph::biconnectedComponents() const {
                     inComponent=true;
                     while(inComponent)
                     {
+                        if(value(edgeStack[0]).contains(vertexStack[0])&&value(edgeStack[0]).contains(vertexStack[1]))
+                        {
+                            inComponent=false;
+                        }
                         component.addEdge(edgeStack[0],value(edgeStack[0]));
                         edgeStack.pop_front();
-                        for(int i=2;i<vertexStack.size();i++)
-                        {
-                            if(value(edgeStack[0]).contains(vertexStack[i]))
-                            {
-                                inComponent=false;
-                                break;
-                            }
-                        }
 
                     }
               }
@@ -264,6 +260,28 @@ QList<FnGraph> FnGraph::biconnectedComponents() const {
   return biconnectedComponents;
 
 }
+
+void FnGraph::simplify()
+{
+    foreach (QString edge, keys())
+    {
+        if(keys(value(edge)).size()>1)
+        {
+            removeEdge(edge);
+        }
+        else
+        {
+            QVector<QString> temp;
+            temp.append(value(edge).at(1));
+            temp.append(value(edge).at(0));
+            if(keys(temp).size()>0)
+            {
+                removeEdge(edge);
+            }
+        }
+    }
+}
+
 
 bool FnGraph::isSubGraph(const FnGraph &gamma) const
 {
