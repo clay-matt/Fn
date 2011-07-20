@@ -78,6 +78,7 @@ const FnWord Fail(QString("Fail 0"));
 
 FnWord conjugacyProblem(const FnWord & u, const FnWord & v);
 FnGraph whiteheadGraph(QList<FnWord> words, const Basis & basis = BASIS);
+QList<FnWord> wordsoflength (Basis basis, int len);
 
 /////////////////////////////////////////////////////////
 

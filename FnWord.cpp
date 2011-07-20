@@ -4,10 +4,12 @@
 #include <QChar>
 #include <QRegExp>
 #include <QString>
-
+#include "Basis.h"
+#include <QList>
+#include <iostream>
 #include "FnWord.h"
 #include "WhiteheadData.h"
-
+using namespace std;
                        
 /////////////////////////////////////////////////////////
 // Private Members
@@ -245,4 +247,32 @@ FnGraph whiteheadGraph(QList<FnWord> words, const Basis &basis)
     }
     return whitehead;
 }
+
+
+QList<FnWord> wordsoflength (Basis basis, int len){
+    QList<FnWord> wordList;
+    FnWord word;
+
+    if(len == 1)
+    {
+        for(int i =0;i<basis.size();i++)
+        wordList.append(basis.at(i));
+        return wordList;
+    }
+
+    QList<FnWord> shorterWords = wordsoflength(basis,len-1);
+    foreach(FnWord x, shorterWords)
+    {
+
+      foreach(QChar a, basis){
+        if(basis.inverse(a) != x.at(0))
+          wordList.append(a+x);
+        }
+
+    }
+
+    return wordList;
+
+}
+
 
