@@ -118,7 +118,7 @@ FnGraph FnWord::whiteheadGraph(const Basis &basis) const {
 
 bool FnWord::isSeparable(const Basis &basis) const {
     FnWord word=cyclicWord();
-    FnGraph graph=whiteheadGraph(basis);
+    FnGraph graph=word.whiteheadGraph(basis);
     QList<FnGraph> components=graph.connectedComponents();
     QList<QString> vertices;
     QString setZ;
@@ -131,7 +131,7 @@ bool FnWord::isSeparable(const Basis &basis) const {
     }
     else  //this part needs to be cleaned up
     {
-        components.pop_back();
+        graph.simplify();
         components=graph.biconnectedComponents();
         if(components.size()>1)
         {

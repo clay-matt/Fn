@@ -52,6 +52,8 @@ public:
     QList<QString> vertexList() const { return vertices.keys(); }
     QList<QString> edgeList() const { return keys(); }
 
+    void simplify();
+
     bool isSubGraph(const FnGraph &gamma) const;
 
     //friends

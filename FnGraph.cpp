@@ -265,6 +265,28 @@ QList<FnGraph> FnGraph::biconnectedComponents() const {
 
 }
 
+void FnGraph::simplify()
+{
+    foreach (QString edge, keys())
+    {
+        if(keys(value(edge)).size()>1)
+        {
+            removeEdge(edge);
+        }
+        else
+        {
+            QVector<QString> temp;
+            temp.append(value(edge).at(1));
+            temp.append(value(edge).at(0));
+            if(keys(temp).size()>0)
+            {
+                removeEdge(edge);
+            }
+        }
+    }
+}
+
+
 bool FnGraph::isSubGraph(const FnGraph &gamma) const
 {
     foreach(QString vertex, vertices.keys())
