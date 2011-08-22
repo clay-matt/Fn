@@ -2,7 +2,7 @@
 // inherits QObject
 
 // author Matt Clay
-// version 110712
+// version 110805
 
 /////////////////////////////////////////////////////////
 
@@ -65,6 +65,7 @@ private:
     FnData applyFunction(enum FunctionNames fcn, const FunctionInput &input);
 
     // preset functions
+    FnData AbelianizationFunction(const FunctionInput &input);
     FnData BicomponentsFunction(const FunctionInput &input);
     FnData CommutatorFunction(const FunctionInput &input);
     FnData ComposeFunction(const FunctionInput &input);
@@ -82,6 +83,7 @@ private:
     FnData LengthFunction(const FunctionInput &input);
     FnData MapFunction(const FunctionInput &input);
     FnData MultiplyFunction(const FunctionInput &input);
+    FnData TwoStepNilpotentFunction(const FunctionInput &input);
     FnData WhiteheadAutomorphismFunction(const FunctionInput &input);
     FnData WhiteheadGraphFunction(const FunctionInput &input);
     FnData WhiteheadProblemFunction(const FunctionInput &input);

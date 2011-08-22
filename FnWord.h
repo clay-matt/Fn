@@ -2,7 +2,7 @@
 // inherits QString
 
 // authors Matt Clay, Jack Conant and Nivetha Ramasubramanian
-// version 110713
+// version 110805
 
 /////////////////////////////////////////////////////////
 
@@ -54,14 +54,20 @@ class FnWord : public QString {
     bool checkBasis (const Basis & basis = BASIS) const {
         return basis.inBasis(*this);
     }
-    void tighten();
+    bool isTrivial () const {
+        if (*this == Fn_Identity) return true;
+        return isEmpty();
+    }
+    QList<int> abelianization(const Basis & basis = BASIS) const;
     FnWord cyclicWord() const;
-    FnWord inverse() const;
     FnWord exp(int n) const;
-    bool operator ! () const;
-    FnGraph whiteheadGraph(const Basis & basis = BASIS) const;
+    FnWord inverse() const;
     bool isSeparable(const Basis & basis = BASIS) const;
-
+    QList<int> stepTwoNilpotentNormalForm(const Basis & basis = BASIS) const;
+    void tighten();
+    FnGraph whiteheadGraph(const Basis & basis = BASIS) const;
+    bool operator ! () const;
+    
     // friends
     friend FnWord operator * (const FnWord & u, const FnWord & v);
     friend FnWord operator * (const QChar a, const FnWord & v);
@@ -78,7 +84,7 @@ const FnWord Fail(QString("Fail 0"));
 
 FnWord conjugacyProblem(const FnWord & u, const FnWord & v);
 FnGraph whiteheadGraph(QList<FnWord> words, const Basis & basis = BASIS);
-QList<FnWord> wordsoflength (Basis basis, int len);
+QList<FnWord> wordsoflength(Basis basis, int len);
 
 /////////////////////////////////////////////////////////
 

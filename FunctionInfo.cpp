@@ -8,6 +8,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
 {
 
   // place function tags into list
+  functionEnum["Abelianization_"] = AbelianizationFcn;
   functionEnum["Bicomponents_"] = BicomponentsFcn;
   functionEnum["Commutator_"] = CommutatorFcn;
   functionEnum["Compose_"] = ComposeFcn;
@@ -25,11 +26,13 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionEnum["Length_"] = LengthFcn;
   functionEnum["Map_"] = MapFcn;
   functionEnum["Multiply_"] = MultiplyFcn;
+  functionEnum["TwoStepNilpotent_"] = TwoStepNilpotentFcn;
   functionEnum["WhiteheadAutomorphism_"] = WhiteheadAutomorphismFcn;
   functionEnum["WhiteheadGraph_"] = WhiteheadGraphFcn;
   functionEnum["WhiteheadProblem_"] = WhiteheadProblemFcn;
 
   // place function names into list
+  functionName[AbelianizationFcn] = "Abelianization_";
   functionName[BicomponentsFcn] = "Bicomponents_";
   functionName[CommutatorFcn] = "Commutator_";
   functionName[ComposeFcn] = "Compose_";
@@ -47,11 +50,13 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionName[LengthFcn] = "Length_";
   functionName[MapFcn] = "Map_";
   functionName[MultiplyFcn] = "Multiply_";
+  functionName[TwoStepNilpotentFcn] = "TwoStepNilpotent_";
   functionName[WhiteheadAutomorphismFcn] = "WhiteheadAutomorphism_";
   functionName[WhiteheadGraphFcn] = "WhiteheadGraph_";
   functionName[WhiteheadProblemFcn] = "WhiteheadProblem_";
 
   // place function Skeleta into list
+  functionSkeleton[AbelianizationFcn] = "Abelianization_( u_ , <n_> )";
   functionSkeleton[BicomponentsFcn] = "Bicomponents_( Gamma_ )";
   functionSkeleton[CommutatorFcn] = "Commutator_( u_ , v_ )";
   functionSkeleton[ComposeFcn] = "Compose_( f_ , g_ )";
@@ -69,11 +74,13 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionSkeleton[LengthFcn] = "Length_( u_ )";
   functionSkeleton[MapFcn] = "Map_( f_ , u_ , <n_> )";
   functionSkeleton[MultiplyFcn] = "Multiply_( u_ , v_ )";
+  functionSkeleton[TwoStepNilpotentFcn] = "TwoStepNilpotent_( u_, <n_> )";
   functionSkeleton[WhiteheadAutomorphismFcn] = "WhiteheadAutomorphism_( [A_] , a_ , n_ )";
   functionSkeleton[WhiteheadGraphFcn] = "WhiteheadGraph_( [u_] , <n_> )";
   functionSkeleton[WhiteheadProblemFcn] = "WhiteheadProblem_( u_, v_, <n_> )";
 
   // place function Status Tips into list
+  functionStatusTip[AbelianizationFcn] = tr(": returns the abelianization of u (n is the optional rank)");
   functionStatusTip[BicomponentsFcn] = tr(": returns the bicomponents of Gamma");
   functionStatusTip[CommutatorFcn] = tr(": returns uvUV");
   functionStatusTip[ComposeFcn] = tr(": returns the composition fg");
@@ -91,11 +98,13 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionStatusTip[LengthFcn] = tr(": return the length of u");
   functionStatusTip[MapFcn] = tr(": returns f^n(u), by default n = 1");
   functionStatusTip[MultiplyFcn] = tr(": returns uv");
+  functionStatusTip[TwoStepNilpotentFcn] = tr(": return the 2-step nilpotent normal form of u (n is the optional rank)");
   functionStatusTip[WhiteheadAutomorphismFcn] = tr(": returns the Whitehead Automorphism (A,a) in rank n");
   functionStatusTip[WhiteheadGraphFcn] = tr(": return the Whitehead graph of u (n is the optional rank)");
   functionStatusTip[WhiteheadProblemFcn] = tr(": returns f such that f(v) = u if such an f exists (n is the optional rank)");
 
   // place variable types for functions into list
+  functionInput[AbelianizationFcn] << Element << NotListable << OptionalInteger << NotListable;
   functionInput[BicomponentsFcn] << Graph << NotListable;
   functionInput[CommutatorFcn] << Element << NotListable << Element << NotListable;
   functionInput[ComposeFcn] << Morphism << NotListable << Morphism << NotListable;
@@ -113,11 +122,13 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionInput[LengthFcn] << Element << Listable;
   functionInput[MapFcn] << Morphism << NotListable << Element << Listable << OptionalInteger << NotListable;
   functionInput[MultiplyFcn] << Element << NotListable << Element << NotListable;
+  functionInput[TwoStepNilpotentFcn] << Element << NotListable << OptionalInteger << NotListable;
   functionInput[WhiteheadAutomorphismFcn] << Element << Listable << Element << NotListable << Integer << NotListable;
   functionInput[WhiteheadGraphFcn] << Element << Listable << OptionalInteger << NotListable;
   functionInput[WhiteheadProblemFcn] << Element << NotListable << Element << NotListable << OptionalInteger << NotListable;
 
   // place function output into list
+  functionOutput[AbelianizationFcn] = Integer;
   functionOutput[BicomponentsFcn] = Graph;
   functionOutput[CommutatorFcn] = Element;
   functionOutput[ComposeFcn] = Morphism;
@@ -135,6 +146,7 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionOutput[LengthFcn] = Integer;
   functionOutput[MapFcn] = Element;
   functionOutput[MultiplyFcn] = Element;
+  functionOutput[TwoStepNilpotentFcn] = Integer;
   functionOutput[WhiteheadAutomorphismFcn] = Morphism;
   functionOutput[WhiteheadGraphFcn] = Graph;
   functionOutput[WhiteheadProblemFcn] = Element;

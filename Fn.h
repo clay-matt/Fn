@@ -1,7 +1,7 @@
 // Header file for constants
 
 // author Matt Clay
-// version 110713
+// version 110809
 
 /////////////////////////////////////////////////////////
 
@@ -23,6 +23,7 @@ enum VariableTypes {NoType,
                     FailMessage};
 
 enum FunctionNames {ERROR,
+                    AbelianizationFcn,
                     BicomponentsFcn,
                     CommutatorFcn,
                     ComposeFcn,
@@ -40,6 +41,7 @@ enum FunctionNames {ERROR,
                     LengthFcn,
                     MapFcn,
                     MultiplyFcn,
+                    TwoStepNilpotentFcn,
                     WhiteheadAutomorphismFcn,
                     WhiteheadGraphFcn,
                     WhiteheadProblemFcn};

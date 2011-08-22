@@ -2,40 +2,26 @@
 /////////////////////////////////////////////////////////
 
 #include <QChar>
+#include <QList>
 #include <QRegExp>
 #include <QString>
 #include "Basis.h"
-#include <QList>
-#include <iostream>
 #include "FnWord.h"
 #include "WhiteheadData.h"
-using namespace std;
                        
 /////////////////////////////////////////////////////////
 // Private Members
 
-void FnWord::tighten() {
+QList<int> FnWord::abelianization(const Basis &basis) const {
 
-  /* This function tightens the word. */
+  int rank = basis.getRank();
+  QList<int> abelian_image;
 
-  int old_length = length();
-  int new_length;
-
-  if (*this == Id) return;
-
-  remove(BASIS.tightRegExp);
-
-  new_length = length();
-
-  while (new_length < old_length) {
-    old_length = new_length;
-    remove(BASIS.tightRegExp);
-    new_length = length();
+  for(int i = 0; i < rank; i++) {
+    abelian_image.append(count(basis.at(2*i)) - count(basis.at(2*i+1)));
   }
 
-  if (new_length == 0) *this = Id;
-
-  return;
+  return abelian_image;
 
 }
 
@@ -58,6 +44,24 @@ FnWord FnWord::cyclicWord() const {
 
 }
 
+FnWord FnWord::exp(int n) const {
+
+  /* Returns the nth power of the element. */
+
+  FnWord u(*this);
+
+  if (n == 0) return Id;
+
+  else if (n < 0)
+    return u.inverse().exp(-n);
+
+  else {
+    u *= exp(n-1);
+    return u;
+  }
+
+}
+
 FnWord FnWord::inverse() const {
 
   /* This function returns the inverse of the element. */
@@ -77,44 +81,6 @@ FnWord FnWord::inverse() const {
   inv.tighten(); // tighten the inverse
 
   return(inv);
-
-}
-
-FnWord FnWord::exp(int n) const {
-
-  /* Returns the nth power of the element. */
-
-  FnWord u(*this);
-
-  if (n == 0) return Id;
-
-  else if (n < 0)
-    return u.inverse().exp(-n);
-
-  else {
-    u *= exp(n-1);
-    return u;
-  }
-
-}
-
-FnGraph FnWord::whiteheadGraph(const Basis &basis) const {
-
-    FnGraph whitehead;
-    QString e="e",num;
-    int i=0;
-    for(i=0;i<2*basis.getRank();i++)
-    {
-        whitehead.addVertex(basis.at(i));
-    }
-    for(i=0;i<length()-1;i++)
-    {
-
-        whitehead.addEdge(e+num.setNum(i),at(i),basis.inverse(at(i+1)));
-    }
-    whitehead.addEdge(e+num.setNum(i), at(i), basis.inverse(at(0)));
-
-    return whitehead;
 
 }
 
@@ -172,6 +138,128 @@ bool FnWord::isSeparable(const Basis &basis) const {
         }
     }
     return false;
+    
+}
+
+QList<int> FnWord::stepTwoNilpotentNormalForm(const Basis & basis) const {
+    
+    int rank = basis.getRank();
+    QList<int> nilpotent_image = abelianization(basis);
+    FnWord currentForm(*this);
+    FnWord normalForm;
+
+    for(int i = 0; i < rank; i++) {
+	FnWord a(basis.at(2*i));
+	normalForm *= a.exp(nilpotent_image.at(i));
+    }
+
+    QList<int> commutator_portion;
+
+    for(int i = 0; i < (rank*(rank-1))/2; i++) 
+	commutator_portion.append(0);
+
+    int move_forward;
+    int i,j,commutator;
+    int first_index,second_index;
+    QChar a_i,a_j;
+
+    while (!currentForm.isTrivial()) {
+
+	// find where the current form and normal form differ
+        while(!normalForm.isEmpty()) {
+            if(normalForm.at(0) == currentForm.at(0)) {
+                currentForm.remove(0,1);
+                normalForm.remove(0,1);
+            }
+            else break;
+	}
+
+        if(currentForm.isTrivial()) break;
+
+	if(normalForm.isEmpty()) {
+            move_forward = currentForm.indexOf(basis.inverse(currentForm.at(0)));
+	} else {
+	    move_forward = currentForm.indexOf(normalForm.at(0));
+	}
+	
+	a_i = currentForm.at(move_forward);
+	a_j = currentForm.at(move_forward - 1);
+
+	// swap a_ja_i for a_ia_j, so add commutator [a_i,a_j]
+
+	i = basis.indexOf(a_i);
+	j = basis.indexOf(a_j);
+
+        first_index = ( i < j ) ? i/2 : j/2;
+        second_index = (i > j ) ? i/2 : j/2;
+        commutator = first_index*rank - (first_index*(first_index + 1))/2 + (second_index - first_index - 1);
+
+        if((i + j) % 2 == 0) {
+            if (i < j)
+                commutator_portion[commutator]--;
+            else
+                commutator_portion[commutator]++;
+        } else {
+            if (i < j)
+                commutator_portion[commutator]++;
+            else
+                commutator_portion[commutator]--;
+        }
+	
+	currentForm.replace(move_forward - 1,1,a_i);
+	currentForm.replace(move_forward,1,a_j);
+	currentForm.tighten();
+	    
+    }
+
+    nilpotent_image.append(commutator_portion);
+
+    return nilpotent_image;
+
+}
+
+void FnWord::tighten() {
+
+  /* This function tightens the word. */
+
+  int old_length = length();
+  int new_length;
+
+  if (*this == Id) return;
+
+  remove(BASIS.tightRegExp);
+
+  new_length = length();
+
+  while (new_length < old_length) {
+    old_length = new_length;
+    remove(BASIS.tightRegExp);
+    new_length = length();
+  }
+
+  if (new_length == 0) *this = Id;
+
+  return;
+
+}
+
+FnGraph FnWord::whiteheadGraph(const Basis &basis) const {
+
+    FnGraph whitehead;
+    QString e="e",num;
+    int i=0;
+    for(i=0;i<2*basis.getRank();i++)
+    {
+        whitehead.addVertex(basis.at(i));
+    }
+    for(i=0;i<length()-1;i++)
+    {
+
+        whitehead.addEdge(e+num.setNum(i),at(i),basis.inverse(at(i+1)));
+    }
+    whitehead.addEdge(e+num.setNum(i), at(i), basis.inverse(at(0)));
+
+    return whitehead;
 
 }
 
@@ -251,11 +339,10 @@ FnGraph whiteheadGraph(QList<FnWord> words, const Basis &basis)
 
 QList<FnWord> wordsoflength (Basis basis, int len){
     QList<FnWord> wordList;
-    FnWord word;
 
     if(len == 1)
     {
-        for(int i =0;i<basis.size();i++)
+        for(int i = 0;i<basis.size();i++)
         wordList.append(basis.at(i));
         return wordList;
     }

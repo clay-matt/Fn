@@ -247,6 +247,10 @@ FnData Calculator::applyFunction(enum FunctionNames fcn, const FunctionInput & i
 
     switch (fcn) {
 
+    case AbelianizationFcn:
+        return AbelianizationFunction(input);
+        break;
+
     case BicomponentsFcn:
         return BicomponentsFunction(input);
         break;
@@ -315,6 +319,10 @@ FnData Calculator::applyFunction(enum FunctionNames fcn, const FunctionInput & i
         return MultiplyFunction(input);
         break;
 
+    case TwoStepNilpotentFcn:
+        return TwoStepNilpotentFunction(input);
+        break;
+
     case WhiteheadAutomorphismFcn:
         return WhiteheadAutomorphismFunction(input);
         break;
@@ -339,6 +347,40 @@ FnData Calculator::applyFunction(enum FunctionNames fcn, const FunctionInput & i
 
 /////////////////////////////////////////////////////////
 // PRESET FUNCTIONS
+
+FnData Calculator::AbelianizationFunction(const FunctionInput &input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(AbelianizationFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for Abelianization"));
+    return output;
+  }
+
+  FnWord u(input.at(0).wordData());
+
+  if (input.size() == 2) {
+    int r = input.at(1).integerData();
+    if (r < Fn_MinRank || r > Fn_MaxRank) {
+      output.setFailMessage(tr("Basis Error: %1 is not a valid rank (%2 < rank < %3)").arg(r)
+                            .arg(Fn_MinRank).arg(Fn_MaxRank));
+      return output;
+    }
+    basis.changeRank(r);
+  }
+
+  if (!u.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+    return output;
+  }
+
+  QList<int> abelian_image = u.abelianization(basis);
+  output.setIntegerList(abelian_image);
+
+  return output;
+
+}
 
 FnData Calculator::BicomponentsFunction(const FunctionInput & input)
 {
@@ -919,6 +961,40 @@ FnData Calculator::MultiplyFunction(const FunctionInput & input)
 
   FnWord u1u2 = u1*u2;
   output.setElement(u1u2);
+
+  return output;
+
+}
+
+FnData Calculator::TwoStepNilpotentFunction(const FunctionInput &input)
+{
+
+  FnData output;
+
+  if (!input.isAcceptable(presetFunctions.fcnInput(TwoStepNilpotentFcn))) {
+    output.setFailMessage(tr("Function Error: invalid input for TwoStepNilpotent"));
+    return output;
+  }
+
+  FnWord u(input.at(0).wordData());
+
+  if (input.size() == 2) {
+    int r = input.at(1).integerData();
+    if (r < Fn_MinRank || r > Fn_MaxRank) {
+      output.setFailMessage(tr("Basis Error: %1 is not a valid rank (%2 < rank < %3)").arg(r)
+                            .arg(Fn_MinRank).arg(Fn_MaxRank));
+      return output;
+    }
+    basis.changeRank(r);
+  }
+
+  if (!u.checkBasis(basis)) {
+    output.setFailMessage(tr("Basis Error: %1 is not an element in the basis %2").arg(u).arg(basis));
+    return output;
+  }
+
+  QList<int> nilpotent_image = u.stepTwoNilpotentNormalForm(basis);
+  output.setIntegerList(nilpotent_image);
 
   return output;
 
