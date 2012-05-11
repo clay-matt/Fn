@@ -131,6 +131,10 @@ FnData Calculator::compute(const QString & input)
 
     FnData output;
 
+    // try to math with previous input
+    if (input == PreviousOutput)
+        return previousOutput;
+
     // try to match with integer
     bool isInt;
     int n = input.toInt(&isInt);
@@ -197,6 +201,14 @@ FnData Calculator::compute(const QString & input)
         // functionName =  everything to the left of first (
         QString functionName = input.section(QChar('('),0,0);
         enum FunctionNames fcn = presetFunctions.fcnTag(functionName);
+
+        if(fcn == ERROR) {
+
+            output.setFailMessage(tr("Function Error: \"%1\" is not a valid function").arg(functionName));
+            return output;
+
+        }
+
         QString functionInput = input.section(QChar('('),1);
         functionInput.chop(1);
 
@@ -237,13 +249,11 @@ FnData Calculator::applyFunction(enum FunctionNames fcn, const FunctionInput & i
     if (input.varTypes().contains(FailMessage)) {
         FunctionInputIterator x(input);
         while (x.hasNext()) {
-        failedOutput = x.next();
-        if (failedOutput.type() == FailMessage)
-            return failedOutput;
+            failedOutput = x.next();
+            if (failedOutput.type() == FailMessage)
+                return failedOutput;
         }
     }
-
-    failedOutput.setFailMessage(tr("Function Error: \"%1\" is not a valid function").arg(presetFunctions.fcnName(fcn)));
 
     switch (fcn) {
 
@@ -289,10 +299,6 @@ FnData Calculator::applyFunction(enum FunctionNames fcn, const FunctionInput & i
 
     case IsAutomorphismFcn:
         return IsAutomorphismFunction(input);
-        break;
-
-    case IsolatedVerticesFcn:
-        return IsolatedVerticesFunction(input);
         break;
 
     case IsPrimitiveElementFcn:
@@ -700,29 +706,6 @@ FnData Calculator::IsAutomorphismFunction(const FunctionInput & input)
 
 }
 
-FnData Calculator::IsolatedVerticesFunction(const FunctionInput &input)
-{
-
-    FnData output;
-
-    if (!input.isAcceptable(presetFunctions.fcnInput(IsolatedVerticesFcn))) {
-      output.setFailMessage(tr("Function Error: invalid input for IsolatedVertices"));
-      return output;
-    }
-
-    FnGraph Gamma(input.at(0).graphData());
-
-    QList<QString> verticesList = Gamma.isolatedVertices();
-
-    if (verticesList.isEmpty())
-        output.setString(tr("There are no isolated vertices"));
-    else
-        output.setStringList(verticesList);
-
-    return output;
-
-}
-
 FnData Calculator::IsPrimitiveElementFunction(const FunctionInput & input)
 {
 
@@ -791,12 +774,12 @@ FnData Calculator::IsSeparableFunction(const FunctionInput &input) {
         }
     }
 
-    FnWord v = wordList.takeFirst();
+    //FnWord v = wordList.takeFirst();
 
-    if (v.isSeparable(basis))
-        output.setString(tr("%1 is separable.").arg(v));
+    if (isSeparable(wordList,basis))
+        output.setString(tr("%1 is separable.").arg(input.at(0).toOutput()));
     else
-        output.setString(tr("%1 is not separable.").arg(v));
+        output.setString(tr("%1 is not separable.").arg(input.at(0).toOutput()));
 
     return output;
 

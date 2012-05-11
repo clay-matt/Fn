@@ -19,7 +19,6 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionEnum["Identity_"] = IdentityFcn;
   functionEnum["Inverse_"] = InverseFcn;
   functionEnum["IsAutomorphism_"] = IsAutomorphismFcn;
-  functionEnum["IsolatedVertices_"] = IsolatedVerticesFcn;
   functionEnum["IsPrimitiveElement_"] = IsPrimitiveElementFcn;
   functionEnum["IsSeparable_"] = IsSeparableFcn;
   functionEnum["Iterate_"] = IterateFcn;
@@ -43,7 +42,6 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionName[IdentityFcn] = "Identity_";
   functionName[InverseFcn] = "Inverse_";
   functionName[IsAutomorphismFcn] = "IsAutomorphism_";
-  functionName[IsolatedVerticesFcn] = "IsolatedVertices_";
   functionName[IsPrimitiveElementFcn] = "IsPrimitiveElement_";
   functionName[IsSeparableFcn] = "IsSeparable_";
   functionName[IterateFcn] = "Iterate_";
@@ -67,7 +65,6 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionSkeleton[IdentityFcn] = "Identity_( [u_] )";
   functionSkeleton[InverseFcn] = "Inverse_( [u_] )";
   functionSkeleton[IsAutomorphismFcn] = "IsAutomorphism_( f_ )";
-  functionSkeleton[IsolatedVerticesFcn] = "IsolatedVertices_( Gamma_ )";
   functionSkeleton[IsPrimitiveElementFcn] = "IsPrimitiveElement_( u_ , <n_> )";
   functionSkeleton[IsSeparableFcn] = "IsSeparable_( [u_] , n_ )";
   functionSkeleton[IterateFcn] = "Iterate_( f_, n_ )";
@@ -91,7 +88,6 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionStatusTip[IdentityFcn] = tr(": returns u");
   functionStatusTip[InverseFcn] = tr(": returns U");
   functionStatusTip[IsAutomorphismFcn] = tr(": returns the inverse of f if f is an automorphism");
-  functionStatusTip[IsolatedVerticesFcn] = tr(": returns the list of isolated vertices of Gamma");
   functionStatusTip[IsPrimitiveElementFcn] = tr(": returns an automorphism f such that f(u) has length 1 if possible (n is the optional rank)");
   functionStatusTip[IsSeparableFcn] = tr(": returns whether or not the set of words [u_] in rank n is separable");
   functionStatusTip[IterateFcn] = tr(": returns f^n");
@@ -115,7 +111,6 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionInput[IdentityFcn] << Element << Listable;
   functionInput[InverseFcn] << Element << Listable;
   functionInput[IsAutomorphismFcn] << Morphism << NotListable;
-  functionInput[IsolatedVerticesFcn] << Graph << NotListable;
   functionInput[IsPrimitiveElementFcn] << Element << NotListable << OptionalInteger << NotListable;
   functionInput[IsSeparableFcn] << Element << Listable << Integer << NotListable;
   functionInput[IterateFcn] << Morphism << NotListable << Integer << NotListable;
@@ -139,7 +134,6 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionOutput[IdentityFcn] = Element;
   functionOutput[InverseFcn] = Element;
   functionOutput[IsAutomorphismFcn] = Morphism;
-  functionOutput[IsolatedVerticesFcn] = String;
   functionOutput[IsPrimitiveElementFcn] = Morphism;
   functionOutput[IsSeparableFcn] = Morphism;
   functionOutput[IterateFcn] = Morphism;

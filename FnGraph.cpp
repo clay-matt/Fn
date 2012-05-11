@@ -10,33 +10,56 @@ FnGraph::FnGraph()
 
 /////////////////////////////////////////////////////////
 
-void FnGraph::addVertex(const QString &vertex) {
+void FnGraph::addVertex(const QString &vertex)
+{
 
     // adds the vertex named vertex with an empty list
     // of adjacent edges
 
+    // if the vertex name is already used, there are no
+    // changes to the graph
+
     if(!vertices.contains(vertex)) {
-        QVector<QString> s;
-        vertices.insert(vertex,s);
+
+        QStringList emptyList;
+        vertices.insert(vertex,emptyList);
+
     }
 
 }
 
-void FnGraph::addEdge(const QString &edge, const QVector<QString> &endpoints) {
+void FnGraph::addEdge(const QString &edge, const QVector<QString> &endpoints)
+{
 
-    if (!vertices.contains(endpoints.at(0)))
-        addVertex(endpoints.at(0));
-    vertices[endpoints.at(0)].push_back(edge);
-    if (!vertices.contains(endpoints.at(1)))
-        addVertex(endpoints.at(1));
-    vertices[endpoints.at(1)].push_back(edge);
+    // adds the edge named edge with adjacent vertices
+    // given by endpoints
+
+    // if the edge name is already used, there are no changes to the graph
+
     if(!keys().contains(edge)) {
+
+        // if the vertices are not present, they are first
+        // added to the graph
+
+        if (!vertices.contains(endpoints.at(0)))
+            addVertex(endpoints.at(0));
+        vertices[endpoints.at(0)].append(edge);
+
+        if (!vertices.contains(endpoints.at(1)))
+            addVertex(endpoints.at(1));
+        vertices[endpoints.at(1)].append(edge);
+
         insert(edge,endpoints);
+
     }
 
 }
 
-void FnGraph::addEdge(const QString &edge, const QString &initial, const QString &terminal) {
+void FnGraph::addEdge(const QString &edge, const QString &initial, const QString &terminal)
+{
+
+    // overloads addEdge(QString, QVector<QString>) by creating a QVector
+    // with entries initial and terminal
 
     QVector<QString> endpoints;
     endpoints << initial << terminal;
@@ -46,297 +69,345 @@ void FnGraph::addEdge(const QString &edge, const QString &initial, const QString
 
 void FnGraph::removeVertex(const QString &vertex)
 {
-    QVector<QString> edges=vertices.take(vertex);
-    while(!edges.isEmpty())
-    {
-        removeEdge(edges.at(0));
-        edges.pop_front();
+
+    // removes vertex from the graph and any adjacent edges
+
+    // if vertex is not present, there is no change in the graph
+
+    QStringList adjacentEdgeList = vertices.take(vertex);
+
+    foreach(QString edge, adjacentEdgeList) {
+        removeEdge(edge);
     }
+
 }
 
 void FnGraph::removeEdge(const QString &edge)
 {
-    QVector<QString> nodes= take(edge);
-    QVector<QString> edges;
-    if(nodes.at(0)==nodes.at(1))
-    {
-        if(vertices.contains(nodes.at(0)))
-        {
-            edges=vertices.value(nodes.at(0));
-            vertices[nodes.at(0)].remove(edges.indexOf(edge));
-        }
-        return;
-    }
-    if(vertices.contains(nodes.at(0)))
-    {
-        edges=vertices.value(nodes.at(0));
-        vertices[nodes.at(0)].remove(edges.indexOf(edge));
-    }
-     if(vertices.contains(nodes.at(1)))
-    {
-        edges=vertices.value(nodes.at(1));
-         vertices[nodes.at(1)].remove(edges.indexOf(edge));
+
+    // removes edge from the graph
+
+    // if edge is not present, there is no change in the graph
+
+    if(contains(edge)) {
+
+        QString v0 = initialVertex(edge);
+        QString v1 = terminalVertex(edge);
+
+        remove(edge);
+
+        // remove edge from list of adjacent edges
+        if(vertices.contains(v0))
+            vertices[v0].removeAll(edge);
+
+        if(v0 != v1 && vertices.contains(v1))
+            vertices[v1].removeAll(edge);
+
     }
 
 }
 
-QList<QString> FnGraph::isolatedVertices() const {
+QStringList FnGraph::isolatedVertices(void) const
+{
 
-    // Returns the list of isolated vertices of the graph
+    // returns the list of isolated vertices of the graph
 
-        QList<QString> isolated;
+    QStringList isolated;
 
+    foreach(QString vertex, vertices.keys()) {
 
-
-        foreach(QString vertex, vertices.keys())
-        {
-            if(vertices.value(vertex).size()==0)
-            {
-                   isolated.append(vertex);
-            }
-
+        if(vertices.value(vertex).isEmpty())
+            isolated.append(vertex);
 
         }
 
     return isolated;
+
 }
 
-QList<FnGraph> FnGraph::connectedComponents() const {
+QList<FnGraph> FnGraph::connectedComponents() const
+{
 
-    // Return the list of connected components of the graph
+    // returns the list of connected components of the graph
 
     QList<FnGraph> components;
-    QHash<QString, QVector <QString> > unused=vertices;
+    QHash<QString, QStringList> unusedVertices = vertices;
     QList<QString> queue;
-    QString edge,vertex;
 
-    while(!unused.isEmpty())
-    {
+    while(!unusedVertices.isEmpty()) {
+
         FnGraph component;
-        queue.append(unused.begin().key());//puts the first unused vertex it finds in the queue
 
-        while(!queue.isEmpty())
-        {
-            vertex=queue[0];//sets the vertex to next key in the queue
-            component.addVertex(vertex);
-            foreach(edge,unused.value(vertex))
-            {
-                if(!component.contains(edge))//if the edge hasn't been used
-                {
-                    component.addEdge(edge,value(edge));//add it to the graph
+        queue.append(unusedVertices.keys().first()); // puts the first unused vertex it finds in the queue
 
-                    if(initialVertex(edge)!=vertex)//finds the other vertex along the edge
-                    {
-                        if(!queue.contains(initialVertex(edge)))//if the other vertex isn't in the queue
-                            queue.push_back(initialVertex(edge));//add it
+        while(!queue.isEmpty()) {
+
+            QString vertex = queue.at(0); // sets vertex to the next one in the queue
+
+            component.addVertex(vertex); // add vertex to component
+
+            // loop over edges adjacent to vertex
+            foreach(QString edge, unusedVertices.value(vertex)) {
+
+                if(!component.contains(edge)) { // if the edge hasn't been used
+
+                    component.addEdge(edge,adjacentVertices(edge)); // add it to component
+
+                    // add other adjacent vertex to queue
+                    if(initialVertex(edge) != vertex) { // finds the other vertex along the edge
+
+                        if(!queue.contains(initialVertex(edge))) // if the other vertex isn't in the queue
+                            queue.append(initialVertex(edge)); // add it
+
                     }
-                    if(terminalVertex(edge)!=vertex)
-                    {
+
+                    if(terminalVertex(edge) != vertex) {
+
                         if(!queue.contains(terminalVertex(edge)))
-                            queue.push_back(terminalVertex(edge));
+                            queue.append(terminalVertex(edge));
+
                     }
+
                 }
 
             }
-            queue.pop_front();//removes the vertex from the queue
-            unused.remove(vertex);//the vertex has been used
-        }
-        components.append(component);
-    }
 
+            queue.removeFirst(); // removes vertex from the queue
+            unusedVertices.remove(vertex); // removes vertex from vertex list
+
+        }
+
+        components.append(component); // add component to component list
+
+    }
 
     return components;
 
 }
 
-QList<FnGraph> FnGraph::biconnectedComponents() const {
+QList<FnGraph> FnGraph::biconnectedComponents() const
+{
+
+    // returns the list of biconnected components of the graph
+
     /*
-    This algorithm was derived from an algorithm found in
-    John Hopcroft's and Robert Tarjan's
-    article "Algorithm 447 Efficient Algorithms for Graph Manipulation"
-    in Communications of the ACM, 1973
+    This algorithm was derived from an algorithm found in John Hopcroft's and Robert Tarjan's article
+    "Algorithm 447 Efficient Algorithms for Graph Manipulation" in Communications of the ACM, 1973
     */
-    //Note: I use the front of the stacks as the top of the stacks;
-  QList<FnGraph> biconnectedComponents;
-  FnGraph copyOfGraph= *this;
-  QList<QString> edgeStack;
-  QList<QString> vertexStack;
-  QList<int> dFSNumbers;//stores the number of each vertex;
-  QList<int> lowpoints;// stores the lowpoint of each vertex;
-  QString head;//the other vertex along an edge
-  QString edge;//the current edge being looked at
-  bool inComponent;//a boolean to determine if an edge is in the component being built
-  int count=0;//keeps track of the number vertices searched
 
-  vertexStack=copyOfGraph.isolatedVertices();
-  while(!vertexStack.isEmpty())//removes isolated vertices from the graph
-  {
-      copyOfGraph.removeVertex(vertexStack[0]);
-      vertexStack.pop_front();
-  }
-  vertexStack.push_front(copyOfGraph.vertexList().at(0));
-  count++;
-  dFSNumbers.push_front(count);//sets the number of the vertex
-  lowpoints.push_front(copyOfGraph.vertices.size());//sets the Lowpoint to the number of vertices as a place holder.
+    QList<FnGraph> bicomponents;
+    FnGraph Gamma(*this);
+    QList<QString> edgeStack;
+    QList<QString> vertexStack;
+    QList<int> dFSNumbers; // stores the Depth First Search number of each vertex;
+    QList<int> lowpoints; // stores the lowpoint of each vertex;
+    QString vertex;
+    QString edge;
+    int count = 1; // keeps track of the number vertices searched
 
-  //chooses start point and puts it on the top of the stack;
+    // remove isolated vertices from the graph
+    foreach(QString vertex, isolatedVertices()) {
+        Gamma.removeVertex(vertex);
+    }
 
-  while((vertexStack.size()>1)||(copyOfGraph.vertices.value(vertexStack[0]).size()>0))
-  {
-      if(copyOfGraph.vertices.value(vertexStack[0]).size()>0)//if there is an edge from the top of the stack
-      {
-          edge=copyOfGraph.vertices.value(vertexStack[0]).at(0);
+    // add first vertex to stack
+    vertexStack.prepend(Gamma.vertexList().first());
 
-          if(copyOfGraph.value(edge).at(0)==vertexStack[0])
-              head=copyOfGraph.value(edge).at(1);
-          else
-              head=copyOfGraph.value(edge).at(0);
+    dFSNumbers.prepend(count); // sets the number of the vertex
+    lowpoints.prepend(Gamma.nVertices()); // sets the lowpoint to the number of vertices as a place holder.
 
-          edgeStack.push_front(edge);
-          copyOfGraph.removeEdge(edge);
+    // main loop
+    while (vertexStack.size() > 1 || !Gamma.adjacentEdges(vertexStack.first()).isEmpty()) {
 
-          if(!vertexStack.contains(head))
-          {
-              vertexStack.push_front(head);//adds the new vertex to the stack
-              count++;
-              dFSNumbers.push_front(count);//numbers the vertex
-              lowpoints.push_front(dFSNumbers[1]);// sets the lowpoint to the number of the previous top of stack
 
-          }
-          else
-          {
-              int stackPosition=vertexStack.indexOf(head);
-              if(dFSNumbers[stackPosition]<lowpoints[0])
-                  lowpoints[0]=dFSNumbers[stackPosition];
-          }
-      }
-      else
-      {
-          if(lowpoints[0]==dFSNumbers[1])
-          {
-              FnGraph component;
-              if(vertexStack.size()>2)
-              {
-                    inComponent=true;
-                    while(inComponent)
-                    {
-                        if(value(edgeStack[0]).contains(vertexStack[0])&&value(edgeStack[0]).contains(vertexStack[1]))
-                        {
-                            inComponent=false;
-                        }
-                        component.addEdge(edgeStack[0],value(edgeStack[0]));
-                        edgeStack.pop_front();
+        // if there is an edge from the top of the vertex stack
+        if (!Gamma.adjacentEdges(vertexStack.first()).isEmpty()) {
+
+            edge = Gamma.adjacentEdges(vertexStack.first()).first();
+
+            // set head to other adjacent vertex (if one exists)
+            if (vertexStack.first() == Gamma.initialVertex(edge))
+                vertex = Gamma.terminalVertex(edge);
+            else
+                vertex = Gamma.initialVertex(edge);
+
+            if (vertexStack.contains(vertex)) {
+
+                if(dFSNumbers.at(vertexStack.indexOf(vertex)) < lowpoints.first())
+                    lowpoints[0] = dFSNumbers.at(vertexStack.indexOf(vertex));
+
+            }
+
+            else {
+
+                count++;
+                vertexStack.prepend(vertex);
+                lowpoints.prepend(dFSNumbers.first());
+                dFSNumbers.prepend(count);
+
+            }
+
+            // delete edge from Gamma and place at top of edge stack
+            edgeStack.prepend(edge);
+            Gamma.removeEdge(edge);
+
+        } // now retest while statement
+
+        // there are no edges out of the top of the stack, but there is more than one point in stack
+        else {
+
+            if (lowpoints.first() == dFSNumbers.at(1)) { // make new biconnected component
+
+                FnGraph component;
+
+                // if there are only two vertices, take all edges
+                if (vertexStack.size() == 2) {
+
+                    while(!edgeStack.isEmpty()) {
+
+                        component.addEdge(edgeStack.first(),adjacentVertices(edgeStack.first()));
+                        edgeStack.removeFirst();
 
                     }
-              }
-              else
-              {
-                  while(!edgeStack.isEmpty())
-                  {
-                      component.addEdge(edgeStack[0],value(edgeStack[0]));
-                      edgeStack.pop_front();
-                  }
-              }
-              biconnectedComponents.push_back(component);
+
+                }
+
+                // add edges from edge stck until one is found that connects to third point on stack
+                else {
+
+                    vertex = vertexStack.at(2);
+
+                    while(!edgeStack.isEmpty() && !adjacentVertices(edgeStack.first()).contains(vertex)) {
+
+                            component.addEdge(edgeStack.first(),adjacentVertices(edgeStack.first()));
+                            edgeStack.removeFirst();
+
+                    }
+
+                }
+
+                bicomponents.append(component);
+
           }
-          else
-          {
-              if(lowpoints[0]<lowpoints[1])
-                  lowpoints[1]=lowpoints[0];
+
+          else { // modify lowpoints if necessary
+
+                if(lowpoints.first() < lowpoints.at(1))
+                  lowpoints[1] = lowpoints.first();
+
           }
-          vertexStack.pop_front();
-          dFSNumbers.pop_front();
-          lowpoints.pop_front();
 
-     }
+          // remove top of stack
+          vertexStack.removeFirst();
+          dFSNumbers.removeFirst();
+          lowpoints.removeFirst();
+
+     } // now retest while statement
+
   }
-  if(count<copyOfGraph.vertices.size())
-  {
-      biconnectedComponents+=copyOfGraph.biconnectedComponents();
-  }
 
+  // if Gamma is not connected, repeat process
+  if(count < Gamma.nVertices())
+      bicomponents += Gamma.biconnectedComponents();
 
-
-  return biconnectedComponents;
+  return bicomponents;
 
 }
 
-void FnGraph::simplify()
+bool FnGraph::isSubGraph(const FnGraph &Gamma) const
 {
-    foreach (QString edge, keys())
-    {
-        if(keys(value(edge)).size()>1)
-        {
-            removeEdge(edge);
-        }
-        else
-        {
-            QVector<QString> temp;
-            temp.append(value(edge).at(1));
-            temp.append(value(edge).at(0));
-            if(keys(temp).size()>0)
-            {
-                removeEdge(edge);
-            }
-        }
-    }
-}
 
+    // determines if graph is a subgraph of Gamma
 
-bool FnGraph::isSubGraph(const FnGraph &gamma) const
-{
-    foreach(QString vertex, vertices.keys())
-    {
-        if(!gamma.vertices.contains(vertex))
-        {
+    // in order to be a subgraph, it must have the same vertex and edge labels
+    // and adjacency
+
+    // test that each vertex is also a vertex of Gamma
+    foreach(QString vertex, vertexList()) {
+
+        if(!Gamma.vertexList().contains((vertex)))
             return false;
-        }
+
     }
 
-    foreach(QString edge, keys())
-    {
-        if(!gamma.contains(edge))
-        {
+    // test that each edge is an edge of Gamma with same adjacent vertices
+    foreach(QString edge, edgeList()) {
+
+        if(!Gamma.edgeList().contains(edge))
             return false;
-        }
+
+        if(adjacentVertices(edge) != Gamma.adjacentVertices(edge))
+            return false;
+
     }
+
     return true;
 
 }
 
-//Friends
-FnGraph operator + (const FnGraph & gamma, const FnGraph & beta)
+/////////////////////////////////////////////////////////
+// Friends
+
+FnGraph operator + (const FnGraph &Gamma0, const FnGraph &Gamma1)
 {
-    FnGraph tau;
-    QString num;
-    foreach(QString vertex, gamma.vertices.keys())
-        tau.addVertex(vertex);
-    foreach(QString vertex, beta.vertices.keys())
-        tau.addVertex(vertex);
 
-    foreach(QString edge, gamma.keys())
-    {
-        tau.addEdge("e."+num.setNum(tau.size()),gamma.value(edge));
-    }
-    foreach(QString edge, beta.keys())
-    {
-        tau.addEdge("e."+num.setNum(tau.size()),beta.value(edge));
-    }
+    // returns the sum the two graphs Gamma0 and Gamma1
 
-    return tau;
+    // the vertices of the sum is the union of the two vertex lists
+    // the edges of the sum is the disjoint union of the two edge lists
+    // edges from Gamma0 are appended with 0, edges from Gamma1 are appended with 1
+
+    FnGraph unionGraph;
+
+    QString edge,vertex;
+
+    foreach(vertex, Gamma0.vertexList())
+        unionGraph.addVertex(vertex);
+
+    foreach(vertex, Gamma1.vertexList())
+        unionGraph.addVertex(vertex);
+
+    foreach(edge, Gamma0.edgeList())
+        unionGraph.addEdge(edge+"0",Gamma0.adjacentVertices(edge));
+
+    foreach(edge, Gamma1.edgeList())
+        unionGraph.addEdge(edge+"1",Gamma1.adjacentVertices(edge));
+
+    return unionGraph;
+
 }
-FnGraph operator - (const FnGraph & gamma, const FnGraph & beta)
-{
-    FnGraph tau=gamma;
 
-    if(beta.isSubGraph(gamma))
-    {
-        foreach(QString vertex, beta.vertices.keys())
-        {
-          tau.removeVertex(vertex);
+FnGraph operator - (const FnGraph &Gamma0, const FnGraph &Gamma1)
+{
+
+    // returns the difference of the graphs Gamma0 and Gamma1 if
+    // Gamma1 is a subgraph of Gamma0, else returns Gamma0
+
+    // this is the graph Gamma0 with all of the edges of Gamma1 removed
+    // additionally any vertex only adjacent to edges in Gamma1 is removed
+    // and any isolated vertex of Gamma1 that is isolated in Gamma0 is also removed
+
+    FnGraph differenceGraph(Gamma0);
+
+    if(Gamma1.isSubGraph(differenceGraph)) {
+
+        // remove edges of Gamma1
+        foreach(QString edge, Gamma1.edgeList())
+            differenceGraph.removeEdge(edge);
+
+        // remove certain isolated vertices
+        QStringList isolated = differenceGraph.isolatedVertices();
+        foreach(QString vertex, isolated) {
+
+            if(Gamma1.vertexList().contains(vertex))
+                differenceGraph.removeVertex(vertex);
+
         }
+
     }
 
-    return tau;
+    return differenceGraph;
+
 }
+
 /////////////////////////////////////////////////////////

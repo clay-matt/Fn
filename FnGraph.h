@@ -2,7 +2,7 @@
 // inherits QHash<QString, QVector<QString> >
 
 // authors Matt Clay, Jack Conant and Nivetha Ramasubramanian
-// version 110627
+// version 120511
 
 /////////////////////////////////////////////////////////
 
@@ -12,6 +12,7 @@
 #include <QHash>
 #include <QList>
 #include <QString>
+#include <QStringList>
 #include <QVector>
 
 #include "Fn.h"
@@ -35,32 +36,35 @@ public:
     }
 
     void addVertex(const QString &vertex);
-    void addEdge(const QString &edge, const QVector<QString> &vertices);
+    void addEdge(const QString &edge, const QVector<QString> &endpoints);
     void addEdge(const QString &edge, const QString &initial, const QString &terminal);
 
     void removeVertex(const QString &vertex);
     void removeEdge(const QString &edge);
 
-    QVector<QString> getAdjacentEdges(const QString &vertex) const {
+    QStringList adjacentEdges(const QString &vertex) const {
         return vertices.value(vertex);
     }
 
-    QList<QString> isolatedVertices(void) const;
+    QVector<QString> adjacentVertices(const QString &edge) const {
+        return value(edge);
+    }
+
+    QStringList isolatedVertices(void) const;
     QList<FnGraph> connectedComponents(void) const;
     QList<FnGraph> biconnectedComponents(void) const;
 
-    QList<QString> vertexList() const { return vertices.keys(); }
-    QList<QString> edgeList() const { return keys(); }
+    QStringList vertexList(void) const { return vertices.keys(); }
+    QStringList edgeList(void) const { return keys(); }
 
-    void simplify();
-
-    bool isSubGraph(const FnGraph &gamma) const;
+    bool isSubGraph(const FnGraph &Gamma) const;
 
     //friends
-    friend FnGraph operator + (const FnGraph & gamma, const FnGraph & beta);
-    friend FnGraph operator - (const FnGraph & gamma, const FnGraph & beta);
+    friend FnGraph operator + (const FnGraph &Gamma0, const FnGraph &Gamma1);
+    friend FnGraph operator - (const FnGraph &Gamma0, const FnGraph &Gamma1);
+
 private:
-    QHash<QString, QVector<QString> > vertices;
+    QHash<QString, QStringList> vertices; // holds list of vertices and their adjacent edges
 
 };
 

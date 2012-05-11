@@ -53,11 +53,12 @@ FnWord FnWord::exp(int n) const {
   if (n == 0) return Id;
 
   else if (n < 0)
-    return u.inverse().exp(-n);
+      return u.inverse().exp(-n);
 
   else {
-    u *= exp(n-1);
-    return u;
+      FnWord un(u.repeated(n));
+      un.tighten();
+      return un;
   }
 
 }
@@ -99,7 +100,7 @@ bool FnWord::isSeparable(const Basis &basis) const {
     }
     else  //this part needs to be cleaned up
     {
-        graph.simplify();
+        //graph.combineMultiEdges();
         components=graph.biconnectedComponents();
         if(components.size()>1)
         {
@@ -149,7 +150,7 @@ QList<int> FnWord::stepTwoNilpotentNormalForm(const Basis & basis) const {
     FnWord normalForm;
 
     for(int i = 0; i < rank; i++) {
-	FnWord a(basis.at(2*i));
+        FnWord a(basis.at(2*i));
 	normalForm *= a.exp(nilpotent_image.at(i));
     }
 
@@ -246,18 +247,16 @@ void FnWord::tighten() {
 FnGraph FnWord::whiteheadGraph(const Basis &basis) const {
 
     FnGraph whitehead;
-    QString e="e",num;
-    int i=0;
-    for(i=0;i<2*basis.getRank();i++)
-    {
-        whitehead.addVertex(basis.at(i));
-    }
-    for(i=0;i<length()-1;i++)
-    {
+    QString edge;
+    int i;
 
-        whitehead.addEdge(e+num.setNum(i),at(i),basis.inverse(at(i+1)));
-    }
-    whitehead.addEdge(e+num.setNum(i), at(i), basis.inverse(at(0)));
+    for(i = 0; i < 2*basis.getRank(); i++)
+        whitehead.addVertex(basis.at(i));
+
+    for(i = 0; i < length()-1; i++)
+        whitehead.addEdge(edge.setNum(i),at(i),basis.inverse(at(i+1)));
+
+    whitehead.addEdge(edge.setNum(i),at(i),basis.inverse(at(0)));
 
     return whitehead;
 
@@ -326,14 +325,108 @@ FnWord conjugacyProblem(const FnWord & u, const FnWord & v) {
 
 }
 
+bool isSeparable(QList<FnWord> words, const Basis &basis) {
+
+    // determines whether or not a set of words is separable
+
+    QList<FnWord> cycWords;
+    foreach(FnWord word, words) { // get cyclic words
+        cycWords.append(word.cyclicWord());
+    }
+
+    // build Whitehead graph for the words
+    FnGraph Gamma = whiteheadGraph(cycWords,basis);
+
+    // connectivity properties don't change by identifying multiedges
+    //Gamma.combineMultiEdges();
+
+    // Gamma is disconnected, hence the set of words is separable
+    if (Gamma.connectedComponents().size() > 1) return true;
+
+    // get the biconnected components
+    QList<FnGraph> bicomponents = Gamma.biconnectedComponents();
+
+    if(bicomponents.size() > 1) { // there is a cut vertex
+
+        QList<QString> V1,V2;
+        QString Z;
+        FnWord cutVertex;
+
+        FnGraph Gamma1 = bicomponents[0];
+        FnGraph Gamma2;
+
+        for( int i = 1; i < bicomponents.size(); i++) {
+            Gamma2 = Gamma2 + bicomponents[i];
+        }
+
+        V1 = Gamma1.vertexList();
+        V2 = Gamma2.vertexList();
+
+        // find cut vertex, it is a vertex appearing in two components
+        for(int i = 0; i < V1.size(); i++) {
+            for(int j = 1; j < V2.size(); j++) {
+                if (V1[i] == V2[j]) {
+                    cutVertex = V1[i];
+                    break;
+                }
+            }
+        }
+
+        if (V1.contains(cutVertex.inverse())) {
+            for(int i=0;i < V1.size(); i++) Z += V1[i];
+        } else {
+            for(int i=0;i < V2.size(); i++) Z += V2[i];
+        }
+
+        WhiteheadData whData(basis.getRank(),Z,cutVertex.at(0));
+        FnMap phi = whitehead(whData, basis);
+
+        // shorten the words according
+        QList<FnWord> newWords;
+        foreach(FnWord word,cycWords) {
+            newWords.append(phi(word));
+        }
+
+        // rerun algorithm again
+        return isSeparable(newWords,basis);
+
+    }
+
+    // there is no cut vertex, so the set of words is not separable
+    return false;
+
+}
+
 FnGraph whiteheadGraph(QList<FnWord> words, const Basis &basis)
 {
+
+    // returns the Whitehead graph of a collection of words
+
+    int i,nword;
+    QString edgeNumber,wordNumber;
     FnGraph whitehead;
-    for(int i=0;i<words.size();i++)
-    {
-        whitehead=whitehead+words[i].whiteheadGraph(basis);
+
+    // add vertices to graph
+    for(i = 0; i < 2*basis.getRank(); i++)
+        whitehead.addVertex(basis.at(i));
+
+    nword = 1;
+    foreach(FnWord word, words) {
+
+        wordNumber.setNum(nword);
+
+        // add edges for word
+        for(i = 0; i < word.length()-1; i++)
+            whitehead.addEdge(wordNumber+"."+edgeNumber.setNum(i),word.at(i),basis.inverse(word.at(i+1)));
+
+        whitehead.addEdge(wordNumber+"."+edgeNumber.setNum(i),word.at(i),basis.inverse(word.at(0)));
+
+        nword++;
+
     }
+
     return whitehead;
+
 }
 
 
