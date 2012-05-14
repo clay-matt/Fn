@@ -264,6 +264,17 @@ table.classmembers
     border-color:#0066CC;
 }
 
+table.equations
+{
+    margin:10px;
+    width:400px;
+    padding:2px;
+    padding-left:10px;
+    background-color:#D3D3D3;
+    border-radius:5px;
+
+}
+
 table.memberheader
 {
     margin-left:0px;
@@ -275,6 +286,19 @@ table.memberheader
     border-color:#000000;
     border-radius:5px;
     font-size:120%;
+}
+
+td.eqleft
+{
+    text-align:right;
+    vertical-align:bottom;
+}
+
+
+td.eqright
+{
+    text-align:left;
+    vertical-align:bottom;
 }
 
 td.type
@@ -293,7 +317,7 @@ span.code
 span.input
 {
     font-style:italic;
-    font-size:110%;
+    font-size:105%;
 }
 
 span.type
@@ -305,6 +329,7 @@ span.type
 span.membername
 {
     font-weight:bold;
+    font-size:105%;
 }
 
 img.icon

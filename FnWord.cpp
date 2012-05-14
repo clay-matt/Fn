@@ -5,6 +5,9 @@
 #include <QList>
 #include <QRegExp>
 #include <QString>
+
+#include <QDebug>
+
 #include "Basis.h"
 #include "FnWord.h"
 #include "WhiteheadData.h"
@@ -14,203 +17,130 @@
 
 QList<int> FnWord::abelianization(const Basis &basis) const {
 
-  int rank = basis.getRank();
-  QList<int> abelian_image;
+    // returns an integer list of basis elements exponent sums
 
-  for(int i = 0; i < rank; i++) {
-    abelian_image.append(count(basis.at(2*i)) - count(basis.at(2*i+1)));
-  }
+    int rank = basis.getRank();
+    QList<int> abelian_image;
 
-  return abelian_image;
+    for(int i = 0; i < rank; i++)
+        abelian_image.append(count(basis.at(2*i)) - count(basis.at(2*i+1)));
+
+    return abelian_image;
 
 }
 
 FnWord FnWord::cyclicWord() const {
 
-  /* Returns the cyclic word of the element. */
+    // returns the cyclic word of the element
 
-  int i,len;
-  FnWord cyc(*this); // initialize cyc
+    int i,len;
+    FnWord cyc(*this);
 
-  cyc.tighten(); // tighten first
+    cyc.tighten(); // tighten first
 
-  if (cyc == Id) return(cyc);
+    if (cyc == Id) return(cyc);
 
-  len = cyc.length(); 
-  i = 0;
-  while (cyc.at(i) == BASIS.inverse(cyc.at(len-(i+1)))) i++;
+    len = cyc.length();
+    i = 0;
 
-  return(cyc.mid(i,len-2*i));
+    while (cyc.at(i) == BASIS.inverse(cyc.at(len-(i+1)))) i++;
+
+    return(cyc.mid(i,len-2*i));
 
 }
 
 FnWord FnWord::exp(int n) const {
 
-  /* Returns the nth power of the element. */
+    // returns the nth power of the element
 
-  FnWord u(*this);
+    // if n = 0, then the identity is returned
 
-  if (n == 0) return Id;
+    if (n == 0) return Id;
 
-  else if (n < 0)
-      return u.inverse().exp(-n);
+    else if (n < 0)
+        return inverse().exp(-n);
 
-  else {
-      FnWord un(u.repeated(n));
-      un.tighten();
-      return un;
-  }
+    else {
+        FnWord un(repeated(n));
+        un.tighten();
+        return un;
+    }
 
 }
 
 FnWord FnWord::inverse() const {
 
-  /* This function returns the inverse of the element. */
+    // returns the inverse of the element
 
-  if(*this == Id) return(Id);
+    if(*this == Id) return(Id);
 
-  int len;
-  FnWord inv;
+    FnWord inv;
 
-  len = length();
+    int len = length();
 
-  while (len > 0) { // write u backwards and swap x <-> X
-    len--;
-    inv += BASIS.inverse(at(len));
-  }
+    while (len > 0) { // write u backwards and swap x <-> X
+        len--;
+        inv += BASIS.inverse(at(len));
+    }
 
-  inv.tighten(); // tighten the inverse
+    inv.tighten();
 
-  return(inv);
+    return(inv);
 
 }
 
-bool FnWord::isSeparable(const Basis &basis) const {
-    FnWord word=cyclicWord();
-    FnGraph graph=word.whiteheadGraph(basis);
-    QList<FnGraph> components=graph.connectedComponents();
-    QList<QString> vertices;
-    QString setZ;
-    QString cutVertex;
+bool FnWord::isSeparableElement(const Basis &basis) const {
 
+    // returns true if the element is separable by using Stallings algorithm
 
-    if(components.size()>1)
-    {
-        return true;
-    }
-    else  //this part needs to be cleaned up
-    {
-        //graph.combineMultiEdges();
-        components=graph.biconnectedComponents();
-        if(components.size()>1)
-        {
-           vertices=components[0].vertexList();
-           for(int i=0;i<vertices.size();i++)
-           {
-               for(int j=1;j<components.size();j++)
-               {
-                   if(components[j].vertexList().contains(vertices[i]))
-                   {
-                       cutVertex=vertices[i];
-                       break;
-                   }
-               }
-               if(!cutVertex.isEmpty())
-                   break;
-           }
-           FnGraph temp=graph;
-           temp.removeVertex(cutVertex);
-           word=cutVertex;
-           components=temp.connectedComponents();
-           if(components[0].vertexList().contains(word.inverse()))
-               temp=graph-components[1];
-           else
-               temp=graph-components[0];
-           temp.removeVertex(word.inverse());
-           vertices=temp.vertexList();
-           for(int i=0;i<vertices.size();i++)
-           {
-               setZ+=vertices[i];
-           }
-           WhiteheadData whData(basis.getRank(),setZ,cutVertex.at(0));
-           FnMap phi=whitehead(whData, basis);
-           word=phi(*this);
-           return word.isSeparable(basis);
-        }
-    }
-    return false;
-    
+    QList<FnWord> word;
+
+    word.append(*this);
+
+    return isSeparable(word,basis);
+
 }
 
 QList<int> FnWord::stepTwoNilpotentNormalForm(const Basis & basis) const {
     
+    // returns an integer list of the two step nilpotent normal form of the element
+
     int rank = basis.getRank();
     QList<int> nilpotent_image = abelianization(basis);
-    FnWord currentForm(*this);
-    FnWord normalForm;
-
-    for(int i = 0; i < rank; i++) {
-        FnWord a(basis.at(2*i));
-	normalForm *= a.exp(nilpotent_image.at(i));
-    }
-
     QList<int> commutator_portion;
 
-    for(int i = 0; i < (rank*(rank-1))/2; i++) 
-	commutator_portion.append(0);
+    int index = 0;
+    for(int i = 0; i < rank; i++) {
+        for(int j = i+1; j < rank; j++) {
 
-    int move_forward;
-    int i,j,commutator;
-    int first_index,second_index;
-    QChar a_i,a_j;
+            QString ijBasis(basis);
+            ijBasis.remove(2*j,2);
+            ijBasis.remove(2*i,2);
 
-    while (!currentForm.isTrivial()) {
+            FnWord ijWord(*this);
+            ijWord.remove(QRegExp("["+ijBasis+"]"));
+            ijWord.tighten();
 
-	// find where the current form and normal form differ
-        while(!normalForm.isEmpty()) {
-            if(normalForm.at(0) == currentForm.at(0)) {
-                currentForm.remove(0,1);
-                normalForm.remove(0,1);
+            // integrate -y dx
+            int integral = 0;
+            commutator_portion.append(0);
+            for(int k = 0; k < ijWord.length(); k++) {
+
+                if(ijWord.at(k) == basis.at(2*i))
+                    commutator_portion[index] += integral;
+                if(ijWord.at(k) == basis.at(2*i + 1))
+                    commutator_portion[index] -= integral;
+                if(ijWord.at(k) == basis.at(2*j))
+                    integral -= 1;
+                if(ijWord.at(k) == basis.at(2*j + 1))
+                    integral += 1;
+
             }
-            else break;
-	}
 
-        if(currentForm.isTrivial()) break;
+            index++;
 
-	if(normalForm.isEmpty()) {
-            move_forward = currentForm.indexOf(basis.inverse(currentForm.at(0)));
-	} else {
-	    move_forward = currentForm.indexOf(normalForm.at(0));
-	}
-	
-	a_i = currentForm.at(move_forward);
-	a_j = currentForm.at(move_forward - 1);
-
-	// swap a_ja_i for a_ia_j, so add commutator [a_i,a_j]
-
-	i = basis.indexOf(a_i);
-	j = basis.indexOf(a_j);
-
-        first_index = ( i < j ) ? i/2 : j/2;
-        second_index = (i > j ) ? i/2 : j/2;
-        commutator = first_index*rank - (first_index*(first_index + 1))/2 + (second_index - first_index - 1);
-
-        if((i + j) % 2 == 0) {
-            if (i < j)
-                commutator_portion[commutator]--;
-            else
-                commutator_portion[commutator]++;
-        } else {
-            if (i < j)
-                commutator_portion[commutator]++;
-            else
-                commutator_portion[commutator]--;
         }
-	
-	currentForm.replace(move_forward - 1,1,a_i);
-	currentForm.replace(move_forward,1,a_j);
-	currentForm.tighten();
-	    
+
     }
 
     nilpotent_image.append(commutator_portion);
@@ -325,7 +255,7 @@ FnWord conjugacyProblem(const FnWord & u, const FnWord & v) {
 
 }
 
-bool isSeparable(QList<FnWord> words, const Basis &basis) {
+bool isSeparable(const QList<FnWord> words, const Basis &basis) {
 
     // determines whether or not a set of words is separable
 
@@ -337,9 +267,6 @@ bool isSeparable(QList<FnWord> words, const Basis &basis) {
     // build Whitehead graph for the words
     FnGraph Gamma = whiteheadGraph(cycWords,basis);
 
-    // connectivity properties don't change by identifying multiedges
-    //Gamma.combineMultiEdges();
-
     // Gamma is disconnected, hence the set of words is separable
     if (Gamma.connectedComponents().size() > 1) return true;
 
@@ -348,34 +275,36 @@ bool isSeparable(QList<FnWord> words, const Basis &basis) {
 
     if(bicomponents.size() > 1) { // there is a cut vertex
 
-        QList<QString> V1,V2;
-        QString Z;
+        QStringList V1,V2; // vertex sets
+        QString Z;  // vertex set as string for use by WhiteheadData
         FnWord cutVertex;
 
-        FnGraph Gamma1 = bicomponents[0];
-        FnGraph Gamma2;
+        FnGraph Gamma1 = bicomponents.at(0);
+        FnGraph Gamma2 = bicomponents.at(1);
 
-        for( int i = 1; i < bicomponents.size(); i++) {
-            Gamma2 = Gamma2 + bicomponents[i];
+        // add remaining components
+        for( int i = 2; i < bicomponents.size(); i++) {
+            Gamma2 = Gamma2 + bicomponents.at(i);
         }
 
         V1 = Gamma1.vertexList();
         V2 = Gamma2.vertexList();
 
-        // find cut vertex, it is a vertex appearing in two components
+        // find cut vertex, it is the vertex that appears in both V1 and V2
         for(int i = 0; i < V1.size(); i++) {
             for(int j = 1; j < V2.size(); j++) {
-                if (V1[i] == V2[j]) {
-                    cutVertex = V1[i];
+                if (V1.at(i) == V2.at(j)) {
+                    cutVertex = V1.at(i);
                     break;
                 }
             }
         }
 
+        // build appropriate Whitehead auto
         if (V1.contains(cutVertex.inverse())) {
-            for(int i=0;i < V1.size(); i++) Z += V1[i];
+            Z = V1.join("");
         } else {
-            for(int i=0;i < V2.size(); i++) Z += V2[i];
+            Z = V2.join("");
         }
 
         WhiteheadData whData(basis.getRank(),Z,cutVertex.at(0));
@@ -430,7 +359,7 @@ FnGraph whiteheadGraph(QList<FnWord> words, const Basis &basis)
 }
 
 
-QList<FnWord> wordsoflength (Basis basis, int len){
+QList<FnWord> wordsOfLength (const Basis &basis, int len){
     QList<FnWord> wordList;
 
     if(len == 1)
@@ -440,7 +369,7 @@ QList<FnWord> wordsoflength (Basis basis, int len){
         return wordList;
     }
 
-    QList<FnWord> shorterWords = wordsoflength(basis,len-1);
+    QList<FnWord> shorterWords = wordsOfLength(basis,len-1);
     foreach(FnWord x, shorterWords)
     {
 

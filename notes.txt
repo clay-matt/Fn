@@ -35,7 +35,7 @@ This file contains a log of changes made and needed to be made
     2. Features to Add:
         Graphs
         Stallings Graphs
-        Separability
+        Separability ** Added 05/14/2012 **
         Graph Morphism
         Train-Tracks
         Translation length (free volume) in 1-edge Bass-Serre Trees
@@ -59,7 +59,7 @@ This file contains a log of changes made and needed to be made
     2. Features to Add:
         Morphisms should be "linked" to computed inverses so that Map_(f_,a_,-1) applies the inverse of f_ to a_.
         Roig/Venture/Weil P algorithm for Whitehead problem
-        Whitehead Graphs
+        Whitehead Graphs ** added 05/14/2012 **
 
 3/31/2011 -
 

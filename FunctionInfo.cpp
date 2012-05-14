@@ -68,8 +68,8 @@ FunctionInfo::FunctionInfo(QObject *parent) :
   functionSkeleton[IsPrimitiveElementFcn] = "IsPrimitiveElement_( u_ , <n_> )";
   functionSkeleton[IsSeparableFcn] = "IsSeparable_( [u_] , n_ )";
   functionSkeleton[IterateFcn] = "Iterate_( f_, n_ )";
-  functionSkeleton[LengthFcn] = "Length_( u_ )";
-  functionSkeleton[MapFcn] = "Map_( f_ , u_ , <n_> )";
+  functionSkeleton[LengthFcn] = "Length_( [u_] )";
+  functionSkeleton[MapFcn] = "Map_( f_ , [u_] , <n_> )";
   functionSkeleton[MultiplyFcn] = "Multiply_( u_ , v_ )";
   functionSkeleton[TwoStepNilpotentFcn] = "TwoStepNilpotent_( u_, <n_> )";
   functionSkeleton[WhiteheadAutomorphismFcn] = "WhiteheadAutomorphism_( [A_] , a_ , n_ )";

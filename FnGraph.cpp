@@ -355,7 +355,7 @@ FnGraph operator + (const FnGraph &Gamma0, const FnGraph &Gamma1)
 
     // the vertices of the sum is the union of the two vertex lists
     // the edges of the sum is the disjoint union of the two edge lists
-    // edges from Gamma0 are appended with 0, edges from Gamma1 are appended with 1
+    // if an edge has the same label in Gamma1, the label is appended with '
 
     FnGraph unionGraph;
 
@@ -368,10 +368,17 @@ FnGraph operator + (const FnGraph &Gamma0, const FnGraph &Gamma1)
         unionGraph.addVertex(vertex);
 
     foreach(edge, Gamma0.edgeList())
-        unionGraph.addEdge(edge+"0",Gamma0.adjacentVertices(edge));
+        unionGraph.addEdge(edge,Gamma0.adjacentVertices(edge));
 
-    foreach(edge, Gamma1.edgeList())
-        unionGraph.addEdge(edge+"1",Gamma1.adjacentVertices(edge));
+    foreach(edge, Gamma1.edgeList()) {
+
+        if(unionGraph.edgeList().contains(edge))
+            unionGraph.addEdge(edge+"'",Gamma1.adjacentVertices(edge));
+
+        else
+            unionGraph.addEdge(edge,Gamma1.adjacentVertices(edge));
+
+    }
 
     return unionGraph;
 

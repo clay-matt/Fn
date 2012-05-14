@@ -131,7 +131,7 @@ FnData Calculator::compute(const QString & input)
 
     FnData output;
 
-    // try to math with previous input
+    // try to match with previous input
     if (input == PreviousOutput)
         return previousOutput;
 

@@ -2,7 +2,7 @@
 // inherits QObject
 
 // author Matt Clay
-// version 110712
+// version 120514
 
 /////////////////////////////////////////////////////////
 

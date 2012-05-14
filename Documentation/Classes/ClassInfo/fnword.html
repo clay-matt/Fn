@@ -66,8 +66,16 @@ is an element of the free group.  </p>
   </tr>
 
   <tr>
+    <td class="type">QList&lt;int&gt; </td>
+    <td><a class="membername" href="#abelianization">abelianization </a>
+    ( <span class="type">const Basis</span> & <span class="input">basis</span>
+      = <a class="code" href="basis.html#BASIS-CONST">BASIS</a> ) <span
+    class="type">const</span></td>
+  </tr>
+
+  <tr>
     <td class="type">bool</td>
-    <td><a class="membername" href="#checkBasis">checkBasis</a> (
+    <td><a class="membername" href="#checkbasis">checkBasis</a> (
       <span class="type">const
   Basis</span> & <span class="input">basis</span> = <a
       class="code" href="basis.html#BASIS-CONST">BASIS</a> )
@@ -76,7 +84,7 @@ is an element of the free group.  </p>
   
   <tr>
     <td class="type">FnWord</td>
-    <td><a class="membername" href="#cyclicWord">cyclicWord</a> ( )
+    <td><a class="membername" href="#cyclicword">cyclicWord</a> ( )
     <span class="type">const</span></td>
   </tr>
 
@@ -95,10 +103,16 @@ is an element of the free group.  </p>
 
   <tr>
     <td class="type">bool</td>
-    <td><a class="membername" href="#isSeparable">isSeparable</a> (
+    <td><a class="membername" href="#isseparable">isSeparable</a> (
       <span class="type">const
   Basis</span> & <span class="input">basis</span> = <a
       class="code" href="basis.html#BASIS-CONST">BASIS</a> )
+    <span class="type">const</span></td>
+  </tr>
+
+  <tr>
+    <td class="type">bool</td>
+    <td><a class="membername" href="#istrivial">isTrivial</a> ( )
     <span class="type">const</span></td>
   </tr>
 
@@ -109,8 +123,20 @@ is an element of the free group.  </p>
 
 
   <tr>
-    <td class="type">FnGraph FnWord</td>
-    <td><a class="membername" href="#whiteheadGraph">whiteheadGraph</a> (<span class="type"> const </span> <span class = "type"> Basis </span>&<span class = "type">basis</span> = <a class ="code" href ="basis.html#BASIS-CONST">BASIS</a>)<span class="type">const </span></td>
+    <td class="type">QList&lt;int&gt; </td>
+    <td><a class="membername" href="#twostepnilpotent">twoStepNilpotentNormalForm </a>
+    ( <span class="type">const Basis</span> & <span class="input">basis</span>
+      = <a class="code" href="basis.html#BASIS-CONST">BASIS</a> ) <span
+    class="type">const</span></td>
+  </tr>
+  
+  <tr>
+    <td class="type">FnGraph</td>
+    <td><a class="membername" href="#whiteheadgraph">whiteheadGraph</a> (
+      <span class="type">const </span> <span class = "type"> Basis </span>
+      & <span class = "input">basis</span> = <a class ="code" href
+    ="basis.html#BASIS-CONST">BASIS</a>)<span class="type"> const
+    </span></td>
   </tr>
 
   <tr>
@@ -196,20 +222,29 @@ is an element of the free group.  </p>
   </tr>
 
  <tr>
-    <td class="type">FnWord</td>
+    <td class="type">bool</td>
     <td><a class="membername"
-    href="#whiteheadGraph">whiteheadGraph</a>(<span
-    class="type">QList &lt;FnWord &gt; </span> words, <span class="type">const</span>
+    href="#isseparable-non">isSeparable</a> ( <span
+    class="type">QList&lt;FnWord&gt; </span> <span class="input">words</span>,
+      <span class="type">const</span>
     <span class="type"> Basis</span> & <span
-    class="type">basis</span> )</td>
+    class="input">basis</span> )</td>
+  </tr>
+
+   <tr>
+    <td class="type">FnGraph</td>
+    <td><a class="membername"
+    href="#whiteheadgraph-non">whiteheadGraph</a> ( <span
+    class="type">QList&lt;FnWord&gt; </span> words, <span class="type">const</span>
+    <span class="type"> Basis</span> & <span
+    class="input">basis</span> )</td>
   </tr>
 
  <tr>
-    <td class="type">QList &lt;FnWord &gt;</td>
+    <td class="type">QList&lt;FnWord&gt;</td>
     <td><a class="membername"
-    href="#wordsoflength">wordsoflength</a>(<span
-    class="type">Basis </span> basis, <span class="type">int
-    <span> len)</td>
+    href="#wordsoflength">wordsOfLength</a> ( <span
+    class="type">Basis </span> & <span class="input">basis</span>, <span class="type">int</span> <span class="input">len</span> )</td>
   </tr>
     
 </table>
@@ -247,7 +282,7 @@ group and other basic group operations.
 
 <br />
 
-Default constructor for the class.  The constructs an empty QString.
+Default constructor for the class.  It constructs an empty QString.
 
 </p>
 
@@ -279,7 +314,31 @@ class="input">a</span>.
 
 </p>
 
-<p class="memberdescription"><a name="checkBasis" />
+<p class="memberdescription"><a name="abelianization" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">QList&lt;int&gt;</span>
+      FnWord::abelianization</span> ( <span class="type">const
+  Basis</span> & <span class="input">basis</span> = <a
+      class="code" href="basis.html#BASIS-CONST">BASIS</a> ) <span
+  class="type">const</span></td></tr> </table>
+
+<br />
+
+Returns the exponent sums of the FnWord as a word in the basis <span
+class="input">basis</span>.  The exponent sum is the sum of the
+positive occurances of a basis element <span class="input">x</span>
+minus the negative occurances <span
+class="input">x</span><sup>&minus;1</sup>.  For example, the
+abelianization of the word <span
+class="input">baab</span><sup>&minus;2</sup><span
+class="input">a</span><sup>&minus;1</sup> in the basis
+{<span class="input">a,&nbsp;b</span>} is [&nbsp;1&nbsp;&minus;1&nbsp;].
+  
+</p>
+
+<p class="memberdescription"><a name="checkbasis" />
 
 <table class="memberheader">
   <tr>
@@ -296,7 +355,7 @@ class="input">basis</span>.
   
 </p>
 
-<p class="memberdescription"><a name="cyclicWord" />
+<p class="memberdescription"><a name="cyclicword" />
 
 <table class="memberheader">
   <tr>
@@ -307,9 +366,10 @@ class="input">basis</span>.
 <br />
 
 Returns the FnWord obtained by removing all instances of
-  initial-terminal <i>x</i> - <i>x<sup>&minus;1</sup></i> pairs.  To
-  check if two words define the same cylic word (i.e., are conjugate)
-  use <a class="code" href="#conjugacyProblem">FnWord::conjugacyProblem</a>.
+  initial-terminal <span class="input">x</span>&nbsp;-&nbsp;<span
+  class="input">x</span><sup>&minus;1</sup> pairs.  To check if two
+  words define the same cylic word (i.e., are conjugate) use <a
+   class="code" href="#conjugacyProblem">FnWord::conjugacyProblem</a>.
   
 </p>
 
@@ -351,7 +411,7 @@ Returns the inverse the FnWord.
 
 </p>
 
-<p class="memberdescription"><a name="isSeparable" />
+<p class="memberdescription"><a name="isseparable" />
 
 <table class="memberheader">
   <tr>
@@ -362,17 +422,29 @@ Returns the inverse the FnWord.
   class="type">const</span></td></tr> </table>
 
 <br />
-Bibliography:
-Stallings, John R. Whitehead graphs on handlebodies. Geometric group theory down under (Canberra, 1996), 317-330,de Gruyter, Berlin, 1999.
 
-<br />
-
-A subset of A of a free group F is separable when there is a non-trivial free factorization F = F<SUB>1</SUB> * F<SUB>2</SUB> such that each element of A is conjugate to an element factor.
-<br />
-Takes in a basis and returns a bool if the FnWord is separable or not separable.
+Determines if the FnWord is contained in a proper free factor of the
+free group with basis <span class="input">basis</span>.  See <a class="code"
+ href="#isseparable-non">isSeparable</a>.
   
 </p>
 
+<p class="memberdescription"><a name="istrivial" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">bool</span> FnWord::isTrivial</span> ( )
+    <span class="type">const</span>
+    </td>
+  </tr>
+</table>
+
+<br />
+
+Determines if the FnWord represents <a href="#ID">ID</a>.
+
+</p>
+  
 <p class="memberdescription"><a name="tighten" />
 
 <table class="memberheader">
@@ -386,8 +458,64 @@ Takes in a basis and returns a bool if the FnWord is separable or not separable.
 
 <br />
 
-Removes all instances of <i>x</i> - <i>x<sup>&minus;1</sup></i> pairs.
+Removes all instances of <span class="input">x</span>&nbsp;-&nbsp;<span
+  class="input">x</span><sup>&minus;1</sup> pairs.
 
+</p>
+
+<p class="memberdescription"><a name="twostepnilpotent" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">QList&lt;int&gt;</span>
+      FnWord::twoStepNilpotentNormalForm</span> ( <span class="type">const
+  Basis</span> & <span class="input">basis</span> = <a
+      class="code" href="basis.html#BASIS-CONST">BASIS</a> ) <span
+  class="type">const</span></td></tr> </table>
+
+<br />
+
+Returns the two step nilpotent normal form of the FnWord as a word in
+the basis <span class="input">basis</span>.  The first <span class="input">r</span>
+entries are composed of the exponent sums of the basis elements where
+<span class="input">r</span> is the rank <span class="input">basis</span> (see <span
+class="type"><a class="code"
+href="#abelianization">FnWord::abelianization</a></span>).  The
+remaining <span class="input">r</span>(<span class="input">r</span>&nbsp;&minus;&nbsp;1)/2 are the
+exponents of the commutators
+[&nbsp;<span class="input">a<sub>i</sub>&nbsp;,&nbsp;a<sub>j</sub></span>&nbsp;]&nbsp;=&nbsp;<span class="input">a<sub>i</sub>&nbsp;a<sub>j</sub>&nbsp;a<sub>i</sub></span><sup>&minus;1</sup><span class="input">a<sub>j</sub></span><sup>&minus;1</sup>
+where
+1&nbsp;&leq;&nbsp;<span class="input">i</span>&nbsp;&lt;&nbsp;<span class="input">j</span>&nbsp;&leq;&nbsp;<span class="input">r</span>.
+Words are converted to normal form using the relations:
+
+  <table class="equations">
+    <tr>
+      <td class="eqleft"> <span class="input">ba</span> =</td>
+      <td class="eqright">[ <span class="input">a , b</span> ]<sup>&minus;1</sup> <span class="input">ab</span></td>
+    </tr>
+    <tr>
+      <td class="eqleft"> <span class="input">ba</span><sup>&minus;1</sup> =</td>
+      <td class="eqright"><span class="input">a</span><sup>&minus;1</sup><span class="input">b</span>
+	(<span class="input">b</span><sup>&minus;1</sup>[ <span class="input">a , b</span> ] <span class="input">b</span>)</td>
+    </tr>
+    <tr>
+      <td class="eqleft"> <span class="input">b</span><sup>&minus;1</sup><span class="input">a</span> =</td>
+      <td class="eqright"><span class="input">ab</span><sup>&minus;1</sup>
+	(<span class="input">a</span><sup>&minus;1</sup>[ <span class="input">a , b</span> ] <span class="input">a</span>)</td>
+    </tr>
+    <tr>
+      <td class="eqleft">  <span class="input">b</span><sup>&minus;1</sup><span class="input">a</span><sup>&minus;1</sup>
+	=</td>
+      <td class="eqright"><span class="input">a</span><sup>&minus;1</sup><span class="input">b</span><sup>&minus;1</sup>
+	[ <span class="input">a , b</span> ]<sup>&minus;1</sup></td>
+    </tr>    
+    </table>
+
+For more information about free nilpotent groups, see <a
+        href="https://terrytao.wordpress.com/2009/12/21/the-free-nilpotent-group/">Terence
+       Tao's Blog: What's New</a>.  Note, he defines commutators
+       [&nbsp;<span class="input">g&nbsp;,&nbsp;h</span>&nbsp;]&nbsp;=&nbsp;<span class="input">g</span><sup>&minus;1</sup><span class="input">h</span><sup>&minus;1</sup><span class="input">gh</span>.
+    
 </p>
 
 
@@ -405,7 +533,9 @@ Removes all instances of <i>x</i> - <i>x<sup>&minus;1</sup></i> pairs.
 
 <br />
 
-The Whitehead graph is defined as follows: Let V consist of the set Returns the whitehead graph with number of edges
+Returns the Whitehead graph of the FnWord in the basis
+<span class="input">basis</span>.  See <a class="code"
+ href="#whiteheadgraph-non">whiteheadGraph</a>.
   
 </p>
 
@@ -422,7 +552,12 @@ The Whitehead graph is defined as follows: Let V consist of the set Returns the 
 
 <br />
 
-Returns true if the FnWord is equal to <a class="code" href="#FAIL">FAIL</a>.
+Returns true if the FnWord is equal to <a class="code"
+href="#FAIL">FAIL</a>.  This can be used in conjunction with certain
+functions that return FAIL as a fail state.  For example, <span
+class="inlinecode">!conjugacyProblem(u,&nbsp;v)</span> is true if the
+FnWords <span class="inlinecode">u</span> and <span
+class="inlinecode">v</span> are not conjugate.
 
 </p>
 
@@ -476,7 +611,7 @@ Multiplies the FnWord on the right by <span class="input">u</span>.
 <br />
 
 The overloads the function <a class="code"
-href="#operator*=fnowrd">FnWord::operator *= ( )</a>.
+href="#operator*=fnowrd">FnWord::operator&nbsp;*=&nbsp;(&nbsp;)</a>.
 
 <br />
 <br />
@@ -526,9 +661,9 @@ Returns the product of the elements <span class="input">u</span> and
 <br />
 
 The overloads the function <a class="code"
-href="#operator*fnword">operator * ( <span class="type">const
-FnWord</span> & <span class="input">u</span>, <span class="type">const
-FnWord</span> & <span class="input">v</span> )</a>.
+href="#operator*fnword">operator&nbsp;*&nbsp;(&nbsp;<span class="type">const
+FnWord</span>&nbsp;&&nbsp;<span class="input">u</span>,&nbsp;<span class="type">const
+FnWord</span>&nbsp;&&nbsp;<span class="input">v</span>&nbsp;)</a>.
 
 <br />
 <br />
@@ -555,9 +690,9 @@ the length one element <span class="input">a</span>.
 <br />
 
 The overloads the function <a class="code"
-href="#operator*fnword">operator * ( <span class="type">const
-FnWord</span> & <span class="input">u</span>, <span class="type">const
-FnWord</span> & <span class="input">v</span> )</a>.
+href="#operator*fnword">operator&nbsp;*&nbsp;(&nbsp;<span class="type">const
+FnWord</span>&nbsp;&&nbsp;<span class="input">u</span>,&nbsp;<span class="type">const
+FnWord</span>&nbsp;&&nbsp;<span class="input">v</span>&nbsp;)</a>.
 
 <br />
 <br />
@@ -583,7 +718,7 @@ class="input">a</span> and the element <span class="input">v</span>.
 
 <br />
 
-Returns the element <span class="input">vuv<sup>-1</sup></span>.
+Returns the element <span class="input">vuv</span><sup>&minus;1</sup>.
 
 </p>
 
@@ -604,14 +739,14 @@ Returns the element <span class="input">vuv<sup>-1</sup></span>.
 <br />
 
 The overloads the function <a class="code"
-href="#operator^fnword">operator ^ ( <span class="type">const
-FnWord</span> & <span class="input">u</span>, <span class="type">const
-FnWord</span> & <span class="input">v</span> )</a>.
+href="#operator^fnword">operator&nbsp;^&nbsp;(&nbsp;<span class="type">const
+FnWord</span>&nbsp;&&nbsp;<span class="input">u</span>, <span class="type">const
+FnWord</span>&nbsp;&&nbsp;<span class="input">v</span>&nbsp;)</a>.
 
 <br />
 <br />
 
-Returns the element <span class="input">aua<sup>-1</sup></span>.
+Returns the element <span class="input">aua</span><sup>&minus;1</sup>.
 
 </p>
 
@@ -632,34 +767,70 @@ Returns the element <span class="input">aua<sup>-1</sup></span>.
 <br />
 
 Returns the element <span class="input">w</span> such that <span
-class="input">u</span> = <span class="input">wvw<sup>-1</sup></span>
-if <span class="input">w</span> exist.  If not, <a class="code"
+class="input">u</span>&nbsp;=&nbsp;<span
+class="input">wvw</span><sup>&minus;1</sup></span> if <span
+class="input">w</span> exist.  If not, <a class="code"
 href="#FAIL">FAIL</a> is returned.
 
 </p>
 
+<p class="memberdescription"><a name="isseparable-non" />
+
+<table class="memberheader">
+  <tr>
+    <td><span class="membername"><span class="type">bool</span>
+      FnWord::isSeparable</span> ( <span class="type">QList&lt;FnWord&gt;</span> <span class="input">words</span>, <span class="type">const
+  Basis</span> & <span class="input">basis</span> ) </td></tr> </table>
+
+<br />
+
+Determines if the set <span class="input">words</span> is separable in
+the free group with basis <span class="input">basis</span>.  A subset
+of <span class="input">A</span> of the free group <span
+class="input">F</span> is <span class="input">separable</span> when
+there is a non-trivial free factorization <span
+class="input">F</span>&nbsp;=&nbsp;<span
+class="input">F<sub>1</sub>&nbsp;*&nbsp;F<sub>2</sub></span> such that
+each element of <span class="input">A</span> is conjugate to an
+element of either <span class="input">F<sub>1</sub></span> or <span
+class="input">F<sub>2</sub></span>.  The algorithm to determine if the
+set <span class="input">words</span> is separable is due to
+J. R. Stallings.
+
+<br />
+<br />
+  
+Stallings, John R. "Whitehead graphs on
+handlebodies." <b>Geometric group theory down under (Canberra,
+1996)</b>, 317-330, de Gruyter, Berlin, 1999.
 
 </p>
 
-<p class="memberdescription"><a name="whiteheadGraph" />
+<p class="memberdescription"><a name="whiteheadgraph-non" />
 
 <table class="memberheader">
   <tr>
     <td><span class="membername"><span class="type">FnGraph</span>
-      whiteheadGraph</span> ( <span class="type">QList&lt;
-  FnWord&gt;</span> words, <span
+      whiteheadGraph</span> ( <span class="type">QList&lt;FnWord&gt;</span> <span class="input">words</span>, <span
     class="type">const</span> <span class="type">
   Basis</span> & <span
-    class="type">basis</span> )
+    class="input">basis</span> )
     </td>
   </tr>
 </table>
 
 <br />
 
-Returns the whitehead graph of FnWord 
-
-</p>
+Returns the Whitehead graph of the set <span
+class="input">words</span> in the basis <span
+class="input">basis</span>.  This is the graph with 2<span
+class="input">r</span> vertices, where <span class="input">r</span> is
+the rank of <span class="input">basis</span>, corresponding to the
+elements <span class="input">a<sub>i</sub></span><sup>&pm;1</sup>.
+For each subword <span class="input">uv</span> of one of the cyclic
+words in the set <span class="input">words</span>, there is an edge
+from <span class="input">u</span><sup>&plus;</sup> to <span
+class="input">v</span><sup>&minus;</sup>.
 
 </p>
 
@@ -667,14 +838,16 @@ Returns the whitehead graph of FnWord
 
 <table class="memberheader">
   <tr>
-    <td><span class="membername"><span class="type">QList &lt;FnWord &gt;</span> wordsoflength</span> ( <span class="type"> Basis</span> basis, <span
-    class="type">int</span> len <span>) </td>
+    <td><span class="membername"><span class="type">QList&lt;FnWord&gt;</span> wordsOfLength</span> ( <span class="type"> const Basis</span> &
+      <span class="input">basis</span>, <span
+    class="type">int</span> <span class="input">len</span> ) </td>
   </tr>
 </table>
 
 <br />
 
-Returns the list of words given a specific length and rank of FnWord
+Returns the list of words of length <span class="input">len</span> in
+the free group with basis <span class="input">basis</span>.
 
 </p>
 
